@@ -86,9 +86,9 @@ Se il documento non è un POS o non è leggibile, rispondi con:
 {"errore": "descrizione del problema"}`,
   });
 
-  const response = await fetch("/api/claude", {
+  const response = await fetch("https://api.anthropic.com/v1/messages", {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: { "Content-Type": "application/json", "x-api-key": "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", "anthropic-version": "2023-06-01" },
     body: JSON.stringify({
       model: "claude-3-5-sonnet-20241022",
       max_tokens: 1000,
