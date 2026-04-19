@@ -80,7 +80,7 @@ Se il documento non è leggibile o non pertinente alla sicurezza sul lavoro:
 {"errore": "descrizione del problema", "confidenza": 0}`,
   });
 
-  const response = await fetch("http://localhost:3001/api/claude", {
+  const response = await fetch("/api/claude", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({

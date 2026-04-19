@@ -86,7 +86,7 @@ Se il documento non è un POS o non è leggibile, rispondi con:
 {"errore": "descrizione del problema"}`,
   });
 
-  const response = await fetch("http://localhost:3001/api/claude", {
+  const response = await fetch("/api/claude", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
