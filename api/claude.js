@@ -14,10 +14,14 @@ export default async function handler(req, res) {
   const ANTHROPIC_KEY = process.env.ANTHROPIC_KEY;
 
   if (!ANTHROPIC_KEY) {
-    return res.status(500).json({ error: 'Chiave API non configurata su Vercel' });
+    return res.status(500).json({ error: 'Chiave API mancante' });
   }
 
   try {
+    const body = typeof req.body === 'string'
+      ? JSON.parse(req.body)
+      : req.body;
+
     const response = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
       headers: {
@@ -25,11 +29,12 @@ export default async function handler(req, res) {
         'x-api-key': ANTHROPIC_KEY,
         'anthropic-version': '2023-06-01',
       },
-      body: JSON.stringify(req.body),
+      body: JSON.stringify(body),
     });
 
     const data = await response.json();
     return res.status(200).json(data);
+
   } catch (err) {
     return res.status(500).json({ error: err.message });
   }
