@@ -572,3 +572,7 @@ export default function GestioneTemplatesDUVRIDVR() {
             💡 <strong style={{ color: "#64748b" }}>Consiglio:</strong> carica {tab === "DUVRI" ? "DUVRI di tipi diversi (manutenzione meccanica, elettrica, pulizie) per coprire più scenari" : "DVR di reparti diversi per avere uno stile coerente su tutto lo stabilimento"}.
           </div>
         </div>
+      </div>
+    </div>
+  );
+}
