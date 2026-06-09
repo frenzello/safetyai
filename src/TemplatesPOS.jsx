@@ -1,4 +1,5 @@
 import { useState, useRef } from "react";
+import API_URL from "./config";
 
 // ─── MOCK TEMPLATE CARICATI ───────────────────────────────────────────────────
 const TEMPLATE_INIZIALI = [
@@ -86,9 +87,9 @@ Se il documento non è un POS o non è leggibile, rispondi con:
 {"errore": "descrizione del problema"}`,
   });
 
-  const response = await fetch("https://api.anthropic.com/v1/messages", {
+  const response = await fetch(`${API_URL}/api/claude`, {
     method: "POST",
-    headers: { "Content-Type": "application/json", "x-api-key": "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", "anthropic-version": "2023-06-01" },
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
       model: "claude-3-5-sonnet-20241022",
       max_tokens: 1000,
@@ -616,7 +617,3 @@ export default function GestioneTemplatesPOS() {
             💡 Più template carichi, più preciso sarà lo stile replicato. Consigliamo almeno 3 POS di tipo diverso (manutenzione meccanica, elettrica, pulizie...).
           </div>
         </div>
-      </div>
-    </div>
-  );
-}

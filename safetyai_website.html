@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SafetyAI — Il Gestionale HSE per Professionisti</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,600;1,9..144,300;1,9..144,600&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&family=DM+Mono:wght@400&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{--ink:#0b0f1a;--ink2:#161c2e;--ink3:#1e2740;--slate:#2d3a5a;--muted:#5a6a8a;--subtle:#8a9ab8;--border:#1e2740;--cream:#f0ede6;--accent:#2a6ef5;--accent2:#4d8fff;--gold:#c8a44a;--gold2:#e5c068;--green:#1fa870;--red:#e04545}
+html{scroll-behavior:smooth}
+body{font-family:'DM Sans',sans-serif;background:var(--ink);color:var(--cream);overflow-x:hidden;line-height:1.6}
+::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:var(--ink)}::-webkit-scrollbar-thumb{background:var(--slate);border-radius:3px}
+nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:0 6vw;height:68px;display:flex;align-items:center;justify-content:space-between;background:rgba(11,15,26,0.92);backdrop-filter:blur(24px);border-bottom:1px solid rgba(255,255,255,.06);transition:border-color .3s}
+.logo{display:flex;align-items:center;gap:10px;text-decoration:none}
+.logo-icon{width:34px;height:34px;background:linear-gradient(135deg,var(--accent),#06c6f5);border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:800;color:#fff}
+.logo-text{font-family:'Fraunces',serif;font-size:20px;color:var(--cream);letter-spacing:-.3px}
+.nav-links{display:flex;align-items:center;gap:28px;list-style:none}
+.nav-links a{font-size:14px;color:var(--subtle);text-decoration:none;transition:color .2s}
+.nav-links a:hover{color:var(--cream)}
+.btn{display:inline-flex;align-items:center;gap:7px;padding:9px 20px;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;text-decoration:none;transition:all .2s;border:none;font-family:'DM Sans',sans-serif}
+.btn-primary{background:linear-gradient(135deg,var(--accent),#06b6f5);color:#fff;box-shadow:0 4px 20px rgba(42,110,245,.3)}
+.btn-primary:hover{transform:translateY(-1px);box-shadow:0 6px 28px rgba(42,110,245,.4)}
+.btn-lg{padding:14px 28px;font-size:15px;border-radius:10px}
+.btn-outline{background:transparent;color:var(--cream);border:1px solid rgba(255,255,255,.15)}
+.btn-outline:hover{background:rgba(255,255,255,.06)}
+.btn-ghost{background:transparent;color:var(--subtle);border:1px solid var(--border)}
+.btn-ghost:hover{color:var(--cream);border-color:var(--slate)}
+/* HERO */
+.hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:120px 6vw 80px;position:relative;overflow:hidden}
+.hero-glow{position:absolute;top:20%;left:50%;transform:translateX(-50%);width:800px;height:500px;background:radial-gradient(ellipse,rgba(42,110,245,.12) 0%,transparent 70%);pointer-events:none}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;padding:6px 14px;background:rgba(42,110,245,.1);border:1px solid rgba(42,110,245,.25);border-radius:20px;font-size:12px;font-weight:600;color:var(--accent2);letter-spacing:.5px;margin-bottom:32px}
+.hero-badge::before{content:'';width:6px;height:6px;background:var(--accent2);border-radius:50%;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(1.4)}}
+.hero h1{font-family:'Fraunces',serif;font-size:clamp(40px,6vw,78px);font-weight:600;line-height:1.1;letter-spacing:-2px;margin-bottom:24px;max-width:860px}
+.hero h1 em{font-style:italic;color:var(--gold2)}
+.hero-sub{font-size:clamp(16px,2vw,19px);color:var(--subtle);max-width:600px;line-height:1.7;margin-bottom:24px}
+.hero-sub strong{color:var(--cream)}
+.hero-gdpr{display:inline-flex;align-items:center;gap:8px;padding:8px 16px;background:rgba(31,168,112,.08);border:1px solid rgba(31,168,112,.2);border-radius:8px;font-size:13px;color:#34d399;margin-bottom:36px}
+.hero-gdpr strong{color:#4ade80}
+.hero-actions{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin-bottom:16px}
+.hero-note{font-size:13px;color:var(--muted)}
+/* PREVIEW */
+.preview-wrap{margin-top:72px;width:100%;max-width:980px;position:relative}
+.preview-glow{position:absolute;bottom:-40px;left:50%;transform:translateX(-50%);width:80%;height:100px;background:radial-gradient(ellipse,rgba(42,110,245,.25) 0%,transparent 70%);filter:blur(20px)}
+.preview{background:var(--ink2);border:1px solid var(--border);border-radius:16px;overflow:hidden;box-shadow:0 40px 100px rgba(0,0,0,.6)}
+.preview-bar{padding:12px 16px;background:var(--ink3);display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--border)}
+.preview-dots{display:flex;gap:6px}
+.dot{width:10px;height:10px;border-radius:50%}
+.dot-r{background:#e04545}.dot-y{background:#f5a623}.dot-g{background:#1fa870}
+.preview-url{flex:1;margin:0 16px;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:6px;padding:4px 12px;font-size:11px;font-family:'DM Mono',monospace;color:var(--muted);text-align:center}
+.preview-body{display:grid;grid-template-columns:180px 1fr;min-height:400px}
+.preview-sidebar{background:var(--ink3);border-right:1px solid var(--border);padding:16px 0}
+.p-logo{padding:0 16px 14px;margin-bottom:8px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px}
+.p-logo-icon{width:24px;height:24px;background:linear-gradient(135deg,var(--accent),#06c6f5);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#fff}
+.p-logo-text{font-size:12px;font-weight:700;color:var(--cream)}
+.p-company{padding:8px 16px;margin-bottom:6px}
+.p-company-label{font-size:9px;color:var(--muted);letter-spacing:.5px;margin-bottom:4px}
+.p-company-name{font-size:11px;color:var(--subtle);font-weight:500}
+.p-nav-item{padding:8px 16px;font-size:12px;color:var(--muted);display:flex;align-items:center;gap:8px}
+.p-nav-item.active{background:rgba(42,110,245,.08);border-left:2px solid var(--accent);color:var(--accent2);font-weight:600}
+.preview-main{padding:18px;display:flex;flex-direction:column;gap:12px;overflow:hidden}
+.p-title{font-size:16px;font-weight:700;color:var(--cream)}
+.p-alert{padding:9px 12px;background:rgba(224,69,69,.1);border:1px solid rgba(224,69,69,.2);border-radius:7px;font-size:11px;color:#f87171}
+.p-kpi{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
+.p-kpi-card{background:var(--ink3);border:1px solid var(--border);border-radius:7px;padding:11px;position:relative;overflow:hidden}
+.p-kpi-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px}
+.p-kpi-card.blue::before{background:var(--accent)}.p-kpi-card.green::before{background:var(--green)}.p-kpi-card.red::before{background:var(--red)}
+.p-kpi-val{font-size:22px;font-weight:800;margin-bottom:2px}
+.p-kpi-val.blue{color:var(--accent2)}.p-kpi-val.green{color:var(--green)}.p-kpi-val.red{color:var(--red)}
+.p-kpi-label{font-size:10px;color:var(--muted)}
+.p-scadenze{background:var(--ink3);border:1px solid var(--border);border-radius:7px;overflow:hidden}
+.p-scad-header{padding:9px 13px;border-bottom:1px solid var(--border);font-size:11px;font-weight:700;color:var(--subtle)}
+.p-scad-row{padding:8px 13px;display:flex;align-items:center;gap:9px;border-bottom:1px solid rgba(255,255,255,.03)}
+.p-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.p-scad-name{font-size:11px;color:var(--cream);flex:1}
+.p-scad-doc{font-size:10px;color:var(--muted)}
+.p-scad-badge{font-size:9px;font-weight:700;padding:2px 7px;border-radius:10px}
+.p-scad-badge.red{background:rgba(224,69,69,.15);color:#f87171}
+.p-scad-badge.yellow{background:rgba(245,166,35,.15);color:#fbbf24}
+.p-scad-badge.green{background:rgba(31,168,112,.15);color:#34d399}
+/* SEZIONI */
+section{padding:96px 6vw}
+.section-label{display:inline-flex;align-items:center;gap:8px;font-size:11px;font-weight:700;letter-spacing:1.5px;color:var(--accent2);text-transform:uppercase;margin-bottom:16px}
+.section-label::before{content:'';width:24px;height:1px;background:var(--accent2)}
+h2{font-family:'Fraunces',serif;font-size:clamp(32px,4vw,52px);font-weight:600;letter-spacing:-1.5px;line-height:1.15;margin-bottom:20px}
+h2 em{font-style:italic;color:var(--gold2)}
+.section-sub{font-size:16px;color:var(--muted);max-width:580px;line-height:1.7;margin-bottom:56px}
+/* GDPR STRIP */
+.gdpr-strip{background:rgba(31,168,112,.05);border-top:1px solid rgba(31,168,112,.12);border-bottom:1px solid rgba(31,168,112,.12);padding:56px 6vw}
+.gdpr-inner{max-width:1100px;margin:0 auto;display:grid;grid-template-columns:1fr 2fr;gap:56px;align-items:center}
+.gdpr-left h3{font-family:'Fraunces',serif;font-size:30px;font-weight:600;color:var(--cream);letter-spacing:-.5px;margin-bottom:10px;line-height:1.2}
+.gdpr-left p{font-size:14px;color:var(--muted);line-height:1.7}
+.gdpr-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.gdpr-card{padding:20px;background:rgba(31,168,112,.06);border:1px solid rgba(31,168,112,.15);border-radius:10px}
+.gdpr-card-icon{font-size:20px;margin-bottom:10px}
+.gdpr-card h4{font-size:13px;font-weight:700;color:#4ade80;margin-bottom:6px}
+.gdpr-card p{font-size:12px;color:var(--muted);line-height:1.6}
+/* PROBLEMA */
+.problema{background:var(--ink2);border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
+.problema-grid{display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:start}
+.problema-cards{display:flex;flex-direction:column;gap:14px}
+.problema-card{padding:20px 24px;background:var(--ink3);border:1px solid var(--border);border-radius:12px;display:flex;gap:16px;align-items:flex-start}
+.problema-icon{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.problema-card h3{font-size:14px;font-weight:700;color:var(--cream);margin-bottom:4px}
+.problema-card p{font-size:13px;color:var(--muted);line-height:1.6}
+/* FEATURES */
+.features-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);border:1px solid var(--border);border-radius:16px;overflow:hidden}
+.feature-card{padding:36px 32px;background:var(--ink);transition:background .2s}
+.feature-card:hover{background:var(--ink2)}
+.feature-card.hl{background:linear-gradient(160deg,rgba(42,110,245,.07),var(--ink))}
+.feature-card.hl:hover{background:linear-gradient(160deg,rgba(42,110,245,.1),var(--ink2))}
+.feature-icon{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;margin-bottom:20px}
+.feature-card h3{font-size:17px;font-weight:700;color:var(--cream);margin-bottom:10px}
+.feature-card p{font-size:13px;color:var(--muted);line-height:1.7}
+.feature-detail{margin-top:10px;font-size:13px;color:var(--subtle);line-height:1.6}
+.feature-detail strong{color:var(--accent2)}
+.feature-tag{display:inline-block;margin-top:14px;font-size:10px;font-weight:700;padding:3px 9px;border-radius:20px;letter-spacing:.5px}
+/* HOW */
+.how{background:var(--ink2);border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
+.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:0;position:relative}
+.steps::before{content:'';position:absolute;top:28px;left:calc(12.5% + 28px);right:calc(12.5% + 28px);height:1px;background:linear-gradient(90deg,var(--accent),var(--gold),var(--accent));opacity:.3}
+.step{padding:32px 24px;text-align:center}
+.step-num{width:56px;height:56px;border-radius:50%;border:1px solid var(--border);background:var(--ink);display:flex;align-items:center;justify-content:center;font-family:'Fraunces',serif;font-size:20px;font-weight:600;color:var(--accent2);margin:0 auto 20px;position:relative;z-index:1}
+.step h3{font-size:15px;font-weight:700;color:var(--cream);margin-bottom:8px}
+.step p{font-size:13px;color:var(--muted);line-height:1.6}
+.step-emoji{font-size:22px;margin-bottom:8px}
+/* PERSONAS */
+.personas{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:56px}
+.persona{padding:32px;background:var(--ink2);border:1px solid var(--border);border-radius:14px;position:relative;overflow:hidden;transition:border-color .2s}
+.persona:hover{border-color:var(--slate)}
+.persona::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+.persona.rspp::before{background:linear-gradient(90deg,var(--accent),var(--accent2))}
+.persona.cse::before{background:linear-gradient(90deg,var(--gold),var(--gold2))}
+.persona.studio::before{background:linear-gradient(90deg,var(--green),#4ade80)}
+.persona-avatar{width:52px;height:52px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:24px;margin-bottom:16px}
+.persona h3{font-size:18px;font-weight:700;color:var(--cream);margin-bottom:4px}
+.persona-role{font-size:12px;color:var(--muted);margin-bottom:16px;font-weight:600;letter-spacing:.3px}
+.persona-problems{display:flex;flex-direction:column;gap:8px;margin-bottom:20px}
+.persona-problem{font-size:13px;color:var(--muted);display:flex;gap:8px;line-height:1.5}
+.persona-problem::before{content:'→';color:var(--accent2);flex-shrink:0}
+.persona-benefit{font-size:13px;padding:10px 14px;background:rgba(42,110,245,.08);border:1px solid rgba(42,110,245,.15);border-radius:8px;color:var(--accent2);font-weight:500}
+/* NORMA */
+.norma{background:var(--ink2);border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
+.norma-grid{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:start}
+.norma-pills{display:flex;flex-wrap:wrap;gap:10px;margin-top:28px}
+.pill{padding:8px 16px;border-radius:20px;font-size:12px;font-weight:700;border:1px solid;line-height:1.4}
+.pill.blue{background:rgba(42,110,245,.1);border-color:rgba(42,110,245,.25);color:var(--accent2)}
+.pill.gold{background:rgba(200,164,74,.1);border-color:rgba(200,164,74,.25);color:var(--gold2)}
+.pill.green{background:rgba(31,168,112,.1);border-color:rgba(31,168,112,.25);color:#34d399}
+.pill.purple{background:rgba(192,132,252,.1);border-color:rgba(192,132,252,.25);color:#c084fc}
+.norma-right p{font-size:14px;color:var(--muted);line-height:1.8;margin-bottom:20px}
+.norma-right strong{color:var(--subtle)}
+.norma-nota{padding:20px;background:rgba(42,110,245,.06);border:1px solid rgba(42,110,245,.15);border-radius:10px;margin-top:8px}
+/* SICUREZZA */
+.sicurezza-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-top:48px;max-width:900px;margin-left:auto;margin-right:auto}
+.sicurezza-card{padding:28px;background:var(--ink2);border:1px solid var(--border);border-radius:14px;display:flex;gap:18px}
+.sicurezza-icon{font-size:28px;flex-shrink:0}
+.sicurezza-card h3{font-size:14px;font-weight:700;color:var(--cream);margin-bottom:6px}
+.sicurezza-card p{font-size:13px;color:var(--muted);line-height:1.6}
+/* FAQ */
+.faq-list{max-width:720px;margin:48px auto 0}
+.faq-item{border-bottom:1px solid var(--border)}
+.faq-q{padding:20px 0;font-size:15px;font-weight:600;color:var(--cream);cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:16px;list-style:none;user-select:none}
+.faq-q::-webkit-details-marker{display:none}
+.faq-arrow{color:var(--muted);transition:transform .3s;flex-shrink:0;font-size:18px}
+details[open] .faq-arrow{transform:rotate(45deg)}
+.faq-a{padding:0 0 20px;font-size:14px;color:var(--muted);line-height:1.7}
+/* CTA */
+.cta-final{text-align:center;padding:120px 6vw;position:relative;overflow:hidden;background:var(--ink2);border-top:1px solid var(--border)}
+.cta-glow{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:600px;height:400px;background:radial-gradient(ellipse,rgba(42,110,245,.1) 0%,transparent 70%);pointer-events:none}
+.cta-final h2{font-size:clamp(36px,5vw,64px);margin-bottom:20px}
+.cta-final p{font-size:17px;color:var(--muted);margin-bottom:40px;max-width:520px;margin-left:auto;margin-right:auto;line-height:1.7}
+/* FOOTER */
+footer{background:var(--ink);border-top:1px solid var(--border);padding:60px 6vw 32px}
+.footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:40px;margin-bottom:48px}
+.footer-brand p{font-size:13px;color:var(--muted);line-height:1.7;max-width:240px;margin-top:10px}
+.footer-col h4{font-size:12px;font-weight:700;color:var(--subtle);letter-spacing:1px;text-transform:uppercase;margin-bottom:16px}
+.footer-col a{display:block;font-size:13px;color:var(--muted);text-decoration:none;margin-bottom:10px;transition:color .2s}
+.footer-col a:hover{color:var(--cream)}
+.footer-bottom{border-top:1px solid var(--border);padding-top:24px;display:flex;justify-content:space-between;align-items:center;font-size:12px;color:var(--muted)}
+.footer-badge{padding:4px 10px;background:rgba(31,168,112,.1);border:1px solid rgba(31,168,112,.2);border-radius:20px;font-size:11px;color:#34d399;font-weight:600}
+/* REVEAL */
+.reveal{opacity:0;transform:translateY(24px);transition:opacity .6s ease,transform .6s ease}
+.reveal.visible{opacity:1;transform:none}
+/* RESPONSIVE */
+@media(max-width:960px){
+  .features-grid,.steps,.personas{grid-template-columns:1fr 1fr}
+  .problema-grid,.norma-grid,.gdpr-inner{grid-template-columns:1fr}
+  .gdpr-cards{grid-template-columns:1fr}
+  .preview-body{grid-template-columns:1fr}
+  .preview-sidebar{display:none}
+  .footer-grid{grid-template-columns:1fr 1fr}
+  .steps::before{display:none}
+  .sicurezza-grid{grid-template-columns:1fr}
+}
+@media(max-width:600px){
+  .features-grid,.personas{grid-template-columns:1fr}
+  nav .nav-links{display:none}
+  .footer-grid{grid-template-columns:1fr}
+  .p-kpi{grid-template-columns:1fr 1fr}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="#" class="logo"><div class="logo-icon">S</div><span class="logo-text">SafetyAI</span></a>
+  <ul class="nav-links">
+    <li><a href="#features">Funzionalità</a></li>
+    <li><a href="#how">Come funziona</a></li>
+    <li><a href="#chi">Per chi è</a></li>
+    <li><a href="#faq">FAQ</a></li>
+  </ul>
+  <div><a href="mailto:info@safetyai.it" class="btn btn-ghost">Contattaci</a></div>
+</nav>
+
+<section class="hero">
+  <div class="hero-glow"></div>
+  <div class="hero-badge">✦ Gestionale HSE con Intelligenza Artificiale</div>
+  <h1>La gestione documentale<br>degli appalti,<br><em>rivoluzionata</em></h1>
+  <p class="hero-sub">SafetyAI trasforma ore di raccolta manuale in minuti. Carica una cartella di documenti — l'AI li legge, li classifica, verifica la conformità normativa e organizza tutto automaticamente.</p>
+  <div class="hero-gdpr">🔒 <strong>Privacy by design</strong> — nessun documento archiviato sui nostri server · Conforme GDPR 2016/679</div>
+  <div class="hero-actions">
+    <a href="mailto:info@safetyai.it" class="btn btn-primary btn-lg">Richiedi una demo →</a>
+    <a href="#how" class="btn btn-outline btn-lg">Come funziona</a>
+  </div>
+  <p class="hero-note">Attualmente in sviluppo avanzato — contattaci per accesso anticipato</p>
+
+  <div class="preview-wrap reveal">
+    <div class="preview-glow"></div>
+    <div class="preview">
+      <div class="preview-bar">
+        <div class="preview-dots"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div></div>
+        <div class="preview-url">SafetyAI — Dashboard</div>
+      </div>
+      <div class="preview-body">
+        <div class="preview-sidebar">
+          <div class="p-logo"><div class="p-logo-icon">S</div><div class="p-logo-text">SafetyAI</div></div>
+          <div class="p-company"><div class="p-company-label">AZIENDA ATTIVA</div><div class="p-company-name">Vetri Italiani S.r.l.</div></div>
+          <div class="p-nav-item active">⊟ Dashboard</div>
+          <div class="p-nav-item">✓ Idoneità</div>
+          <div class="p-nav-item">📂 Carica documenti</div>
+          <div class="p-nav-item">⏱ Scadenze</div>
+          <div class="p-nav-item">📋 DUVRI</div>
+          <div class="p-nav-item">◈ POS</div>
+          <div class="p-nav-item">◉ Accessi</div>
+        </div>
+        <div class="preview-main">
+          <div class="p-title">Dashboard</div>
+          <div class="p-alert">🚨 2 lavoratori con accesso bloccato per documenti scaduti</div>
+          <div class="p-kpi">
+            <div class="p-kpi-card blue"><div class="p-kpi-val blue">3</div><div class="p-kpi-label">Appalti attivi</div></div>
+            <div class="p-kpi-card green"><div class="p-kpi-val green">18/20</div><div class="p-kpi-label">Lavoratori idonei</div></div>
+            <div class="p-kpi-card red"><div class="p-kpi-val red">5</div><div class="p-kpi-label">Scadenze urgenti</div></div>
+          </div>
+          <div class="p-scadenze">
+            <div class="p-scad-header">Scadenze imminenti</div>
+            <div class="p-scad-row"><div class="p-dot" style="background:#e04545"></div><div style="flex:1"><div class="p-scad-name">Marco Rossi</div><div class="p-scad-doc">Primo soccorso — Edil Rossi S.r.l.</div></div><div class="p-scad-badge red">SCADUTO</div></div>
+            <div class="p-scad-row"><div class="p-dot" style="background:#f5a623"></div><div style="flex:1"><div class="p-scad-name">Anna Ferrari</div><div class="p-scad-doc">Antincendio — Clean Service S.r.l.</div></div><div class="p-scad-badge yellow">8 giorni</div></div>
+            <div class="p-scad-row"><div class="p-dot" style="background:#1fa870"></div><div style="flex:1"><div class="p-scad-name">Giuseppe Testa</div><div class="p-scad-doc">Carrelli elevatori — GT Impianti</div></div><div class="p-scad-badge green">42 giorni</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- GDPR -->
+<div class="gdpr-strip reveal">
+  <div class="gdpr-inner">
+    <div class="gdpr-left">
+      <h3>🔒 Privacy e GDPR al centro di tutto</h3>
+      <p>Trattiamo dati personali sensibili dei lavoratori ogni giorno. SafetyAI è costruito con la privacy come principio fondante — non come requisito secondario.</p>
+    </div>
+    <div class="gdpr-cards">
+      <div class="gdpr-card"><div class="gdpr-card-icon">📂</div><h4>Nessun archivio documenti</h4><p>I file caricati vengono analizzati in memoria dall'AI e immediatamente scartati. Non esistono copie sui nostri server.</p></div>
+      <div class="gdpr-card"><div class="gdpr-card-icon">⚖️</div><h4>Tu sei il Titolare</h4><p>SafetyAI opera come Responsabile esterno ai sensi dell'art. 28 GDPR. Il DPA è integrato nell'app, leggibile e scaricabile in ogni momento.</p></div>
+      <div class="gdpr-card"><div class="gdpr-card-icon">🔄</div><h4>Flusso dati trasparente</h4><p>Il documento viaggia cifrato verso le API AI (Anthropic), che non lo conserva né lo usa per addestrare modelli. I dati estratti restano sul tuo dispositivo.</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- PROBLEMA -->
+<section class="problema reveal" id="problema">
+  <div class="problema-grid">
+    <div>
+      <div class="section-label">Il problema</div>
+      <h2>La raccolta documentale negli appalti è ancora<br><em>un processo manuale</em></h2>
+      <p style="font-size:15px;color:var(--muted);line-height:1.7;margin-top:20px">Email, WhatsApp, telefonate — ogni cantiere riparte da zero. I documenti arrivano in disordine, le scadenze si perdono, il rischio di non conformità è costante.</p>
+    </div>
+    <div class="problema-cards">
+      <div class="problema-card"><div class="problema-icon" style="background:rgba(224,69,69,.1)">📧</div><div><h3>Raccolta documenti frammentata</h3><p>Attestati, DURC, polizze, idoneità sanitarie — arrivano da canali diversi, in formati diversi, spesso incompleti o fuori scadenza.</p></div></div>
+      <div class="problema-card"><div class="problema-icon" style="background:rgba(245,166,35,.1)">📋</div><div><h3>DUVRI e POS redatti a mano</h3><p>Copia-incolla da documenti precedenti, aggiornamento manuale, rischio di errori e omissioni nei contenuti obbligatori.</p></div></div>
+      <div class="problema-card"><div class="problema-icon" style="background:rgba(90,106,138,.1)">📅</div><div><h3>Scadenze difficili da monitorare</h3><p>Con più appalti e più imprese, tenere traccia di centinaia di scadenze su Excel separati è un lavoro a tempo pieno.</p></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section id="features" class="reveal">
+  <div class="section-label">Funzionalità principali</div>
+  <h2>Tre operazioni che oggi ti costano ore —<br>con SafetyAI diventano <em>minuti</em></h2>
+  <p class="section-sub">Non uno strumento generico — SafetyAI risolve i problemi concreti di chi gestisce la sicurezza negli appalti e nelle manutenzioni.</p>
+  <div class="features-grid">
+    <div class="feature-card hl">
+      <div class="feature-icon" style="background:rgba(42,110,245,.1)">📂</div>
+      <h3>Analisi massiva degli attestati</h3>
+      <p>Trascina una cartella con decine o centinaia di PDF — attestati di formazione, idoneità sanitarie, patenti a crediti. L'AI li legge tutti, identifica il lavoratore, il tipo di corso, la scadenza e verifica la conformità normativa.</p>
+      <p class="feature-detail">↓ Il risultato è un <strong>foglio Excel pronto da scaricare</strong> con la matrice lavoratori × attestati, colorata per stato di validità.</p>
+      <span class="feature-tag" style="background:rgba(42,110,245,.1);color:#4d8fff">Analisi AI + Export Excel</span>
+    </div>
+    <div class="feature-card hl">
+      <div class="feature-icon" style="background:rgba(200,164,74,.1)">🏢</div>
+      <h3>Profilo azienda da visura e DVR</h3>
+      <p>Carica la visura camerale e il DVR — anche un documento di centinaia di pagine. L'AI estrae automaticamente ragione sociale, P.IVA, sede, codice ATECO, figure della sicurezza e tutti i rischi presenti nel DVR.</p>
+      <p class="feature-detail">Il profilo creato viene usato per <strong style="color:var(--gold2)">personalizzare automaticamente DUVRI e POS</strong> su ogni appalto.</p>
+      <span class="feature-tag" style="background:rgba(200,164,74,.1);color:#e5c068">Onboarding azienda AI</span>
+    </div>
+    <div class="feature-card hl">
+      <div class="feature-icon" style="background:rgba(31,168,112,.1)">📋</div>
+      <h3>DUVRI e POS generati sull'appalto</h3>
+      <p>Seleziona l'impresa appaltatrice, l'area di lavoro e il tipo di intervento. L'AI redige il DUVRI con i rischi interferenziali specifici e le misure di prevenzione. Il POS è costruito sui dati reali dei lavoratori.</p>
+      <p class="feature-detail">Ogni documento è <strong style="color:#34d399">customizzato sul lavoro reale</strong> — non un template generico da compilare.</p>
+      <span class="feature-tag" style="background:rgba(31,168,112,.1);color:#34d399">Art. 26 D.Lgs. 81/08</span>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon" style="background:rgba(192,132,252,.1)">⚠️</div>
+      <h3>Controllo conformità normativa</h3>
+      <p>L'AI non si limita a leggere — verifica che ogni attestato rispetti i requisiti di legge: ore di formazione, rinnovi nei tempi previsti, gruppi di rischio appropriati. I documenti non conformi vengono segnalati con spiegazione precisa.</p>
+      <span class="feature-tag" style="background:rgba(192,132,252,.1);color:#c084fc">D.Lgs. 81/08</span>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon" style="background:rgba(6,182,245,.1)">🏛️</div>
+      <h3>Gestione multi-azienda</h3>
+      <p>Un RSPP esterno che segue dieci aziende committenti ha tutto in un'unica interfaccia. Cambio azienda in un click, dati completamente separati — appalti, appaltatori, subappaltatori e lavoratori organizzati in modo strutturato.</p>
+      <span class="feature-tag" style="background:rgba(6,182,245,.1);color:#06b6f5">Per consulenti</span>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon" style="background:rgba(224,69,69,.1)">📱</div>
+      <h3>Verifica accessi in tempo reale</h3>
+      <p>Dashboard sempre aggiornata sulla situazione documentale di ogni lavoratore. In caso di ispezione, hai in pochi secondi il quadro completo su chi è idoneo e chi no — accessibile anche da smartphone.</p>
+      <span class="feature-tag" style="background:rgba(224,69,69,.1);color:#f87171">Accessi cantiere</span>
+    </div>
+  </div>
+</section>
+
+<!-- COME FUNZIONA -->
+<section class="how reveal" id="how">
+  <div style="text-align:center">
+    <div class="section-label" style="justify-content:center">Come funziona</div>
+    <h2 style="text-align:center">Da zero a cantiere in regola<br><em>in quattro passi</em></h2>
+    <p class="section-sub" style="margin:0 auto 56px;text-align:center">Nessuna formazione richiesta. Se sai usare un browser, sai usare SafetyAI.</p>
+  </div>
+  <div class="steps">
+    <div class="step"><div class="step-num">1</div><div class="step-emoji">🏢</div><h3>Crea il profilo azienda</h3><p>Carica visura camerale e DVR — l'AI crea automaticamente il profilo completo con dati aziendali, figure della sicurezza e rischi identificati.</p></div>
+    <div class="step"><div class="step-num">2</div><div class="step-emoji">📂</div><h3>Carica i documenti</h3><p>Trascina una cartella con tutti gli attestati insieme. L'AI li legge, li classifica e li assegna al lavoratore corretto — anche centinaia di file in una volta.</p></div>
+    <div class="step"><div class="step-num">3</div><div class="step-emoji">✓</div><h3>Verifica e approva</h3><p>Controlla l'analisi AI, apri i PDF originali, approva o rifiuta i documenti non conformi con una decisione consapevole.</p></div>
+    <div class="step"><div class="step-num">4</div><div class="step-emoji">📊</div><h3>Esporta e genera</h3><p>Scarica il registro Excel. Genera DUVRI e POS personalizzati sull'appalto specifico, pronti per la firma.</p></div>
+  </div>
+
+  <!-- DEMO ANIMATA -->
+  <div style="margin-top:64px" class="reveal">
+    <div style="text-align:center;margin-bottom:32px">
+      <div style="display:inline-flex;align-items:center;gap:8px;padding:6px 14px;background:rgba(42,110,245,.1);border:1px solid rgba(42,110,245,.25);border-radius:20px;font-size:12px;font-weight:600;color:var(--accent2);letter-spacing:.5px;margin-bottom:14px">▶ Demo interattiva</div>
+      <div style="font-family:'Fraunces',serif;font-size:clamp(22px,3vw,32px);font-weight:600;letter-spacing:-.5px;color:var(--cream)">Guarda il passo 2 in azione</div>
+      <div style="font-size:14px;color:var(--muted);margin-top:8px">Dalla cartella di attestati al registro organizzato — in tempo reale</div>
+    </div>
+
+    <!-- DEMO EMBED -->
+    <div style="background:var(--ink);border:1px solid var(--border);border-radius:16px;overflow:hidden;box-shadow:0 24px 60px rgba(0,0,0,.5)">
+      <!-- Demo header -->
+      <div style="padding:16px 24px;background:var(--ink3);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between">
+        <div style="display:flex;align-items:center;gap:10px">
+          <div style="display:flex;gap:6px"><div style="width:10px;height:10px;border-radius:50%;background:#e04545"></div><div style="width:10px;height:10px;border-radius:50%;background:#f5a623"></div><div style="width:10px;height:10px;border-radius:50%;background:#1fa870"></div></div>
+          <div style="font-size:11px;font-family:'DM Mono',monospace;color:var(--muted);background:rgba(255,255,255,.04);border:1px solid var(--border);padding:4px 12px;border-radius:5px" id="demoUrl">SafetyAI — Dashboard</div>
+        </div>
+        <div style="display:flex;gap:6px" id="demoStepDots">
+          <div style="width:7px;height:7px;border-radius:50%;background:var(--accent2);transition:all .3s" id="dps0"></div>
+          <div style="width:7px;height:7px;border-radius:50%;background:var(--border);transition:all .3s" id="dps1"></div>
+          <div style="width:7px;height:7px;border-radius:50%;background:var(--border);transition:all .3s" id="dps2"></div>
+          <div style="width:7px;height:7px;border-radius:50%;background:var(--border);transition:all .3s" id="dps3"></div>
+        </div>
+      </div>
+
+      <!-- Demo body -->
+      <div style="display:grid;grid-template-columns:160px 1fr;min-height:440px">
+        <!-- Sidebar demo -->
+        <div style="background:var(--ink3);border-right:1px solid var(--border);padding:0">
+          <div style="padding:12px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px">
+            <div style="width:22px;height:22px;background:linear-gradient(135deg,var(--accent),#06c6f5);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;color:#fff">S</div>
+            <span style="font-size:12px;font-weight:700;color:var(--cream)">SafetyAI</span>
+          </div>
+          <div style="padding:8px 14px;border-bottom:1px solid var(--border);background:var(--ink)">
+            <div style="font-size:9px;color:var(--muted);letter-spacing:.5px;margin-bottom:3px">AZIENDA ATTIVA</div>
+            <div style="font-size:11px;color:var(--subtle);font-weight:600">Vetri Italiani S.r.l.</div>
+          </div>
+          <div style="padding:8px 0">
+            <div style="padding:8px 14px;font-size:11px;color:var(--muted);display:flex;align-items:center;gap:7px" id="dsb0">⊟ Dashboard</div>
+            <div style="padding:8px 14px;font-size:11px;color:var(--muted);display:flex;align-items:center;gap:7px">✓ Idoneità</div>
+            <div style="padding:8px 14px;font-size:11px;color:var(--muted);display:flex;align-items:center;gap:7px" id="dsb1">📂 Carica documenti</div>
+            <div style="padding:8px 14px;font-size:11px;color:var(--muted);display:flex;align-items:center;gap:7px">⏱ Scadenze</div>
+            <div style="padding:8px 14px;font-size:11px;color:var(--muted);display:flex;align-items:center;gap:7px">📋 DUVRI</div>
+            <div style="padding:8px 14px;font-size:11px;color:var(--muted);display:flex;align-items:center;gap:7px">◈ POS</div>
+          </div>
+        </div>
+
+        <!-- Main demo -->
+        <div style="position:relative;overflow:hidden">
+
+          <!-- STEP A: cartella -->
+          <div id="demoA" style="position:absolute;inset:0;padding:20px;display:flex;flex-direction:column;gap:12px;opacity:1;transition:opacity .5s">
+            <div style="font-size:13px;font-weight:700;color:var(--cream)">📁 Attestati Cantiere — Edil Rossi S.r.l.</div>
+            <div style="font-size:11px;color:var(--muted);margin-bottom:4px">5 file · Pronti per il drop</div>
+            <div style="display:flex;flex-direction:column;gap:6px" id="demoFiles">
+              <div style="display:flex;align-items:center;gap:10px;padding:8px 12px;background:var(--ink3);border:1px solid var(--border);border-radius:7px;font-size:11px;color:var(--subtle);opacity:0;transform:translateX(-12px);transition:all .3s" id="df0">📋 <span style="font-family:'DM Mono',monospace;font-size:10px;flex:1">attestato_bianchi_sicurezza_generale.pdf</span> <span style="color:var(--muted);font-size:10px">124 KB</span></div>
+              <div style="display:flex;align-items:center;gap:10px;padding:8px 12px;background:var(--ink3);border:1px solid var(--border);border-radius:7px;font-size:11px;color:var(--subtle);opacity:0;transform:translateX(-12px);transition:all .3s" id="df1">📋 <span style="font-family:'DM Mono',monospace;font-size:10px;flex:1">attestato_rossi_primo_soccorso.pdf</span> <span style="color:var(--muted);font-size:10px">98 KB</span></div>
+              <div style="display:flex;align-items:center;gap:10px;padding:8px 12px;background:var(--ink3);border:1px solid var(--border);border-radius:7px;font-size:11px;color:var(--subtle);opacity:0;transform:translateX(-12px);transition:all .3s" id="df2">📋 <span style="font-family:'DM Mono',monospace;font-size:10px;flex:1">attestato_ferri_antincendio.pdf</span> <span style="color:var(--muted);font-size:10px">156 KB</span></div>
+              <div style="display:flex;align-items:center;gap:10px;padding:8px 12px;background:var(--ink3);border:1px solid var(--border);border-radius:7px;font-size:11px;color:var(--subtle);opacity:0;transform:translateX(-12px);transition:all .3s" id="df3">📋 <span style="font-family:'DM Mono',monospace;font-size:10px;flex:1">attestato_colombo_dpi.pdf</span> <span style="color:var(--muted);font-size:10px">87 KB</span></div>
+              <div style="display:flex;align-items:center;gap:10px;padding:8px 12px;background:var(--ink3);border:1px solid var(--border);border-radius:7px;font-size:11px;color:var(--subtle);opacity:0;transform:translateX(-12px);transition:all .3s" id="df4">📋 <span style="font-family:'DM Mono',monospace;font-size:10px;flex:1">attestato_mancini_carrelli.pdf</span> <span style="color:var(--muted);font-size:10px">201 KB</span></div>
+            </div>
+            <div style="margin-top:8px;padding:10px 14px;background:rgba(42,110,245,.08);border:1px solid rgba(42,110,245,.15);border-radius:7px;font-size:11px;color:var(--accent2)">⚡ Seleziona tutti → trascina su "Carica documenti"</div>
+          </div>
+
+          <!-- STEP B: drop zone -->
+          <div id="demoB" style="position:absolute;inset:0;padding:20px;display:flex;flex-direction:column;gap:12px;opacity:0;transition:opacity .5s;pointer-events:none">
+            <div style="font-size:13px;font-weight:700;color:var(--cream);margin-bottom:4px">Carica tutti i documenti</div>
+            <div id="demoDZ" style="border:2px dashed var(--border);border-radius:12px;padding:32px 20px;text-align:center;flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;transition:all .4s">
+              <div style="font-size:40px;opacity:.4" id="demoDZIcon">📂</div>
+              <div style="font-size:13px;font-weight:700;color:var(--subtle)">Trascina tutti i documenti qui</div>
+              <div style="font-size:11px;color:var(--muted)">PDF · JPG · PNG</div>
+            </div>
+          </div>
+
+          <!-- STEP C: elaborazione -->
+          <div id="demoC" style="position:absolute;inset:0;padding:20px;display:flex;flex-direction:column;gap:12px;opacity:0;transition:opacity .5s;pointer-events:none">
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px">
+              <div style="width:24px;height:24px;border-radius:50%;border:2px solid var(--border);border-top-color:var(--accent);animation:spinD .8s linear infinite;flex-shrink:0"></div>
+              <div style="font-size:13px;font-weight:700;color:var(--cream)">Analisi in corso…</div>
+            </div>
+            <div style="background:var(--ink3);border:1px solid var(--border);border-radius:8px;padding:14px 16px">
+              <div style="display:flex;justify-content:space-between;margin-bottom:8px;font-size:11px">
+                <span style="color:var(--subtle);font-weight:600" id="dProgTxt">0 di 5</span>
+                <span style="color:var(--accent2);font-weight:700" id="dProgPct">0%</span>
+              </div>
+              <div style="height:6px;background:var(--border);border-radius:3px;overflow:hidden">
+                <div style="height:100%;width:0%;background:linear-gradient(90deg,var(--accent),#06c6f5);border-radius:3px;transition:width .8s ease" id="dProgFill"></div>
+              </div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:5px" id="dElabList">
+              <div style="display:flex;align-items:center;gap:8px;padding:8px 12px;background:var(--ink3);border:1px solid var(--border);border-radius:7px;opacity:0;transition:all .3s" id="de0"><div style="width:14px;height:14px;border:2px solid var(--border);border-top-color:var(--accent2);border-radius:50%;animation:spinD .7s linear infinite;flex-shrink:0" id="dsp0"></div><div style="flex:1"><div style="font-size:11px;font-weight:600;color:var(--cream)">Bianchi Marco</div><div style="font-size:10px;color:var(--muted)">Formazione generale art.37</div></div><div style="font-size:9px;font-weight:700;padding:2px 6px;border-radius:8px;background:rgba(42,110,245,.15);color:var(--accent2)" id="db0">Analisi…</div></div>
+              <div style="display:flex;align-items:center;gap:8px;padding:8px 12px;background:var(--ink3);border:1px solid var(--border);border-radius:7px;opacity:0;transition:all .3s" id="de1"><div style="width:14px;height:14px;border:2px solid var(--border);border-top-color:var(--accent2);border-radius:50%;animation:spinD .7s linear infinite;flex-shrink:0" id="dsp1"></div><div style="flex:1"><div style="font-size:11px;font-weight:600;color:var(--cream)">Rossi Laura</div><div style="font-size:10px;color:var(--muted)">Primo soccorso gruppo B</div></div><div style="font-size:9px;font-weight:700;padding:2px 6px;border-radius:8px;background:rgba(42,110,245,.15);color:var(--accent2)" id="db1">Analisi…</div></div>
+              <div style="display:flex;align-items:center;gap:8px;padding:8px 12px;background:var(--ink3);border:1px solid var(--border);border-radius:7px;opacity:0;transition:all .3s" id="de2"><div style="width:14px;height:14px;border:2px solid var(--border);border-top-color:var(--accent2);border-radius:50%;animation:spinD .7s linear infinite;flex-shrink:0" id="dsp2"></div><div style="flex:1"><div style="font-size:11px;font-weight:600;color:var(--cream)">Ferri Giuseppe</div><div style="font-size:10px;color:var(--muted)">Antincendio rischio medio</div></div><div style="font-size:9px;font-weight:700;padding:2px 6px;border-radius:8px;background:rgba(42,110,245,.15);color:var(--accent2)" id="db2">Analisi…</div></div>
+              <div style="display:flex;align-items:center;gap:8px;padding:8px 12px;background:var(--ink3);border:1px solid var(--border);border-radius:7px;opacity:0;transition:all .3s" id="de3"><div style="width:14px;height:14px;border:2px solid var(--border);border-top-color:var(--accent2);border-radius:50%;animation:spinD .7s linear infinite;flex-shrink:0" id="dsp3"></div><div style="flex:1"><div style="font-size:11px;font-weight:600;color:var(--cream)">Colombo Anna</div><div style="font-size:10px;color:var(--muted)">DPI 3a categoria</div></div><div style="font-size:9px;font-weight:700;padding:2px 6px;border-radius:8px;background:rgba(42,110,245,.15);color:var(--accent2)" id="db3">Analisi…</div></div>
+              <div style="display:flex;align-items:center;gap:8px;padding:8px 12px;background:var(--ink3);border:1px solid var(--border);border-radius:7px;opacity:0;transition:all .3s" id="de4"><div style="width:14px;height:14px;border:2px solid var(--border);border-top-color:var(--accent2);border-radius:50%;animation:spinD .7s linear infinite;flex-shrink:0" id="dsp4"></div><div style="flex:1"><div style="font-size:11px;font-weight:600;color:var(--cream)">Mancini Roberto</div><div style="font-size:10px;color:var(--muted)">Carrelli elevatori</div></div><div style="font-size:9px;font-weight:700;padding:2px 6px;border-radius:8px;background:rgba(42,110,245,.15);color:var(--accent2)" id="db4">Analisi…</div></div>
+            </div>
+          </div>
+
+          <!-- STEP D: risultati -->
+          <div id="demoD" style="position:absolute;inset:0;padding:20px;overflow-y:auto;display:flex;flex-direction:column;gap:10px;opacity:0;transition:opacity .5s;pointer-events:none">
+            <div style="background:linear-gradient(135deg,rgba(31,168,112,.08),transparent);border:1px solid rgba(31,168,112,.2);border-radius:8px;padding:12px 16px">
+              <div style="font-size:10px;color:var(--green);font-weight:700;letter-spacing:.8px;margin-bottom:4px">ANALISI COMPLETATA</div>
+              <div style="font-size:15px;font-weight:800;color:var(--cream);margin-bottom:10px">5 documenti · 5 lavoratori</div>
+              <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px">
+                <div style="text-align:center"><div style="font-size:18px;font-weight:800;color:var(--accent2)">5</div><div style="font-size:10px;color:var(--muted)">Lavoratori</div></div>
+                <div style="text-align:center"><div style="font-size:18px;font-weight:800;color:var(--green)">4</div><div style="font-size:10px;color:var(--muted)">Validi</div></div>
+                <div style="text-align:center"><div style="font-size:18px;font-weight:800;color:#fbbf24">1</div><div style="font-size:10px;color:var(--muted)">In scad.</div></div>
+                <div style="text-align:center"><div style="font-size:18px;font-weight:800;color:#fb923c">1</div><div style="font-size:10px;color:var(--muted)">Non conf.</div></div>
+              </div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:7px">
+              <div style="background:var(--ink3);border:1px solid var(--border);border-radius:8px;overflow:hidden;opacity:0;transition:all .4s" id="dlc0"><div style="padding:10px 14px;display:flex;align-items:center;gap:10px"><div style="width:30px;height:30px;border-radius:50%;background:rgba(249,115,22,.15);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;color:#fb923c">MB</div><div style="flex:1"><div style="font-size:12px;font-weight:700;color:var(--cream)">Marco Bianchi</div></div><span style="font-size:9px;font-weight:700;padding:2px 6px;border-radius:8px;background:rgba(249,115,22,.1);color:#fb923c">⚠ Non conforme</span></div><div style="padding:7px 14px;border-top:1px solid var(--border);font-size:10px;color:var(--muted);display:flex;justify-content:space-between"><span>Formazione generale · 8h · Ente Formazione Srl</span><span style="color:#fb923c;font-weight:700">8h invece di 4h</span></div></div>
+              <div style="background:var(--ink3);border:1px solid rgba(31,168,112,.2);border-radius:8px;overflow:hidden;opacity:0;transition:all .4s" id="dlc1"><div style="padding:10px 14px;display:flex;align-items:center;gap:10px"><div style="width:30px;height:30px;border-radius:50%;background:rgba(31,168,112,.15);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;color:var(--green)">LR</div><div style="flex:1"><div style="font-size:12px;font-weight:700;color:var(--cream)">Laura Rossi</div></div><span style="font-size:9px;font-weight:700;padding:2px 6px;border-radius:8px;background:rgba(31,168,112,.1);color:var(--green)">✓ Valido</span><span style="font-size:9px;font-weight:700;padding:2px 7px;border-radius:8px;background:rgba(31,168,112,.15);color:#34d399;margin-left:4px">22/06/2027</span></div></div>
+              <div style="background:var(--ink3);border:1px solid rgba(31,168,112,.2);border-radius:8px;overflow:hidden;opacity:0;transition:all .4s" id="dlc2"><div style="padding:10px 14px;display:flex;align-items:center;gap:10px"><div style="width:30px;height:30px;border-radius:50%;background:rgba(31,168,112,.15);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;color:var(--green)">GF</div><div style="flex:1"><div style="font-size:12px;font-weight:700;color:var(--cream)">Giuseppe Ferri</div></div><span style="font-size:9px;font-weight:700;padding:2px 6px;border-radius:8px;background:rgba(31,168,112,.1);color:var(--green)">✓ Valido</span><span style="font-size:9px;font-weight:700;padding:2px 7px;border-radius:8px;background:rgba(31,168,112,.15);color:#34d399;margin-left:4px">10/01/2027</span></div></div>
+              <div style="background:var(--ink3);border:1px solid rgba(245,166,35,.2);border-radius:8px;overflow:hidden;opacity:0;transition:all .4s" id="dlc3"><div style="padding:10px 14px;display:flex;align-items:center;gap:10px"><div style="width:30px;height:30px;border-radius:50%;background:rgba(245,166,35,.15);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;color:#fbbf24">AC</div><div style="flex:1"><div style="font-size:12px;font-weight:700;color:var(--cream)">Anna Colombo</div></div><span style="font-size:9px;font-weight:700;padding:2px 6px;border-radius:8px;background:rgba(245,166,35,.1);color:#fbbf24">⚠ In scadenza</span><span style="font-size:9px;font-weight:700;padding:2px 7px;border-radius:8px;background:rgba(245,166,35,.15);color:#fbbf24;margin-left:4px">05/09/2026</span></div></div>
+              <div style="background:var(--ink3);border:1px solid rgba(31,168,112,.2);border-radius:8px;overflow:hidden;opacity:0;transition:all .4s" id="dlc4"><div style="padding:10px 14px;display:flex;align-items:center;gap:10px"><div style="width:30px;height:30px;border-radius:50%;background:rgba(31,168,112,.15);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;color:var(--green)">RM</div><div style="flex:1"><div style="font-size:12px;font-weight:700;color:var(--cream)">Roberto Mancini</div></div><span style="font-size:9px;font-weight:700;padding:2px 6px;border-radius:8px;background:rgba(31,168,112,.1);color:var(--green)">✓ Valido</span><span style="font-size:9px;font-weight:700;padding:2px 7px;border-radius:8px;background:rgba(31,168,112,.15);color:#34d399;margin-left:4px">18/11/2026</span></div></div>
+            </div>
+            <div style="display:flex;gap:8px;margin-top:4px">
+              <div style="flex:1;padding:10px;background:var(--ink3);border:1px solid var(--border);border-radius:7px;color:var(--muted);font-size:11px;text-align:center;cursor:default">← Carica altri</div>
+              <div id="dExcelBtn" style="flex:2;padding:10px;background:linear-gradient(135deg,#16a34a,#15803d);border-radius:7px;color:#fff;font-size:11px;font-weight:700;text-align:center;cursor:pointer;opacity:0;transition:all .4s" onclick="dShowExcel()">📊 Esporta Excel</div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Demo footer -->
+      <div style="padding:12px 24px;border-top:1px solid var(--border);background:var(--ink3);display:flex;align-items:center;justify-content:space-between">
+        <div style="font-size:11px;color:var(--muted)">Demo interattiva — i dati sono di esempio</div>
+        <button onclick="dRestart()" style="background:none;border:1px solid var(--border);color:var(--muted);padding:5px 14px;border-radius:6px;font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s" onmouseover="this.style.borderColor='#5a6a8a';this.style.color='#f0ede6'" onmouseout="this.style.borderColor='#1e2740';this.style.color='#5a6a8a'">↺ Rivedi</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- EXCEL MODALE SITO -->
+<div id="siteExcel" style="position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:200;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .4s;padding:24px">
+  <div style="background:#fff;border-radius:12px;overflow:hidden;width:100%;max-width:700px;box-shadow:0 40px 100px rgba(0,0,0,.8);transform:scale(.95) translateY(20px);transition:all .4s" id="siteExcelWin">
+    <div style="background:#1d6f42;padding:10px 16px;display:flex;align-items:center;gap:10px">
+      <span style="color:#fff;font-size:13px;font-weight:600">📊 SafetyAI_Attestati_18-05-2026.xlsx</span>
+      <div style="display:flex;gap:5px;margin-left:auto"><div style="width:10px;height:10px;border-radius:50%;background:#e04545"></div><div style="width:10px;height:10px;border-radius:50%;background:#f5a623"></div><div style="width:10px;height:10px;border-radius:50%;background:#1fa870"></div></div>
+    </div>
+    <div style="overflow-x:auto">
+      <table style="width:100%;border-collapse:collapse;font-size:11px;font-family:'DM Mono',monospace">
+        <tr><th style="background:#1d6f42;color:#fff;padding:8px 10px;text-align:left;font-size:10px;min-width:130px">LAVORATORE</th><th style="background:#1d6f42;color:#fff;padding:8px 10px;text-align:center;font-size:10px;white-space:nowrap">Formazione<br>generale</th><th style="background:#1d6f42;color:#fff;padding:8px 10px;text-align:center;font-size:10px;white-space:nowrap">Primo<br>soccorso</th><th style="background:#1d6f42;color:#fff;padding:8px 10px;text-align:center;font-size:10px;white-space:nowrap">Antincendio<br>medio</th><th style="background:#1d6f42;color:#fff;padding:8px 10px;text-align:center;font-size:10px;white-space:nowrap">DPI<br>3a cat.</th><th style="background:#1d6f42;color:#fff;padding:8px 10px;text-align:center;font-size:10px;white-space:nowrap">Carrelli<br>elevatori</th></tr>
+        <tr><td style="padding:7px 10px;border:1px solid #d0d7de;background:#f6f8fa;font-weight:600;color:#1f2328;font-family:'DM Sans',sans-serif;font-size:11px">Marco Bianchi</td><td style="padding:7px 10px;border:1px solid #d0d7de;text-align:center;background:#fef9c3;color:#854d0e;font-weight:700;font-size:10px">⚠ NON CONFORME<br>15/03/2028</td><td style="padding:7px 10px;border:1px solid #d0d7de;text-align:center;background:#fce7f3;color:#9d174d;font-weight:700;font-size:10px;font-style:italic">— MANCANTE</td><td style="padding:7px 10px;border:1px solid #d0d7de;text-align:center;background:#fce7f3;color:#9d174d;font-weight:700;font-size:10px;font-style:italic">— MANCANTE</td><td style="padding:7px 10px;border:1px solid #d0d7de;text-align:center;background:#fce7f3;color:#9d174d;font-weight:700;font-size:10px;font-style:italic">— MANCANTE</td><td style="padding:7px 10px;border:1px solid #d0d7de;text-align:center;background:#fce7f3;color:#9d174d;font-weight:700;font-size:10px;font-style:italic">— MANCANTE</td></tr>
+        <tr><td style="padding:7px 10px;border:1px solid #d0d7de;background:#f6f8fa;font-weight:600;color:#1f2328;font-family:'DM Sans',sans-serif;font-size:11px">Laura Rossi</td><td style="padding:7px 10px;border:1px solid #d0d7de;text-align:center;background:#fce7f3;color:#9d174d;font-weight:700;font-size:10px;font-style:italic">— MANCANTE</td><td style="padding:7px 10px;border:1px solid #d0d7de;text-align:center;background:#dcfce7;color:#166534;font-weight:700;font-size:10px">✓ VALIDO<br>22/06/2027</td><td style="padding:7px 10px;border:1px solid #d0d7de;text-align:center;background:#fce7f3;color:#9d174d;font-weight:700;font-size:10px;font-style:italic">— MANCANTE</td><td style="padding:7px 10px;border:1px solid #d0d7de;text-align:center;background:#fce7f3;color:#9d174d;font-weight:700;font-size:10px;font-style:italic">— MANCANTE</td><td style="padding:7px 10px;border:1px solid #d0d7de;text-align:center;background:#fce7f3;color:#9d174d;font-weight:700;font-size:10px;font-style:italic">— MANCANTE</td></tr>
+        <tr><td style="padding:7px 10px;border:1px solid #d0d7de;background:#f6f8fa;font-weight:600;color:#1f2328;font-family:'DM Sans',sans-serif;font-size:11px">Giuseppe Ferri</td><td style="padding:7px 10px;border:1px solid #d0d7de;text-align:center;background:#fce7f3;color:#9d174d;font-weight:700;font-size:10px;font-style:italic">— MANCANTE</td><td style="padding:7px 10px;border:1px solid #d0d7de;text-align:center;background:#fce7f3;color:#9d174d;font-weight:700;font-size:10px;font-style:italic">— MANCANTE</td><td style="padding:7px 10px;border:1px solid #d0d7de;text-align:center;background:#dcfce7;color:#166534;font-weight:700;font-size:10px">✓ VALIDO<br>10/01/2027</td><td style="padding:7px 10px;border:1px solid #d0d7de;text-align:center;background:#fce7f3;color:#9d174d;font-weight:700;font-size:10px;font-style:italic">— MANCANTE</td><td style="padding:7px 10px;border:1px solid #d0d7de;text-align:center;background:#fce7f3;color:#9d174d;font-weight:700;font-size:10px;font-style:italic">— MANCANTE</td></tr>
+        <tr><td style="padding:7px 10px;border:1px solid #d0d7de;background:#f6f8fa;font-weight:600;color:#1f2328;font-family:'DM Sans',sans-serif;font-size:11px">Anna Colombo</td><td style="padding:7px 10px;border:1px solid #d0d7de;text-align:center;background:#fce7f3;color:#9d174d;font-weight:700;font-size:10px;font-style:italic">— MANCANTE</td><td style="padding:7px 10px;border:1px solid #d0d7de;text-align:center;background:#fce7f3;color:#9d174d;font-weight:700;font-size:10px;font-style:italic">— MANCANTE</td><td style="padding:7px 10px;border:1px solid #d0d7de;text-align:center;background:#fce7f3;color:#9d174d;font-weight:700;font-size:10px;font-style:italic">— MANCANTE</td><td style="padding:7px 10px;border:1px solid #d0d7de;text-align:center;background:#fef9c3;color:#854d0e;font-weight:700;font-size:10px">⚠ IN SCADENZA<br>05/09/2026</td><td style="padding:7px 10px;border:1px solid #d0d7de;text-align:center;background:#fce7f3;color:#9d174d;font-weight:700;font-size:10px;font-style:italic">— MANCANTE</td></tr>
+        <tr><td style="padding:7px 10px;border:1px solid #d0d7de;background:#f6f8fa;font-weight:600;color:#1f2328;font-family:'DM Sans',sans-serif;font-size:11px">Roberto Mancini</td><td style="padding:7px 10px;border:1px solid #d0d7de;text-align:center;background:#fce7f3;color:#9d174d;font-weight:700;font-size:10px;font-style:italic">— MANCANTE</td><td style="padding:7px 10px;border:1px solid #d0d7de;text-align:center;background:#fce7f3;color:#9d174d;font-weight:700;font-size:10px;font-style:italic">— MANCANTE</td><td style="padding:7px 10px;border:1px solid #d0d7de;text-align:center;background:#fce7f3;color:#9d174d;font-weight:700;font-size:10px;font-style:italic">— MANCANTE</td><td style="padding:7px 10px;border:1px solid #d0d7de;text-align:center;background:#fce7f3;color:#9d174d;font-weight:700;font-size:10px;font-style:italic">— MANCANTE</td><td style="padding:7px 10px;border:1px solid #d0d7de;text-align:center;background:#dcfce7;color:#166534;font-weight:700;font-size:10px">✓ VALIDO<br>18/11/2026</td></tr>
+      </table>
+    </div>
+    <div style="padding:12px 16px;background:#f6f8fa;border-top:1px solid #d0d7de;display:flex;align-items:center;gap:10px">
+      <div style="font-size:11px;color:#57606a">🟢 Valido &nbsp;🟡 In scadenza / Non conforme &nbsp;🔴 Scaduto / Mancante</div>
+      <button onclick="dHideExcel()" style="margin-left:auto;background:#1d6f42;border:none;border-radius:6px;color:#fff;padding:6px 14px;font-size:11px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif">✓ Chiudi</button>
+    </div>
+  </div>
+</div>
+
+<style>
+@keyframes spinD{to{transform:rotate(360deg)}}
+</style>
+
+<script>
+(function(){
+  let dTimer = null;
+
+  function dSetUrl(t){ document.getElementById('demoUrl').textContent = t; }
+  function dSetDots(n){
+    for(let i=0;i<4;i++){
+      const el = document.getElementById('dps'+i);
+      if(!el) return;
+      el.style.background = i < n ? 'var(--green)' : i === n ? 'var(--accent2)' : 'var(--border)';
+    }
+  }
+  function dSetSb(id){
+    ['dsb0','dsb1'].forEach(s => {
+      const el = document.getElementById(s);
+      if(el){ el.style.background='transparent'; el.style.borderLeft='none'; el.style.color='var(--muted)'; el.style.fontWeight='400'; }
+    });
+    if(id){ const el = document.getElementById(id); if(el){ el.style.background='rgba(42,110,245,.08)'; el.style.borderLeft='2px solid var(--accent)'; el.style.color='var(--accent2)'; el.style.fontWeight='600'; } }
+  }
+  function dShow(id){
+    ['demoA','demoB','demoC','demoD'].forEach(s => {
+      const el = document.getElementById(s);
+      if(el){ el.style.opacity='0'; el.style.pointerEvents='none'; }
+    });
+    const el = document.getElementById(id);
+    if(el){ el.style.opacity='1'; el.style.pointerEvents='auto'; }
+  }
+
+  function dRunA(){
+    dShow('demoA'); dSetUrl('SafetyAI — Dashboard'); dSetSb('dsb0'); dSetDots(0);
+    ['df0','df1','df2','df3','df4'].forEach((id,i) => {
+      const el = document.getElementById(id);
+      if(el){ el.style.opacity='0'; el.style.transform='translateX(-12px)'; }
+      setTimeout(() => { if(el){ el.style.opacity='1'; el.style.transform='none'; } }, 400 + i*150);
+    });
+    dTimer = setTimeout(() => dRunB(), 2600);
+  }
+
+  function dRunB(){
+    dShow('demoB'); dSetUrl('SafetyAI — Carica documenti'); dSetSb('dsb1'); dSetDots(1);
+    const dz = document.getElementById('demoDZ');
+    const icon = document.getElementById('demoDZIcon');
+    setTimeout(() => {
+      if(dz){ dz.style.borderColor='var(--accent)'; dz.style.background='rgba(42,110,245,.06)'; }
+      if(icon){ icon.style.opacity='1'; icon.style.transform='scale(1.1)'; }
+    }, 600);
+    setTimeout(() => {
+      if(dz){
+        dz.style.borderColor='var(--green)'; dz.style.background='rgba(31,168,112,.06)';
+        dz.innerHTML='<div style="font-size:32px;margin-bottom:8px">✓</div><div style="font-size:14px;font-weight:800;color:var(--green)">5 file selezionati</div><div style="font-size:11px;color:var(--muted);margin-top:6px;max-width:280px;text-align:center">bianchi.pdf · rossi.pdf · ferri.pdf · colombo.pdf · mancini.pdf</div><div style="margin-top:14px;padding:8px 18px;background:linear-gradient(135deg,var(--accent),#06b6f5);border-radius:8px;color:#fff;font-size:12px;font-weight:700">⚡ Analizza 5 documenti →</div>';
+      }
+    }, 1800);
+    dTimer = setTimeout(() => dRunC(), 3200);
+  }
+
+  function dRunC(){
+    dShow('demoC'); dSetUrl('SafetyAI — Analisi in corso…'); dSetSb(null); dSetDots(2);
+    const delays  = [300,900,1700,2500,3300];
+    const dones   = [900,1600,2400,3200,4000];
+    for(let i=0;i<5;i++){
+      (function(idx){
+        setTimeout(() => {
+          const el = document.getElementById('de'+idx);
+          if(el) el.style.opacity='1';
+        }, delays[idx]);
+        setTimeout(() => {
+          const sp = document.getElementById('dsp'+idx);
+          const bd = document.getElementById('db'+idx);
+          if(sp) sp.style.display='none';
+          if(bd){ bd.textContent='Classificato'; bd.style.background='rgba(31,168,112,.15)'; bd.style.color='var(--green)'; }
+          const n = idx+1;
+          const pt = document.getElementById('dProgTxt');
+          const pp = document.getElementById('dProgPct');
+          const pf = document.getElementById('dProgFill');
+          if(pt) pt.textContent = n+' di 5';
+          if(pp) pp.textContent = Math.round(n/5*100)+'%';
+          if(pf) pf.style.width = (n/5*100)+'%';
+        }, dones[idx]);
+      })(i);
+    }
+    dTimer = setTimeout(() => dRunD(), 4800);
+  }
+
+  function dRunD(){
+    dShow('demoD'); dSetUrl('SafetyAI — Situazione documentale'); dSetDots(3);
+    ['dlc0','dlc1','dlc2','dlc3','dlc4'].forEach((id,i) => {
+      setTimeout(() => { const el=document.getElementById(id); if(el) el.style.opacity='1'; }, 300+i*180);
+    });
+    setTimeout(() => { const b=document.getElementById('dExcelBtn'); if(b) b.style.opacity='1'; }, 1400);
+    dTimer = setTimeout(() => dRunA(), 12000);
+  }
+
+  window.dShowExcel = function(){
+    const p = document.getElementById('siteExcel');
+    const w = document.getElementById('siteExcelWin');
+    if(p){ p.style.opacity='1'; p.style.pointerEvents='auto'; }
+    if(w){ w.style.transform='none'; }
+  };
+  window.dHideExcel = function(){
+    const p = document.getElementById('siteExcel');
+    const w = document.getElementById('siteExcelWin');
+    if(p){ p.style.opacity='0'; p.style.pointerEvents='none'; }
+    if(w){ w.style.transform='scale(.95) translateY(20px)'; }
+  };
+  window.dRestart = function(){
+    if(dTimer) clearTimeout(dTimer);
+    ['df0','df1','df2','df3','df4'].forEach(id => { const el=document.getElementById(id); if(el){el.style.opacity='0';el.style.transform='translateX(-12px)';} });
+    ['de0','de1','de2','de3','de4'].forEach(id => { const el=document.getElementById(id); if(el) el.style.opacity='0'; });
+    for(let i=0;i<5;i++){ const sp=document.getElementById('dsp'+i); if(sp) sp.style.display=''; const bd=document.getElementById('db'+i); if(bd){bd.textContent='Analisi…';bd.style.background='rgba(42,110,245,.15)';bd.style.color='var(--accent2)';} }
+    const pf=document.getElementById('dProgFill'); if(pf) pf.style.width='0%';
+    const pt=document.getElementById('dProgTxt'); if(pt) pt.textContent='0 di 5';
+    const pp=document.getElementById('dProgPct'); if(pp) pp.textContent='0%';
+    ['dlc0','dlc1','dlc2','dlc3','dlc4'].forEach(id => { const el=document.getElementById(id); if(el) el.style.opacity='0'; });
+    const eb=document.getElementById('dExcelBtn'); if(eb) eb.style.opacity='0';
+    const dz=document.getElementById('demoDZ');
+    if(dz){ dz.style.borderColor='var(--border)'; dz.style.background='transparent'; dz.innerHTML='<div style="font-size:40px;opacity:.4">📂</div><div style="font-size:13px;font-weight:700;color:var(--subtle)">Trascina tutti i documenti qui</div><div style="font-size:11px;color:var(--muted)">PDF · JPG · PNG</div>'; }
+    dHideExcel();
+    setTimeout(() => dRunA(), 300);
+  };
+
+  // Avvio quando la sezione entra in viewport
+  const demoSection = document.querySelector('#how .reveal:last-child');
+  if(demoSection){
+    const dObs = new IntersectionObserver((entries) => {
+      entries.forEach(e => { if(e.isIntersecting && !window.demoStarted){ window.demoStarted=true; setTimeout(()=>dRunA(), 600); } });
+    }, {threshold:0.3});
+    dObs.observe(demoSection);
+  } else {
+    setTimeout(()=>dRunA(), 800);
+  }
+})();
+</script>
+
+<!-- CHI USA -->
+<section class="reveal" id="chi">
+  <div class="section-label">Per chi è</div>
+  <h2>Costruito per chi gestisce<br>la sicurezza negli appalti<br><em>ogni giorno</em></h2>
+  <p class="section-sub">SafetyAI nasce dall'esperienza diretta nel campo — non da un'idea astratta.</p>
+  <div class="personas">
+    <div class="persona rspp">
+      <div class="persona-avatar" style="background:rgba(42,110,245,.1)">👨‍💼</div>
+      <h3>RSPP Esterno</h3>
+      <div class="persona-role">CONSULENTE CON PIÙ CLIENTI</div>
+      <div class="persona-problems">
+        <div class="persona-problem">Gestisce più aziende committenti con scadenze diverse</div>
+        <div class="persona-problem">Raccoglie documenti via email per ogni nuovo cantiere</div>
+        <div class="persona-problem">Excel diversi per ogni azienda, aggiornati manualmente</div>
+      </div>
+      <div class="persona-benefit">SafetyAI unifica tutto in un'unica dashboard — una sola interfaccia per tutte le aziende</div>
+    </div>
+    <div class="persona cse">
+      <div class="persona-avatar" style="background:rgba(200,164,74,.1)">🦺</div>
+      <h3>CSE / CSP</h3>
+      <div class="persona-role">COORDINATORE SICUREZZA IN CANTIERE</div>
+      <div class="persona-problems">
+        <div class="persona-problem">Deve qualificare ogni impresa appaltatrice e subappaltatrice</div>
+        <div class="persona-problem">I lavoratori cambiano in corsa — i documenti anche</div>
+        <div class="persona-problem">Le ispezioni arrivano senza preavviso</div>
+      </div>
+      <div class="persona-benefit">Situazione documentale in tempo reale — consultabile in pochi secondi anche da smartphone</div>
+    </div>
+    <div class="persona studio">
+      <div class="persona-avatar" style="background:rgba(31,168,112,.1)">🏛️</div>
+      <h3>Studio di Consulenza HSE</h3>
+      <div class="persona-role">TEAM DI PROFESSIONISTI</div>
+      <div class="persona-problems">
+        <div class="persona-problem">Più consulenti, più clienti, rischio di disomogeneità</div>
+        <div class="persona-problem">Difficoltà a standardizzare processi e reportistica</div>
+        <div class="persona-problem">Volume documentale difficile da gestire manualmente</div>
+      </div>
+      <div class="persona-benefit">Processi standardizzati per tutto il team, reportistica uniforme e professionale</div>
+    </div>
+  </div>
+</section>
+
+<!-- CONFORMITÀ -->
+<section class="norma reveal" id="norma">
+  <div class="norma-grid">
+    <div>
+      <div class="section-label">Base normativa</div>
+      <h2>L'AI conosce la normativa italiana sulla sicurezza <em>sul lavoro</em></h2>
+      <p style="font-size:15px;color:var(--muted);line-height:1.7;margin-bottom:16px">Il motore di analisi è costruito sull'intera letteratura normativa italiana in materia di sicurezza sul lavoro. Ogni documento viene verificato rispetto alle regole vigenti — non solo letto.</p>
+      <p style="font-size:13px;color:var(--muted);line-height:1.7">Quando la normativa evolve, SafetyAI viene aggiornato — così non devi tenere traccia tu di ogni modifica legislativa.</p>
+      <div class="norma-pills">
+        <span class="pill blue">D.Lgs. 81/2008</span>
+        <span class="pill blue">Artt. 17–37</span>
+        <span class="pill gold">D.M. 388/2003</span>
+        <span class="pill gold">D.M. 02/09/2021</span>
+        <span class="pill green">Accordo Stato-Regioni 21/12/2011</span>
+        <span class="pill green">Accordo Stato-Regioni 22/02/2012</span>
+        <span class="pill blue">D.L. 145/2023 — Patente crediti</span>
+        <span class="pill purple">CEI 11-27</span>
+        <span class="pill gold">D.Lgs. 196/2003</span>
+        <span class="pill green">GDPR 2016/679</span>
+      </div>
+    </div>
+    <div class="norma-right">
+      <p>SafetyAI non si limita a leggere i documenti — li <strong>interpreta alla luce della normativa vigente</strong>. Ogni attestato viene confrontato con i requisiti specifici del tipo di corso: durata minima, periodicità di rinnovo, contenuti obbligatori.</p>
+      <p>I documenti che non rispettano i requisiti vengono segnalati come <strong>non conformi</strong>, con la spiegazione precisa del problema. L'operatore mantiene sempre il controllo: può approvare eccezioni motivate o richiedere il documento corretto.</p>
+      <p>Questo approccio garantisce che il professionista sia sempre informato — e sempre responsabile delle proprie decisioni.</p>
+      <div class="norma-nota">
+        <div style="font-size:13px;color:var(--accent2);font-weight:700;margin-bottom:8px">⚠ Nota importante</div>
+        <div style="font-size:13px;color:var(--muted);line-height:1.6">SafetyAI è uno strumento di supporto. L'analisi AI ha carattere indicativo — la responsabilità professionale rimane sempre in capo al professionista che utilizza il sistema.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SICUREZZA -->
+<section class="reveal" style="background:var(--ink2);border-top:1px solid var(--border);border-bottom:1px solid var(--border)">
+  <div style="text-align:center;max-width:600px;margin:0 auto">
+    <div class="section-label" style="justify-content:center">Sicurezza e privacy</div>
+    <h2 style="text-align:center">I dati dei tuoi clienti<br><em>non escono dal tuo controllo</em></h2>
+    <p class="section-sub" style="text-align:center;margin:0 auto 0">Ogni documento contiene dati personali sensibili. Ecco esattamente cosa succede quando usi SafetyAI.</p>
+  </div>
+  <div class="sicurezza-grid">
+    <div class="sicurezza-card"><div class="sicurezza-icon">📂</div><div><h3>Analisi in memoria, nessun archivio</h3><p>Il PDF viene trasmesso cifrato al motore AI, analizzato in memoria, e immediatamente scartato. SafetyAI non archivia mai i file originali sui propri server.</p></div></div>
+    <div class="sicurezza-card"><div class="sicurezza-icon">🔄</div><div><h3>Flusso dati trasparente</h3><p>Il percorso è chiaro: browser → server intermediario → API di analisi AI (Anthropic) → i dati estratti tornano sul tuo dispositivo. Nessun passaggio oscuro.</p></div></div>
+    <div class="sicurezza-card"><div class="sicurezza-icon">📄</div><div><h3>DPA integrato — art. 28 GDPR</h3><p>Il Data Processing Agreement è disponibile nell'app, leggibile e scaricabile. Il rapporto tra Titolare (tu) e Responsabile (SafetyAI) è formalizzato per legge.</p></div></div>
+    <div class="sicurezza-card"><div class="sicurezza-icon">💾</div><div><h3>Dati sul tuo dispositivo</h3><p>I dati strutturati estratti restano sul tuo dispositivo. Non esistono database centralizzati con le informazioni dei tuoi clienti.</p></div></div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section id="faq" class="reveal">
+  <div style="text-align:center"><div class="section-label" style="justify-content:center">FAQ</div><h2 style="text-align:center">Domande frequenti</h2></div>
+  <div class="faq-list">
+    <details class="faq-item"><summary class="faq-q">SafetyAI sostituisce il giudizio professionale dell'RSPP? <span class="faq-arrow">+</span></summary><div class="faq-a">No. SafetyAI è uno strumento di supporto organizzativo. L'analisi AI ha carattere indicativo — sei sempre tu a validare i documenti e prendere le decisioni. La responsabilità professionale rimane esclusivamente in capo al professionista.</div></details>
+    <details class="faq-item"><summary class="faq-q">I documenti che carico vengono conservati? <span class="faq-arrow">+</span></summary><div class="faq-a">No. I file vengono analizzati in memoria e immediatamente scartati. SafetyAI non archivia i tuoi PDF su propri server. I dati strutturati estratti rimangono esclusivamente sul tuo dispositivo.</div></details>
+    <details class="faq-item"><summary class="faq-q">Funziona con DVR di centinaia di pagine? <span class="faq-arrow">+</span></summary><div class="faq-a">Sì. SafetyAI estrae automaticamente il testo rilevante dal DVR senza che tu debba fare nulla di speciale. Carica il PDF intero — dati aziendali, figure della sicurezza e rischi vengono identificati automaticamente.</div></details>
+    <details class="faq-item"><summary class="faq-q">Quante aziende posso gestire contemporaneamente? <span class="faq-arrow">+</span></summary><div class="faq-a">La piattaforma è progettata per RSPP esterni che gestiscono più aziende committenti. Ogni azienda ha i propri dati completamente separati — appalti, appaltatori, subappaltatori e lavoratori sono isolati. Puoi passare da un'azienda all'altra con un click.</div></details>
+    <details class="faq-item"><summary class="faq-q">L'AI può sbagliarsi nell'analisi? <span class="faq-arrow">+</span></summary><div class="faq-a">Sì, come qualsiasi strumento AI. Per questo ogni documento non conforme richiede una decisione esplicita da parte tua — approva o rifiuta — e puoi sempre aprire il PDF originale per verificare. Il controllo finale è sempre umano.</div></details>
+    <details class="faq-item"><summary class="faq-q">Quando sarà disponibile? <span class="faq-arrow">+</span></summary><div class="faq-a">SafetyAI è attualmente in fase di sviluppo avanzato. Stiamo lavorando con un gruppo selezionato di professionisti HSE per raffinare il prodotto. Contattaci per ricevere aggiornamenti e accedere alla fase di accesso anticipato.</div></details>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-final reveal">
+  <div class="cta-glow"></div>
+  <div class="section-label" style="justify-content:center">Accesso anticipato</div>
+  <h2>Vuoi essere tra i primi<br>a <em>provarlo</em>?</h2>
+  <p>SafetyAI è in sviluppo avanzato. Stiamo selezionando un gruppo di professionisti HSE per i primi test reali. Se gestisci appalti e vuoi rivoluzionare il tuo flusso documentale, contattaci.</p>
+  <a href="mailto:info@safetyai.it" class="btn btn-primary btn-lg">Richiedi accesso anticipato →</a>
+</section>
+
+<footer>
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <a href="#" class="logo"><div class="logo-icon">S</div><span class="logo-text">SafetyAI</span></a>
+      <p>Il gestionale HSE con intelligenza artificiale per RSPP, CSE e studi di consulenza sicurezza sul lavoro.</p>
+    </div>
+    <div class="footer-col"><h4>Prodotto</h4><a href="#features">Funzionalità</a><a href="#how">Come funziona</a><a href="#chi">Per chi è</a><a href="#norma">Base normativa</a></div>
+    <div class="footer-col"><h4>Legale</h4><a href="#">Privacy Policy</a><a href="#">DPA — art. 28 GDPR</a><a href="#">Termini di servizio</a></div>
+    <div class="footer-col"><h4>Contatti</h4><a href="mailto:info@safetyai.it">info@safetyai.it</a><a href="#">LinkedIn</a></div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2026 SafetyAI — Tutti i diritti riservati</span>
+    <span class="footer-badge">✓ Conforme GDPR 2016/679</span>
+    <span>D.Lgs. 81/08 · Art. 28 GDPR</span>
+  </div>
+</footer>
+
+<script>
+const obs = new IntersectionObserver(e => e.forEach(x => { if(x.isIntersecting) x.target.classList.add('visible'); }), {threshold:.1,rootMargin:'0px 0px -60px 0px'});
+document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+window.addEventListener('scroll', () => { document.querySelector('nav').style.borderBottomColor = window.scrollY > 20 ? 'rgba(255,255,255,.1)' : 'rgba(255,255,255,.06)'; });
+document.querySelectorAll('details').forEach(d => { d.addEventListener('toggle', () => { document.querySelectorAll('details').forEach(o => { if(o !== d && o.open) o.open = false; }); }); });
+</script>
+</body>
+</html>
