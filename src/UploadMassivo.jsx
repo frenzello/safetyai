@@ -914,7 +914,7 @@ export default function PortaleUploadMassivo({ azienda }) {
     const zone = dropZoneRef.current;
     if (!zone) return;
     const onDragEnter = (e) => { e.preventDefault(); e.stopPropagation(); dragCounter.current++; setDragOver(true); };
-    const onDragOver  = (e) => { e.preventDefault(); e.stopPropagation(); };
+    const onDragOver  = (e) => { e.preventDefault(); e.stopPropagation(); e.dataTransfer.dropEffect = 'copy'; };
     const onDragLeave = (e) => { e.preventDefault(); e.stopPropagation(); dragCounter.current--; if (dragCounter.current <= 0) { dragCounter.current = 0; setDragOver(false); } };
     const onDrop      = (e) => { e.preventDefault(); e.stopPropagation(); dragCounter.current = 0; setDragOver(false); if (e.dataTransfer.files.length > 0) handleFiles(e.dataTransfer.files); };
     zone.addEventListener("dragenter", onDragEnter);
@@ -1078,4 +1078,4 @@ export default function PortaleUploadMassivo({ azienda }) {
               {Array.from(files).map((f, i) => (
                 <div key={i} style={{ display: "flex", alignItems: "center", gap: 10, padding: "5px 16px", borderBottom: i < files.length - 1 ? "1px solid #1e253530" : "none" }}>
                   <span style={{ fontSize: 13 }}>{fileIcon(f.name)}</span>
-                  <span style={{ fontSize: 12, 
+           
