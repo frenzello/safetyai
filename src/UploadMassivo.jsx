@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
 import { salvaRisultatiAnalisi } from "./database";
 import { DisclaimerExport } from "./DisclaimerExport";
 import API_URL from "./config";
@@ -907,10 +907,27 @@ export default function PortaleUploadMassivo({ azienda }) {
   const [salvato, setSalvato] = useState(null); // { nuoviLavoratori, nuoviAttestati }
   const inputRef = useRef();
 
+  const dropZoneRef = useRef();
   const handleFiles = useCallback((newFiles) => setFiles(Array.from(newFiles)), []);
-  const handleDragEnter = (e) => { e.preventDefault(); dragCounter.current++; setDragOver(true); };
-  const handleDragLeave = (e) => { e.preventDefault(); dragCounter.current--; if (dragCounter.current === 0) setDragOver(false); };
-  const handleDrop = (e) => { e.preventDefault(); dragCounter.current = 0; setDragOver(false); handleFiles(e.dataTransfer.files); };
+
+  useEffect(() => {
+    const zone = dropZoneRef.current;
+    if (!zone) return;
+    const onDragEnter = (e) => { e.preventDefault(); e.stopPropagation(); dragCounter.current++; setDragOver(true); };
+    const onDragOver  = (e) => { e.preventDefault(); e.stopPropagation(); };
+    const onDragLeave = (e) => { e.preventDefault(); e.stopPropagation(); dragCounter.current--; if (dragCounter.current <= 0) { dragCounter.current = 0; setDragOver(false); } };
+    const onDrop      = (e) => { e.preventDefault(); e.stopPropagation(); dragCounter.current = 0; setDragOver(false); if (e.dataTransfer.files.length > 0) handleFiles(e.dataTransfer.files); };
+    zone.addEventListener("dragenter", onDragEnter);
+    zone.addEventListener("dragover",  onDragOver);
+    zone.addEventListener("dragleave", onDragLeave);
+    zone.addEventListener("drop",      onDrop);
+    return () => {
+      zone.removeEventListener("dragenter", onDragEnter);
+      zone.removeEventListener("dragover",  onDragOver);
+      zone.removeEventListener("dragleave", onDragLeave);
+      zone.removeEventListener("drop",      onDrop);
+    };
+  }, [handleFiles]);
 
   const startElaboration = async () => {
     if (files.length === 0) return;
@@ -1042,10 +1059,7 @@ export default function PortaleUploadMassivo({ azienda }) {
       </div>
 
       <div
-        onDragEnter={handleDragEnter}
-        onDragOver={(e) => e.preventDefault()}
-        onDragLeave={handleDragLeave}
-        onDrop={handleDrop}
+        ref={dropZoneRef}
         onClick={() => inputRef.current?.click()}
         style={{ border: `2px dashed ${dragOver ? "#3b82f6" : files.length > 0 ? "#10b981" : "#1e2535"}`, borderRadius: 16, padding: files.length > 0 ? "32px 24px" : "56px 24px", textAlign: "center", cursor: "pointer", background: dragOver ? "#3b82f610" : files.length > 0 ? "#10b98108" : "#161b27", transition: "all 0.2s", marginBottom: 20 }}
       >
@@ -1064,13 +1078,4 @@ export default function PortaleUploadMassivo({ azienda }) {
               {Array.from(files).map((f, i) => (
                 <div key={i} style={{ display: "flex", alignItems: "center", gap: 10, padding: "5px 16px", borderBottom: i < files.length - 1 ? "1px solid #1e253530" : "none" }}>
                   <span style={{ fontSize: 13 }}>{fileIcon(f.name)}</span>
-                  <span style={{ fontSize: 12, color: "#94a3b8", flex: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{f.name}</span>
-                  <span style={{ fontSize: 10, color: "#334155" }}>{(f.size / 1024).toFixed(0)} KB</span>
-                </div>
-              ))}
-            </div>
-          </>
-        )}
-      </div>
-
-      <button onClick={startElaboration} disabled={files.length === 0} style={{ width: "100%", padding: "15px", background: files.length > 0 ? "linear-gradient(135deg, #3b82f6, #06b6d4)" : "#1e2535", border: "none", borderRadius: 12, color: files.length > 0 ? "white" : "#334155", fontSize: 15, fontWeight: 800, cursor: files.length > 0 ? "pointer" : "not-allowed" 
+                  <span style={{ fontSize: 12, 
