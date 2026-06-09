@@ -899,6 +899,7 @@ export default function PortaleUploadMassivo({ azienda }) {
   const [step, setStep] = useState("upload");
   const [files, setFiles] = useState([]);
   const [dragOver, setDragOver] = useState(false);
+  const dragCounter = useRef(0);
   const [elaborati, setElaborati] = useState([]);
   const [progress, setProgress] = useState({ fatto: 0, totale: 0 });
   const [appaltoSelId, setAppaltoSelId] = useState("");
@@ -907,7 +908,9 @@ export default function PortaleUploadMassivo({ azienda }) {
   const inputRef = useRef();
 
   const handleFiles = useCallback((newFiles) => setFiles(Array.from(newFiles)), []);
-  const handleDrop = (e) => { e.preventDefault(); setDragOver(false); handleFiles(e.dataTransfer.files); };
+  const handleDragEnter = (e) => { e.preventDefault(); dragCounter.current++; setDragOver(true); };
+  const handleDragLeave = (e) => { e.preventDefault(); dragCounter.current--; if (dragCounter.current === 0) setDragOver(false); };
+  const handleDrop = (e) => { e.preventDefault(); dragCounter.current = 0; setDragOver(false); handleFiles(e.dataTransfer.files); };
 
   const startElaboration = async () => {
     if (files.length === 0) return;
@@ -1039,8 +1042,9 @@ export default function PortaleUploadMassivo({ azienda }) {
       </div>
 
       <div
-        onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
-        onDragLeave={() => setDragOver(false)}
+        onDragEnter={handleDragEnter}
+        onDragOver={(e) => e.preventDefault()}
+        onDragLeave={handleDragLeave}
         onDrop={handleDrop}
         onClick={() => inputRef.current?.click()}
         style={{ border: `2px dashed ${dragOver ? "#3b82f6" : files.length > 0 ? "#10b981" : "#1e2535"}`, borderRadius: 16, padding: files.length > 0 ? "32px 24px" : "56px 24px", textAlign: "center", cursor: "pointer", background: dragOver ? "#3b82f610" : files.length > 0 ? "#10b98108" : "#161b27", transition: "all 0.2s", marginBottom: 20 }}
@@ -1069,7 +1073,4 @@ export default function PortaleUploadMassivo({ azienda }) {
         )}
       </div>
 
-      <button onClick={startElaboration} disabled={files.length === 0} style={{ width: "100%", padding: "15px", background: files.length > 0 ? "linear-gradient(135deg, #3b82f6, #06b6d4)" : "#1e2535", border: "none", borderRadius: 12, color: files.length > 0 ? "white" : "#334155", fontSize: 15, fontWeight: 800, cursor: files.length > 0 ? "pointer" : "not-allowed" }}>
-        {files.length > 0 ? `⚡ Analizza ${files.length} documenti con AI →` : "Seleziona i file per continuare"}
-      </button>
-      <div style={{ textAlign: "center", marginTop: 12, fontSize: 11, color: "#334155" }}>Dati cifrati · Conforme GDPR · Nessuna registrazione richiesta</di
+      <button onClick={startElaboration} disabled={files.length === 0} style={{ width: "100%", padding: "15px", background: files.length > 0 ? "linear-gradient(135deg, #3b82f6, #06b6d4)" : "#1e2535", border: "none", borderRadius: 12, color: files.length > 0 ? "white" : "#334155", fontSize: 15, fontWeight: 800, cursor: files.length > 0 ? "pointer" : "not-allowed" 
