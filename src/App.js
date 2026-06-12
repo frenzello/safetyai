@@ -569,11 +569,4 @@ export default function SafetyAIApp() {
             <div style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: 400, flexDirection: "column", gap: 16 }}>
               <div style={{ fontSize: 52, opacity: 0.15 }}>🔧</div>
               <div style={{ fontSize: 18, fontWeight: 700, color: "#334155" }}>{tutteLeVoci.find(n => n.id === modulo)?.label}</div>
-              <div style={{ fontSize: 13, color: "#1e2535", background: "#161b27", padding: "8px 16px", borderRadius: 8, border: "1px solid #1e2535" }}>In sviluppo — prossima versione</div>
-            </div>
-          )}
-        </div>
-      </div>
-    </div>
-  );
-}
+              <div style={{ fontSize: 13, color: "#1e2535", background: "#161b27", padding:
