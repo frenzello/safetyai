@@ -19,6 +19,9 @@
     "build": "react-scripts build",
     "server": "node server.js"
   },
+  "engines": {
+    "node": "18.x"
+  },
   "eslintConfig": {
     "extends": [
       "react-app"
@@ -35,4 +38,9 @@
       "not op_mini all"
     ],
     "development": [
-      "last 1 chrome v
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
+}

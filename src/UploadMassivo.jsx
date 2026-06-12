@@ -83,6 +83,20 @@ DOCUMENTI SEMPRE VALIDI — NESSUNA SCADENZA — NESSUN CONTROLLO CONFORMITÀ:
 9. IDONEITÀ SANITARIA (art. 41 D.Lgs 81/08)
    - Emessa da Medico Competente nominato dal datore di lavoro
    - Deve indicare la mansione specifica
+   - CALCOLO SCADENZA OBBLIGATORIO — NON restituire mai data_scadenza: null se il documento ha una data di rilascio:
+     * Se il certificato riporta esplicitamente la data di scadenza o "prossima visita": usa quella data
+     * Se il certificato riporta solo la data di rilascio o di visita senza scadenza esplicita:
+       data_scadenza = data_rilascio + 12 mesi (sorveglianza sanitaria periodica annuale standard, art. 41 c.2)
+     * Il medico competente può indicare periodicità diversa (es. 24 mesi per rischio basso):
+       in quel caso estrai la periodicità dal testo e calcola data_scadenza = data_rilascio + periodicità indicata
+   - ATTENZIONE: un'idoneità sanitaria ha SEMPRE una scadenza — non è mai permanente
+   - ESEMPI DI ESTRAZIONE CORRETTA:
+     Testo: "Visita medica del 15/03/2024 — Idoneo alla mansione di Gruista — Prossima visita: 15/03/2025"
+     → data_rilascio: "15/03/2024", data_scadenza: "15/03/2025"
+     Testo: "Idoneità del 10/01/2024 — Idoneo con prescrizione — validità 12 mesi"
+     → data_rilascio: "10/01/2024", data_scadenza: "10/01/2025"  (calcolo: +12 mesi)
+     Testo: "Certificato di idoneità 22/06/2023" (nessuna scadenza esplicita)
+     → data_rilascio: "22/06/2023", data_scadenza: "22/06/2024"  (default: +12 mesi)
 
 10. PREPOSTI (Accordo Stato-Regioni 21/12/2011 + Legge 215/2021 art. 37-ter D.Lgs 81/08)
     - Formazione iniziale: 8 ore, obbligatoriamente IN PRESENZA
@@ -117,18 +131,45 @@ ISTRUZIONI FINALI:
 `;
 
 // ─── HELPERS SCADENZE ─────────────────────────────────────────────────────────
-const OGGI = new Date();
 
+// Supporta i tre formati che l'AI può restituire:
+//   "GG/MM/AAAA"  → formato italiano standard
+//   "AAAA-MM-GG"  → ISO 8601 (Claude può emetterlo)
+//   "GG.MM.AAAA"  → con punti (alcuni enti italiani)
+// Restituisce null se la stringa è assente, non parsabile o produce una data invalida.
 function parseData(str) {
-  if (!str) return null;
-  const [g, m, a] = str.split("/");
-  return new Date(`${a}-${m}-${g}`);
+  if (!str || typeof str !== "string") return null;
+  const s = str.trim();
+
+  let d;
+  // GG/MM/AAAA
+  const itMatch = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+  if (itMatch) {
+    const [, g, m, a] = itMatch;
+    d = new Date(`${a}-${m.padStart(2, "0")}-${g.padStart(2, "0")}`);
+  }
+  // AAAA-MM-GG  (ISO)
+  else if (/^\d{4}-\d{2}-\d{2}$/.test(s)) {
+    d = new Date(s);
+  }
+  // GG.MM.AAAA
+  else {
+    const dotMatch = s.match(/^(\d{1,2})\.(\d{1,2})\.(\d{4})$/);
+    if (dotMatch) {
+      const [, g, m, a] = dotMatch;
+      d = new Date(`${a}-${m.padStart(2, "0")}-${g.padStart(2, "0")}`);
+    }
+  }
+
+  // Controlla esplicitamente che la data sia valida (isNaN cattura Invalid Date)
+  return d && !isNaN(d.getTime()) ? d : null;
 }
 
 function giorniAllaScadenza(dataStr) {
   const d = parseData(dataStr);
   if (!d) return null;
-  return Math.ceil((d - OGGI) / (1000 * 60 * 60 * 24));
+  const oggi = new Date(); // calcolato fresco ad ogni chiamata
+  return Math.ceil((d - oggi) / (1000 * 60 * 60 * 24));
 }
 
 function statoScadenza(dataStr) {
@@ -148,27 +189,62 @@ const STATO_CFG = {
   nessuna:   { color: "#64748b", bg: "#64748b12", label: "Nessuna scadenza" },
 };
 
-// ─── AI EXTRACTION ────────────────────────────────────────────────────────────
-async function extractDocumentData(file) {
-  const base64 = await new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve(reader.result.split(",")[1]);
-    reader.onerror = reject;
-    reader.readAsDataURL(file);
-  });
+// ─── VALIDAZIONE POST-ESTRAZIONE ──────────────────────────────────────────────
+// Analisi logica del JSON restituito dall'AI — non spende token,
+// cattura anomalie che il prompt da solo non può garantire.
+// Ritorna un array di stringhe descrittive (vuoto = nessuna anomalia).
+function validaEstrazione(r) {
+  if (!r || r.errore) return [];
+  const anomalie = [];
 
-  const contentParts = [];
-  if (file.type.startsWith("image/")) {
-    contentParts.push({ type: "image", source: { type: "base64", media_type: file.type, data: base64 } });
-  } else if (file.type === "application/pdf") {
-    contentParts.push({ type: "document", source: { type: "base64", media_type: "application/pdf", data: base64 } });
-  } else {
-    contentParts.push({ type: "text", text: `Nome file: ${file.name}` });
+  // 1. Data rilascio nel futuro — quasi certamente errore di OCR
+  if (r.data_rilascio) {
+    const gg = giorniAllaScadenza(r.data_rilascio);
+    if (gg !== null && gg > 0) {
+      anomalie.push(`Data rilascio nel futuro (${r.data_rilascio}) — probabile errore di lettura`);
+    }
   }
 
-  contentParts.push({
-    type: "text",
-    text: `Sei un esperto di sicurezza sul lavoro italiana con profonda conoscenza del D.Lgs 81/08.
+  // 2. Scadenza antecedente al rilascio — fisicamente impossibile
+  if (r.data_rilascio && r.data_scadenza) {
+    const rilascio = parseData(r.data_rilascio);
+    const scadenza = parseData(r.data_scadenza);
+    if (rilascio && scadenza && scadenza <= rilascio) {
+      anomalie.push(`Scadenza (${r.data_scadenza}) precedente al rilascio (${r.data_rilascio})`);
+    }
+  }
+
+  // 3. Ore fuori da qualsiasi range plausibile D.Lgs 81/08
+  if (r.ore_formazione != null) {
+    if (r.ore_formazione <= 0 || r.ore_formazione > 200) {
+      anomalie.push(`Ore formazione non plausibili: ${r.ore_formazione}h`);
+    }
+  }
+
+  // 4. Idoneità sanitaria senza scadenza — il prompt ora la calcola,
+  //    se arriva ancora null è quasi sempre un PDF illeggibile
+  const tipoLower = r.tipo_documento?.toLowerCase() || "";
+  if (tipoLower.includes("idone") && tipoLower.includes("sanit") && !r.data_scadenza) {
+    anomalie.push("Idoneità sanitaria senza data di scadenza — verifica manuale consigliata");
+  }
+
+  // 5. Confidenza AI bassa
+  if (r.confidenza != null && r.confidenza < 60) {
+    anomalie.push(`Confidenza AI bassa (${r.confidenza}%) — il PDF potrebbe essere di scarsa qualità`);
+  }
+
+  // 6. Nome lavoratore assente per un documento di categoria lavoratore
+  if (r.categoria === "lavoratore" && !r.nome_lavoratore) {
+    anomalie.push("Nome lavoratore non estratto — verifica il documento");
+  }
+
+  return anomalie;
+}
+
+// ─── AI EXTRACTION ────────────────────────────────────────────────────────────
+
+// Prompt condiviso tra tutti i passaggi AI (Haiku e Sonnet)
+const PROMPT_ANALISI = `Sei un esperto di sicurezza sul lavoro italiana con profonda conoscenza del D.Lgs 81/08.
 Analizza questo documento e rispondi SOLO con JSON valido, senza backtick, senza markdown.
 
 ${REGOLE_CONFORMITA}
@@ -183,7 +259,7 @@ Restituisci SEMPRE un array JSON, anche se c'è un solo documento:
   {
     "tipo_documento": "descrizione precisa del corso — sii specifico (es. 'Formazione specifica rischio medio' non solo 'Formazione')",
     "categoria": "aziendale oppure lavoratore",
-    "nome_lavoratore": "nome e cognome esatto, null se assente",
+    "nome_lavoratore": "nome e cognome nel formato 'Cognome Nome' (prima il cognome, poi il nome, iniziali maiuscole, resto minuscolo — es. 'Rossi Mario'). Normalizza sempre in questo formato indipendentemente da come è scritto nel documento. null se assente.",
     "codice_fiscale": "codice fiscale se presente, null se assente",
     "data_scadenza": "GG/MM/AAAA, null se non presente o formazione permanente",
     "data_rilascio": "GG/MM/AAAA, null se non presente",
@@ -197,29 +273,82 @@ Restituisci SEMPRE un array JSON, anche se c'è un solo documento:
   }
 ]
 
-Se il PDF non è leggibile: [{"errore": "descrizione", "confidenza": 0}]`,
-  });
+Se il PDF non è leggibile: [{"errore": "descrizione", "confidenza": 0}]`;
 
+// Legge il file e costruisce le content parts per l'API Anthropic
+async function buildContentParts(file) {
+  const base64 = await new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result.split(",")[1]);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+  const mediaPart = file.type.startsWith("image/")
+    ? { type: "image",    source: { type: "base64", media_type: file.type,          data: base64 } }
+    : file.type === "application/pdf"
+      ? { type: "document", source: { type: "base64", media_type: "application/pdf", data: base64 } }
+      : { type: "text",     text: `Nome file: ${file.name}` };
+  return [mediaPart, { type: "text", text: PROMPT_ANALISI }];
+}
+
+// Singola chiamata al server proxy → Anthropic API
+async function callClaudeAPI(contentParts, model, maxTokens) {
   const response = await fetch(`${API_URL}/api/claude`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
-      model: "claude-haiku-4-5-20251001",
-      max_tokens: 1500,
+      model,
+      max_tokens: maxTokens,
       messages: [{ role: "user", content: contentParts }],
     }),
   });
-
   const data = await response.json();
   const text = data.content?.map(b => b.text || "").join("") || "";
   try {
     const parsed = JSON.parse(text.replace(/```json|```/g, "").trim());
-    // Normalizza sempre in array
-    if (Array.isArray(parsed)) return parsed;
-    return [parsed]; // oggetto singolo → array con un elemento
+    return Array.isArray(parsed) ? parsed : [parsed];
   } catch {
     return [{ errore: "Impossibile leggere il documento", confidenza: 0 }];
   }
+}
+
+// Media confidenza di un array di risultati (ignora errori e null)
+function mediaConfidenza(arr) {
+  const validi = arr.filter(r => !r.errore && r.confidenza != null);
+  if (!validi.length) return 0;
+  return validi.reduce((s, r) => s + r.confidenza, 0) / validi.length;
+}
+
+// Estrazione principale con escalation automatica a Sonnet
+async function extractDocumentData(file) {
+  const contentParts = await buildContentParts(file);
+
+  // ── Primo tentativo: Haiku (veloce, economico) ────────────────────────────
+  let risultati = await callClaudeAPI(contentParts, "claude-haiku-4-5-20251001", 1500);
+
+  // ── Condizioni che richiedono escalation a Sonnet ─────────────────────────
+  const necessitaRetry = risultati.some(r =>
+    r.errore ||
+    (r.confidenza != null && r.confidenza < 65) ||
+    (r.categoria === "lavoratore" && !r.nome_lavoratore) ||
+    (r.tipo_documento?.toLowerCase().includes("idone") && !r.data_scadenza)
+  );
+
+  if (necessitaRetry) {
+    console.log(`[SafetyAI] Escalation Sonnet: ${file.name}`);
+    try {
+      const sonnetRis = await callClaudeAPI(contentParts, "claude-sonnet-4-6", 2000);
+      // Usa Sonnet se non ha errori e la confidenza media è maggiore o uguale
+      if (!sonnetRis.some(r => r.errore) && mediaConfidenza(sonnetRis) >= mediaConfidenza(risultati)) {
+        risultati = sonnetRis;
+        risultati.forEach(r => { r._usatoSonnet = true; });
+      }
+    } catch (e) {
+      console.warn("[SafetyAI] Retry Sonnet fallito, uso risultati Haiku:", e.message);
+    }
+  }
+
+  return risultati;
 }
 
 // ─── EXPORT EXCEL ─────────────────────────────────────────────────────────────
@@ -284,6 +413,10 @@ function abbreviaTipo(tipo) {
     "antincendio livello 2": "Antinc. Liv.2",
     "antincendio livello 3": "Antinc. Liv.3",
     // Macchine / attrezzature
+    "semoventi telescopici rotativi": "Carr./Soll. Sem.",
+    "semoventi telescopici": "Carr./Soll. Sem.",
+    "sollevatori/elevatori semoventi": "Carr./Soll. Sem.",
+    "carrelli/sollevatori": "Carr./Soll. Sem.",
     "carrelli elevatori": "Carrelli Elev.",
     "carrello elevatore": "Carrelli Elev.",
     "aggiornamento carrelli elevatori": "Agg. Carrelli",
@@ -325,6 +458,10 @@ function abbreviaTipo(tipo) {
     "comunicazione obbligatoria unificato lav": "Com. Assunzione",
     "permesso di soggiorno": "Permesso Sogg.",
     "patente a crediti": "Patente Crediti",
+    // Consegna DPI
+    "dichiarazione di consegna dpi": "Dich. Cons. DPI",
+    "consegna dpi": "Dich. Cons. DPI",
+    "dichiarazione di consegna": "Dich. Cons. DPI",
     // DURC / aziendali
     "durc": "DURC",
     "visura camerale": "Visura",
@@ -444,7 +581,7 @@ async function esportaExcel(elaborati, decisioniConformita, azienda) {
     tipiOriginali.forEach(tipo => {
       if (docsMap[tipo]) {
         const r = docsMap[tipo].risultato;
-        const chiave = `${r.nome_lavoratore}__${docsMap[tipo].nomeFile}`;
+        const chiave = `${chiaveRaggruppamento(r.nome_lavoratore)}__${docsMap[tipo].nomeFile}`;
         const decisione = decisioniConformita[chiave];
         const nonConforme = r.conforme === false && decisione !== "approvato";
         const giorni = giorniAllaScadenza(r.data_scadenza);
@@ -541,7 +678,7 @@ async function esportaExcel(elaborati, decisioniConformita, azienda) {
   elaborati.forEach(doc => {
     if (!doc.risultato || doc.risultato.errore) return;
     const r = doc.risultato;
-    const chiave = `${r.nome_lavoratore}__${doc.nomeFile}`;
+    const chiave = `${chiaveRaggruppamento(r.nome_lavoratore)}__${doc.nomeFile}`;
     const decisione = decisioniConformita[chiave] || "—";
     const nomeNorm = normalizzaNome(r.nome_lavoratore || r.categoria || "—");
     dettaglioRows.push([
@@ -609,8 +746,9 @@ function SchermatScadenze({ elaborati, azienda, appaltoSelId, appaltatoreSelId, 
   const perLavoratore = elaborati.reduce((acc, doc) => {
     if (doc.risultato?.categoria === "lavoratore" && doc.risultato?.nome_lavoratore) {
       const nome = doc.risultato.nome_lavoratore;
-      if (!acc[nome]) acc[nome] = [];
-      acc[nome].push(doc);
+      const chiave = chiaveRaggruppamento(nome);
+      if (!acc[chiave]) acc[chiave] = { nomeDisplay: normalizzaNome(nome), docs: [] };
+      acc[chiave].docs.push(doc);
     }
     return acc;
   }, {});
@@ -622,14 +760,14 @@ function SchermatScadenze({ elaborati, azienda, appaltoSelId, appaltatoreSelId, 
   // Conta non conformi ancora in attesa di decisione
   const nonConformiInAttesa = elaborati.filter(d => {
     if (d.risultato?.conforme !== false) return false;
-    const chiave = `${d.risultato?.nome_lavoratore}__${d.nomeFile}`;
+    const chiave = `${chiaveRaggruppamento(d.risultato?.nome_lavoratore)}__${d.nomeFile}`;
     return !decisioniConformita[chiave];
   }).length;
 
   function statoLavoratore(docs) {
     const haaNonConforme = docs.some(d => {
       if (d.risultato?.conforme !== false) return false;
-      const chiave = `${d.risultato?.nome_lavoratore}__${d.nomeFile}`;
+      const chiave = `${chiaveRaggruppamento(d.risultato?.nome_lavoratore)}__${d.nomeFile}`;
       return decisioniConformita[chiave] !== "approvato";
     });
     if (haaNonConforme) return "nonconforme";
@@ -663,6 +801,8 @@ function SchermatScadenze({ elaborati, azienda, appaltoSelId, appaltatoreSelId, 
     finally { setExportando(false); }
   }
 
+  // Conta documenti con almeno un'anomalia di estrazione
+  const totaleAnomalie = elaborati.filter(d => d.risultato?._anomalie?.length > 0).length;
   const statoColore = { ok: "#10b981", attenzione: "#f59e0b", critico: "#ef4444", scaduto: "#ef4444", nonconforme: "#f97316", nessuna: "#64748b" };
   const statoLabel = { ok: "Valido", attenzione: "In scadenza", critico: "Scadenza imminente", scaduto: "SCADUTO", nonconforme: "Non conforme", nessuna: "—" };
 
@@ -707,12 +847,12 @@ function SchermatScadenze({ elaborati, azienda, appaltoSelId, appaltatoreSelId, 
       </div>
 
       {/* Stats */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 12, marginBottom: 24 }}>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 12, marginBottom: totaleAnomalie > 0 ? 16 : 24 }}>
         {[
-          { label: "Lavoratori", value: Object.keys(perLavoratore).length, color: "#60a5fa" },
+          { label: "Lavoratori",          value: Object.keys(perLavoratore).length, color: "#60a5fa" },
           { label: "In attesa decisione", value: nonConformiInAttesa, color: nonConformiInAttesa > 0 ? "#f97316" : "#334155" },
-          { label: "Validi", value: elaborati.filter(d => d.risultato?.conforme !== false && statoScadenza(d.risultato?.data_scadenza) === "ok").length, color: "#10b981" },
-          { label: "Da rinnovare", value: elaborati.filter(d => ["scaduto","critico","attenzione"].includes(statoScadenza(d.risultato?.data_scadenza))).length, color: "#f59e0b" },
+          { label: "Validi",              value: elaborati.filter(d => d.risultato?.conforme !== false && statoScadenza(d.risultato?.data_scadenza) === "ok").length, color: "#10b981" },
+          { label: "Da rinnovare",        value: elaborati.filter(d => ["scaduto","critico","attenzione"].includes(statoScadenza(d.risultato?.data_scadenza))).length, color: "#f59e0b" },
         ].map((s, i) => (
           <div key={i} style={{ background: "#161b27", border: `1px solid ${s.color}20`, borderRadius: 12, padding: "16px", textAlign: "center" }}>
             <div style={{ fontSize: 26, fontWeight: 800, color: s.color }}>{s.value}</div>
@@ -721,6 +861,22 @@ function SchermatScadenze({ elaborati, azienda, appaltoSelId, appaltatoreSelId, 
         ))}
       </div>
 
+      {/* Banner anomalie estrazione */}
+      {totaleAnomalie > 0 && (
+        <div style={{ padding: "12px 18px", marginBottom: 20, background: "#f59e0b08", border: "1px solid #f59e0b25", borderRadius: 10, display: "flex", gap: 12, alignItems: "flex-start" }}>
+          <span style={{ fontSize: 18, flexShrink: 0 }}>🔍</span>
+          <div>
+            <div style={{ fontSize: 13, fontWeight: 700, color: "#f59e0b", marginBottom: 4 }}>
+              {totaleAnomalie} {totaleAnomalie === 1 ? "documento richiede verifica" : "documenti richiedono verifica"}
+            </div>
+            <div style={{ fontSize: 12, color: "#ca8a04", lineHeight: 1.5 }}>
+              I dati estratti dall'AI presentano anomalie (date impossibili, confidenza bassa, campi mancanti).
+              I documenti segnalati con <strong>⚠ Verifica</strong> vanno controllati prima dell'export.
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Lavoratori */}
       {Object.keys(perLavoratore).length > 0 && (
         <div style={{ marginBottom: 24 }}>
@@ -728,19 +884,19 @@ function SchermatScadenze({ elaborati, azienda, appaltoSelId, appaltatoreSelId, 
             LAVORATORI — {Object.keys(perLavoratore).length}
           </div>
           <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-            {Object.entries(perLavoratore).map(([nome, docs]) => {
+            {Object.entries(perLavoratore).map(([chiaveLav, { nomeDisplay, docs }]) => {
               const stato = statoLavoratore(docs);
               const colore = statoColore[stato] || "#64748b";
               const label = statoLabel[stato] || stato;
 
               return (
-                <div key={nome} style={{ background: "#161b27", border: `1px solid ${["scaduto","critico","nonconforme"].includes(stato) ? colore + "40" : "#1e2535"}`, borderRadius: 12, overflow: "hidden" }}>
+                <div key={chiaveLav} style={{ background: "#161b27", border: `1px solid ${["scaduto","critico","nonconforme"].includes(stato) ? colore + "40" : "#1e2535"}`, borderRadius: 12, overflow: "hidden" }}>
                   <div style={{ padding: "14px 20px", display: "flex", alignItems: "center", gap: 14, background: `${colore}08` }}>
                     <div style={{ width: 42, height: 42, borderRadius: "50%", flexShrink: 0, background: `${colore}20`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 15, fontWeight: 800, color: colore }}>
-                      {nome.split(" ").map(n => n[0]).join("").slice(0, 2).toUpperCase()}
+                      {nomeDisplay.split(" ").map(n => n[0]).join("").slice(0, 2).toUpperCase()}
                     </div>
                     <div style={{ flex: 1 }}>
-                      <div style={{ fontSize: 14, fontWeight: 700, color: "#f1f5f9" }}>{nome}</div>
+                      <div style={{ fontSize: 14, fontWeight: 700, color: "#f1f5f9" }}>{nomeDisplay}</div>
                       <div style={{ fontSize: 11, color: "#475569", marginTop: 2 }}>{docs.length} documenti</div>
                     </div>
                     <span style={{ padding: "4px 10px", borderRadius: 20, background: colore + "20", color: colore, fontSize: 11, fontWeight: 700 }}>{label}</span>
@@ -749,13 +905,18 @@ function SchermatScadenze({ elaborati, azienda, appaltoSelId, appaltatoreSelId, 
                   <div style={{ borderTop: "1px solid #1e2535" }}>
                     {docs.map((doc, i) => {
                       const r = doc.risultato;
-                      const chiave = `${nome}__${doc.nomeFile}`;
+                      const chiave = `${chiaveLav}__${doc.nomeFile}`;
                       const decisione = decisioniConformita[chiave];
                       const nonConforme = r?.conforme === false;
+                      const anomalie = r?._anomalie || [];
                       const statoDoc = statoScadenza(r?.data_scadenza);
                       const cfgDoc = STATO_CFG[statoDoc];
                       const giorni = giorniAllaScadenza(r?.data_scadenza);
-                      const bordoColore = nonConforme && decisione !== "approvato" ? "#f97316" : cfgDoc.color;
+                      const bordoColore = nonConforme && decisione !== "approvato"
+                        ? "#f97316"
+                        : anomalie.length > 0
+                          ? "#f59e0b"
+                          : cfgDoc.color;
 
                       return (
                         <div key={i} style={{ padding: "12px 20px", borderBottom: i < docs.length - 1 ? "1px solid #1e253540" : "none", borderLeft: `3px solid ${bordoColore}` }}>
@@ -788,18 +949,27 @@ function SchermatScadenze({ elaborati, azienda, appaltoSelId, appaltatoreSelId, 
                             {doc.file && (
                               <button
                                 onClick={() => apriPdf(doc)}
-                                style={{ padding: "6px 10px", background: "#1e2535", border: "1px solid #334155", borderRadius: 7, color: "#94a3b8", fontSize: 11, cursor: "pointer", display: "flex", alignItems: "center", gap: 4, flexShrink: 0 }}
+                                style={{
+                                  padding: "6px 10px", borderRadius: 7, fontSize: 11,
+                                  cursor: "pointer", display: "flex", alignItems: "center", gap: 4, flexShrink: 0,
+                                  background: anomalie.length > 0 ? "#f59e0b15" : "#1e2535",
+                                  border:     anomalie.length > 0 ? "1px solid #f59e0b50" : "1px solid #334155",
+                                  color:      anomalie.length > 0 ? "#f59e0b"              : "#94a3b8",
+                                  fontWeight: anomalie.length > 0 ? 700 : 400,
+                                }}
                                 onMouseOver={e => { e.currentTarget.style.background = "#2d3748"; e.currentTarget.style.color = "#f1f5f9"; }}
-                                onMouseOut={e => { e.currentTarget.style.background = "#1e2535"; e.currentTarget.style.color = "#94a3b8"; }}
+                                onMouseOut={e => {
+                                  e.currentTarget.style.background = anomalie.length > 0 ? "#f59e0b15" : "#1e2535";
+                                  e.currentTarget.style.color      = anomalie.length > 0 ? "#f59e0b"   : "#94a3b8";
+                                }}
                               >
-                                👁 Verifica
+                                {anomalie.length > 0 ? "⚠ Verifica" : "👁 Verifica"}
                               </button>
                             )}
                           </div>
 
                           {/* Blocco non conformità — sotto a tutta larghezza */}
-                          {nonConforme && (
-                            <div style={{ marginTop: 10, padding: "10px 14px", background: "#f9731610", border: "1px solid #f9731630", borderRadius: 8 }}>
+                          {nonConforme && (                            <div style={{ marginTop: 10, padding: "10px 14px", background: "#f9731610", border: "1px solid #f9731630", borderRadius: 8 }}>
                               <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 12 }}>
                                 <div style={{ fontSize: 11, color: "#fdba74", flex: 1 }}>
                                   ⚠ <strong>Non conforme:</strong> {r.problema_conformita}
@@ -807,12 +977,12 @@ function SchermatScadenze({ elaborati, azienda, appaltoSelId, appaltatoreSelId, 
                                 {!decisione && (
                                   <div style={{ display: "flex", gap: 8, flexShrink: 0 }}>
                                     <button
-                                      onClick={() => setDecisione(nome, doc.nomeFile, "approvato")}
+                                      onClick={() => setDecisione(chiaveLav, doc.nomeFile, "approvato")}
                                       style={{ padding: "4px 12px", background: "#10b98120", border: "1px solid #10b98140", borderRadius: 6, color: "#10b981", fontSize: 11, fontWeight: 700, cursor: "pointer", whiteSpace: "nowrap" }}>
                                       ✓ Approva
                                     </button>
                                     <button
-                                      onClick={() => setDecisione(nome, doc.nomeFile, "scartato")}
+                                      onClick={() => setDecisione(chiaveLav, doc.nomeFile, "scartato")}
                                       style={{ padding: "4px 12px", background: "#ef444420", border: "1px solid #ef444440", borderRadius: 6, color: "#ef4444", fontSize: 11, fontWeight: 700, cursor: "pointer", whiteSpace: "nowrap" }}>
                                       ✗ Scarta
                                     </button>
@@ -821,16 +991,30 @@ function SchermatScadenze({ elaborati, azienda, appaltoSelId, appaltatoreSelId, 
                                 {decisione === "approvato" && (
                                   <div style={{ display: "flex", alignItems: "center", gap: 8, flexShrink: 0 }}>
                                     <span style={{ fontSize: 11, color: "#10b981", fontWeight: 700 }}>✓ Approvato</span>
-                                    <button onClick={() => setDecisione(nome, doc.nomeFile, null)} style={{ background: "none", border: "none", color: "#475569", fontSize: 10, cursor: "pointer" }}>annulla</button>
+                                    <button onClick={() => setDecisione(chiaveLav, doc.nomeFile, null)} style={{ background: "none", border: "none", color: "#475569", fontSize: 10, cursor: "pointer" }}>annulla</button>
                                   </div>
                                 )}
                                 {decisione === "scartato" && (
                                   <div style={{ display: "flex", alignItems: "center", gap: 8, flexShrink: 0 }}>
                                     <span style={{ fontSize: 11, color: "#ef4444", fontWeight: 700 }}>✗ Scartato</span>
-                                    <button onClick={() => setDecisione(nome, doc.nomeFile, null)} style={{ background: "none", border: "none", color: "#475569", fontSize: 10, cursor: "pointer" }}>annulla</button>
+                                    <button onClick={() => setDecisione(chiaveLav, doc.nomeFile, null)} style={{ background: "none", border: "none", color: "#475569", fontSize: 10, cursor: "pointer" }}>annulla</button>
                                   </div>
                                 )}
                               </div>
+                            </div>
+                          )}
+
+                          {/* Blocco anomalie estrazione — distinto dalla non-conformità normativa */}
+                          {anomalie.length > 0 && (
+                            <div style={{ marginTop: nonConforme ? 6 : 10, padding: "9px 14px", background: "#f59e0b06", border: "1px solid #f59e0b20", borderRadius: 8 }}>
+                              <div style={{ fontSize: 11, fontWeight: 700, color: "#f59e0b", marginBottom: 5 }}>
+                                🔍 Dati estratti da verificare{r?._usatoSonnet ? " (ri-analizzato con Sonnet)" : ""}
+                              </div>
+                              {anomalie.map((a, ai) => (
+                                <div key={ai} style={{ fontSize: 11, color: "#ca8a04", paddingLeft: 6, marginBottom: ai < anomalie.length - 1 ? 3 : 0 }}>
+                                  · {a}
+                                </div>
+                              ))}
                             </div>
                           )}
                         </div>
@@ -894,6 +1078,38 @@ function SchermatScadenze({ elaborati, azienda, appaltoSelId, appaltatoreSelId, 
   );
 }
 
+// ─── HELPERS DRAG & DROP ──────────────────────────────────────────────────────
+const ESTENSIONI_OK = new Set([".pdf", ".jpg", ".jpeg", ".png"]);
+function isFileAccepted(file) {
+  const ext = "." + file.name.split(".").pop().toLowerCase();
+  return ESTENSIONI_OK.has(ext);
+}
+
+// Attraversa ricorsivamente una FileSystemDirectoryEntry.
+// NOTA: readEntries() restituisce al massimo 100 voci per chiamata — occorre
+// richiamarla in loop finché non restituisce un array vuoto.
+async function traversaCartella(entry) {
+  if (entry.isFile) {
+    return new Promise((resolve, reject) => entry.file(resolve, reject));
+  }
+  if (entry.isDirectory) {
+    const reader = entry.createReader();
+    const tutteLeVoci = [];
+    await new Promise((resolve) => {
+      const leggi = () =>
+        reader.readEntries((batch) => {
+          if (!batch.length) return resolve();
+          tutteLeVoci.push(...batch);
+          leggi(); // continua finché il batch è vuoto
+        });
+      leggi();
+    });
+    const nested = await Promise.all(tutteLeVoci.map(traversaCartella));
+    return nested.flat();
+  }
+  return [];
+}
+
 // ─── MAIN ─────────────────────────────────────────────────────────────────────
 export default function PortaleUploadMassivo({ azienda }) {
   const [step, setStep] = useState("upload");
@@ -905,32 +1121,154 @@ export default function PortaleUploadMassivo({ azienda }) {
   const [appaltoSelId, setAppaltoSelId] = useState("");
   const [appaltatoreSelId, setAppaltatoreSelId] = useState("");
   const [salvato, setSalvato] = useState(null); // { nuoviLavoratori, nuoviAttestati }
-  const inputRef = useRef();
+  const folderInputRef = useRef();
+  const dropZoneRef = useRef(null);
 
-  const dropZoneRef = useRef();
-  const handleFiles = useCallback((newFiles) => setFiles(Array.from(newFiles)), []);
+  // ── Stato drag & drop avanzato ──────────────────────────────────────────────
+  const [duplicatiNomi, setDuplicatiNomi] = useState(new Set());
+  const [caricandoCartella, setCaricandoCartella] = useState(false);
+  const [infoCartella, setInfoCartella] = useState(null); // { nome, trovati, skippati }
 
-  useEffect(() => {
-    const zone = dropZoneRef.current;
-    if (!zone) return;
-    const onDragEnter = (e) => { e.preventDefault(); e.stopPropagation(); dragCounter.current++; setDragOver(true); };
-    const onDragOver  = (e) => { e.preventDefault(); e.stopPropagation(); e.dataTransfer.dropEffect = 'copy'; };
-    const onDragLeave = (e) => { e.preventDefault(); e.stopPropagation(); dragCounter.current--; if (dragCounter.current <= 0) { dragCounter.current = 0; setDragOver(false); } };
-    const onDrop      = (e) => { e.preventDefault(); e.stopPropagation(); dragCounter.current = 0; setDragOver(false); if (e.dataTransfer.files.length > 0) handleFiles(e.dataTransfer.files); };
-    zone.addEventListener("dragenter", onDragEnter);
-    zone.addEventListener("dragover",  onDragOver);
-    zone.addEventListener("dragleave", onDragLeave);
-    zone.addEventListener("drop",      onDrop);
-    return () => {
-      zone.removeEventListener("dragenter", onDragEnter);
-      zone.removeEventListener("dragover",  onDragOver);
-      zone.removeEventListener("dragleave", onDragLeave);
-      zone.removeEventListener("drop",      onDrop);
-    };
+  // Aggiunge file in modalità APPEND (non sostituisce).
+  // Rileva automaticamente i duplicati (stesso nome) e li segnala visivamente.
+  const handleFiles = useCallback((nuoviFile) => {
+    const nuoviArr = Array.isArray(nuoviFile) ? nuoviFile : Array.from(nuoviFile);
+    setFiles(prev => {
+      const nomiEsistenti = new Set(prev.map(f => f.name));
+      const dupeNomi = new Set();
+      const unici = [];
+      for (const f of nuoviArr) {
+        if (nomiEsistenti.has(f.name)) {
+          dupeNomi.add(f.name);
+        } else {
+          unici.push(f);
+          nomiEsistenti.add(f.name); // evita dupe nello stesso batch
+        }
+      }
+      if (dupeNomi.size > 0) {
+        setDuplicatiNomi(prev => new Set([...prev, ...dupeNomi]));
+      }
+      return [...prev, ...unici];
+    });
+  }, []);
+
+  // Rimuove un singolo file dalla lista
+  const removeFile = useCallback((idx) => {
+    setFiles(prev => prev.filter((_, i) => i !== idx));
+  }, []);
+
+  // ── Folder picker (File System Access API) ───────────────────────────────────
+  const openFolderPicker = useCallback(async () => {
+    if (!window.showDirectoryPicker) {
+      // Fallback per browser senza supporto
+      folderInputRef.current?.click();
+      return;
+    }
+    try {
+      const dirHandle = await window.showDirectoryPicker({ mode: "read" });
+      setCaricandoCartella(true);
+      const allFiles = [];
+      const leggiDir = async (handle) => {
+        for await (const [, entry] of handle.entries()) {
+          if (entry.kind === "directory") {
+            await leggiDir(entry);
+          } else {
+            try { allFiles.push(await entry.getFile()); } catch {}
+          }
+        }
+      };
+      await leggiDir(dirHandle);
+      setCaricandoCartella(false);
+      const validi = allFiles.filter(isFileAccepted);
+      if (validi.length > 0) {
+        setInfoCartella({ nome: dirHandle.name, trovati: validi.length, skippati: allFiles.length - validi.length });
+        handleFiles(validi);
+      }
+    } catch (err) {
+      setCaricandoCartella(false);
+      if (err.name !== "AbortError") console.error("[SafetyAI] picker error:", err);
+    }
   }, [handleFiles]);
+
+  // ── Handler drag & drop ──────────────────────────────────────────────────────
+  const handleDrop = useCallback((e) => {
+    e.preventDefault();
+    dragCounter.current = 0; setDragOver(false);
+    // Prova prima webkitGetAsEntry (cartelle); fallback a .files
+    const items = Array.from(e.dataTransfer.items || []);
+    const entries = items.map(i => i.webkitGetAsEntry?.() || null).filter(Boolean);
+    if (entries.length > 0) {
+      (async () => {
+        setCaricandoCartella(true);
+        const tuttiFile = []; let skippati = 0; let nomePrimaCartella = null;
+        try {
+          for (const entry of entries) {
+            if (entry.isDirectory) {
+              if (!nomePrimaCartella) nomePrimaCartella = entry.name;
+              const found = await traversaCartella(entry);
+              const acc = found.filter(isFileAccepted);
+              skippati += found.length - acc.length;
+              tuttiFile.push(...acc);
+            } else {
+              const f = await new Promise((res, rej) => entry.file(res, rej));
+              if (isFileAccepted(f)) tuttiFile.push(f); else skippati++;
+            }
+          }
+        } catch (err) { console.warn("[SafetyAI] Errore entries:", err); }
+        finally { setCaricandoCartella(false); }
+        if (nomePrimaCartella) setInfoCartella({ nome: nomePrimaCartella, trovati: tuttiFile.length, skippati });
+        if (tuttiFile.length > 0) handleFiles(tuttiFile);
+      })();
+    } else {
+      const files = Array.from(e.dataTransfer.files || []).filter(isFileAccepted);
+      if (files.length > 0) handleFiles(files);
+    }
+  }, [handleFiles]);
+
+  // ── Drag & drop a livello document ───────────────────────────────────────────
+  // Intercetta qualsiasi drop sulla pagina; più affidabile degli handler sul div
+  useEffect(() => {
+    if (step !== "upload") return;
+
+    const onDragOver  = (e) => { e.preventDefault(); e.dataTransfer.dropEffect = "copy"; };
+    const onDragEnter = (e) => { e.preventDefault(); e.dataTransfer.dropEffect = "copy"; dragCounter.current++; setDragOver(true); };
+    const onDragLeave = (e) => { e.preventDefault(); dragCounter.current--; if (dragCounter.current <= 0) { dragCounter.current = 0; setDragOver(false); } };
+    const onDrop = (e) => {
+      e.preventDefault();
+      dragCounter.current = 0; setDragOver(false);
+      // Prova items.getAsFile() (più affidabile in Firefox)
+      let files = [];
+      if (e.dataTransfer.items?.length > 0) {
+        files = Array.from(e.dataTransfer.items)
+          .filter(i => i.kind === "file")
+          .map(i => i.getAsFile())
+          .filter(Boolean)
+          .filter(isFileAccepted);
+      }
+      // Fallback a .files
+      if (files.length === 0 && e.dataTransfer.files?.length > 0) {
+        files = Array.from(e.dataTransfer.files).filter(isFileAccepted);
+      }
+      if (files.length > 0) handleFiles(files);
+    };
+
+    const opts = { passive: false };
+    window.addEventListener("dragover",  onDragOver,  opts);
+    window.addEventListener("dragenter", onDragEnter, opts);
+    window.addEventListener("dragleave", onDragLeave, opts);
+    window.addEventListener("drop",      onDrop,      opts);
+    return () => {
+      window.removeEventListener("dragover",  onDragOver,  opts);
+      window.removeEventListener("dragenter", onDragEnter, opts);
+      window.removeEventListener("dragleave", onDragLeave, opts);
+      window.removeEventListener("drop",      onDrop,      opts);
+    };
+  }, [step, handleFiles]);
 
   const startElaboration = async () => {
     if (files.length === 0) return;
+    setDuplicatiNomi(new Set());
+    setInfoCartella(null);
     setStep("elaborazione");
     const initial = files.map(f => ({ nomeFile: f.name, stato: "attesa", risultato: null, file: f }));
     setElaborati(initial);
@@ -945,7 +1283,9 @@ export default function PortaleUploadMassivo({ azienda }) {
       setElaborati([...results]);
       await Promise.all(batch.map(async (file, bi) => {
         try {
-          const arrayRisultati = await extractDocumentData(file); // ora è sempre un array
+          const arrayRisultati = await extractDocumentData(file); // sempre un array
+          // Validazione logica post-AI — aggiunge _anomalie senza costare token
+          arrayRisultati.forEach(r => { if (!r.errore) r._anomalie = validaEstrazione(r); });
           if (arrayRisultati.length === 1) {
             // Caso normale: un risultato per file
             const r = arrayRisultati[0];
@@ -1058,24 +1398,155 @@ export default function PortaleUploadMassivo({ azienda }) {
         </div>
       </div>
 
+      {/* Input per selezione cartella via dialog */}
+      <input ref={folderInputRef} type="file" multiple
+        // eslint-disable-next-line react/no-unknown-property
+        webkitdirectory="" directory=""
+        style={{ display: "none" }}
+        onChange={e => {
+          const validi = Array.from(e.target.files).filter(isFileAccepted);
+          const primaCartella = e.target.files[0]?.webkitRelativePath?.split("/")[0];
+          if (primaCartella) {
+            const skippati = e.target.files.length - validi.length;
+            setInfoCartella({ nome: primaCartella, trovati: validi.length, skippati });
+          }
+          handleFiles(validi);
+          e.target.value = ""; // reset per permettere ri-selezione stessa cartella
+        }}
+      />
+
+      {/* ── Zona di drop ──────────────────────────────────────────────────── */}
       <div
         ref={dropZoneRef}
-        onClick={() => inputRef.current?.click()}
-        style={{ border: `2px dashed ${dragOver ? "#3b82f6" : files.length > 0 ? "#10b981" : "#1e2535"}`, borderRadius: 16, padding: files.length > 0 ? "32px 24px" : "56px 24px", textAlign: "center", cursor: "pointer", background: dragOver ? "#3b82f610" : files.length > 0 ? "#10b98108" : "#161b27", transition: "all 0.2s", marginBottom: 20 }}
+        style={{
+          border: `2px dashed ${dragOver ? "#3b82f6" : files.length > 0 ? "#10b981" : "#1e2535"}`,
+          borderRadius: 16,
+          padding: files.length > 0 ? "20px 20px" : "48px 24px",
+          textAlign: "center",
+          background: dragOver ? "#3b82f610" : files.length > 0 ? "#10b98106" : "#161b27",
+          transition: "all 0.2s",
+          marginBottom: 12,
+          position: "relative",
+        }}
       >
-        <input ref={inputRef} type="file" multiple accept=".pdf,.jpg,.jpeg,.png" style={{ display: "none" }} onChange={e => handleFiles(e.target.files)} />
+        {/* Overlay "Caricamento cartella" */}
+        {caricandoCartella && (
+          <div style={{ position: "absolute", inset: 0, borderRadius: 14, background: "#0f111790", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 12, zIndex: 10 }}>
+            <div style={{ width: 36, height: 36, borderRadius: "50%", border: "3px solid #1e2535", borderTop: "3px solid #3b82f6", animation: "spin 0.8s linear infinite" }} />
+            <div style={{ fontSize: 13, color: "#60a5fa", fontWeight: 700 }}>Lettura cartella in corso…</div>
+          </div>
+        )}
+
         {files.length === 0 ? (
+          /* ─── Stato vuoto ──────────────────────────────────────────────── */
           <>
-            <div style={{ fontSize: 48, marginBottom: 16, opacity: 0.4 }}>📂</div>
-            <div style={{ fontSize: 16, fontWeight: 700, color: "#94a3b8", marginBottom: 8 }}>Trascina tutti i documenti qui</div>
-            <div style={{ fontSize: 13, color: "#475569", marginBottom: 16 }}>PDF, JPG, PNG · Fino a 100 file insieme</div>
+            <div style={{ fontSize: 44, marginBottom: 14, opacity: dragOver ? 0.9 : 0.35 }}>
+              {dragOver ? "📂" : "📁"}
+            </div>
+            <div style={{ fontSize: 15, fontWeight: 700, color: "#94a3b8", marginBottom: 6 }}>
+              {dragOver ? "Lascia qui i file o la cartella" : "Trascina file o cartelle qui"}
+            </div>
+            <div style={{ fontSize: 12, color: "#475569", marginBottom: 20 }}>
+              PDF, JPG, PNG · Cartelle intere supportate
+            </div>
+            <div style={{ display: "flex", gap: 10, justifyContent: "center" }}>
+              <button
+                onClick={openFolderPicker}
+                style={{ padding: "9px 18px", background: "#1e3a5f", border: "1px solid #3b82f640", borderRadius: 8, color: "#60a5fa", fontSize: 12, fontWeight: 600, cursor: "pointer", display: "flex", alignItems: "center", gap: 6 }}
+              >
+                📁 Scegli cartella
+              </button>
+            </div>
           </>
         ) : (
+          /* ─── Stato con file ────────────────────────────────────────────── */
           <>
-            <div style={{ fontSize: 40, marginBottom: 12 }}>✓</div>
-            <div style={{ fontSize: 18, fontWeight: 800, color: "#10b981", marginBottom: 4 }}>{files.length} file selezionati</div>
-            <div style={{ maxHeight: 180, overflowY: "auto", background: "#0f1117", borderRadius: 10, padding: "8px 0", textAlign: "left", marginTop: 12 }}>
-              {Array.from(files).map((f, i) => (
-                <div key={i} style={{ display: "flex", alignItems: "center", gap: 10, padding: "5px 16px", borderBottom: i < files.length - 1 ? "1px solid #1e253530" : "none" }}>
-                  <span style={{ fontSize: 13 }}>{fileIcon(f.name)}</span>
-           
+            {/* Banner cartella rilevata */}
+            {infoCartella && (
+              <div style={{ marginBottom: 12, padding: "9px 14px", background: "#1e3a5f", border: "1px solid #3b82f640", borderRadius: 9, display: "flex", alignItems: "center", gap: 10, textAlign: "left" }}>
+                <span style={{ fontSize: 16, flexShrink: 0 }}>📁</span>
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontSize: 12, fontWeight: 700, color: "#60a5fa" }}>{infoCartella.nome}/</div>
+                  <div style={{ fontSize: 11, color: "#475569", marginTop: 1 }}>
+                    {infoCartella.trovati} file PDF/immagini trovati
+                    {infoCartella.skippati > 0 && <span style={{ color: "#f59e0b" }}> · {infoCartella.skippati} ignorati (tipo non supportato)</span>}
+                  </div>
+                </div>
+                <button onClick={() => setInfoCartella(null)} style={{ background: "none", border: "none", color: "#475569", fontSize: 16, cursor: "pointer", lineHeight: 1 }}>×</button>
+              </div>
+            )}
+
+            {/* Banner duplicati */}
+            {duplicatiNomi.size > 0 && (
+              <div style={{ marginBottom: 12, padding: "9px 14px", background: "#f59e0b0e", border: "1px solid #f59e0b30", borderRadius: 9, display: "flex", alignItems: "center", gap: 10, textAlign: "left" }}>
+                <span style={{ fontSize: 15, flexShrink: 0 }}>🔁</span>
+                <div style={{ flex: 1, fontSize: 12, color: "#fbbf24" }}>
+                  <strong>{duplicatiNomi.size} file già presenti</strong>, non aggiunti di nuovo
+                </div>
+                <button onClick={() => setDuplicatiNomi(new Set())} style={{ background: "none", border: "none", color: "#475569", fontSize: 16, cursor: "pointer", lineHeight: 1 }}>×</button>
+              </div>
+            )}
+
+            {/* Header conteggio */}
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }}>
+              <div style={{ fontSize: 14, fontWeight: 800, color: "#10b981" }}>✓ {files.length} file pronti</div>
+              <button
+                onClick={openFolderPicker}
+                style={{ padding: "5px 12px", background: "none", border: "1px solid #1e2535", borderRadius: 7, color: "#475569", fontSize: 11, cursor: "pointer" }}
+              >
+                + Aggiungi
+              </button>
+            </div>
+
+            {/* Lista file */}
+            <div style={{ maxHeight: 220, overflowY: "auto", background: "#0f1117", borderRadius: 10, padding: "4px 0", textAlign: "left" }}>
+              {Array.from(files).map((f, i) => {
+                const isDupl = duplicatiNomi.has(f.name);
+                return (
+                  <div key={i} style={{ display: "flex", alignItems: "center", gap: 8, padding: "5px 12px", borderBottom: i < files.length - 1 ? "1px solid #1e253530" : "none", background: isDupl ? "#f59e0b06" : "transparent" }}>
+                    <span style={{ fontSize: 12, flexShrink: 0 }}>{fileIcon(f.name)}</span>
+                    <span style={{ fontSize: 11, color: isDupl ? "#92400e" : "#64748b", flex: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{f.name}</span>
+                    {isDupl && (
+                      <span style={{ fontSize: 10, color: "#f59e0b", fontWeight: 700, flexShrink: 0, padding: "1px 6px", background: "#f59e0b15", borderRadius: 10 }}>già aggiunto</span>
+                    )}
+                    <span style={{ fontSize: 10, color: "#334155", flexShrink: 0 }}>{(f.size / 1024).toFixed(0)} KB</span>
+                    <button
+                      onClick={(ev) => { ev.stopPropagation(); removeFile(i); }}
+                      title="Rimuovi"
+                      style={{ background: "none", border: "none", color: "#334155", fontSize: 14, cursor: "pointer", padding: "0 2px", lineHeight: 1, flexShrink: 0 }}
+                      onMouseOver={e => { e.currentTarget.style.color = "#ef4444"; }}
+                      onMouseOut={e => { e.currentTarget.style.color = "#334155"; }}
+                    >×</button>
+                  </div>
+                );
+              })}
+            </div>
+          </>
+        )}
+      </div>
+
+      {/* Azioni sotto la drop zone */}
+      {files.length > 0 && (
+        <div style={{ display: "flex", gap: 8, marginBottom: 16 }}>
+          <button
+            onClick={openFolderPicker}
+            style={{ flex: 1, padding: "9px", background: "#161b27", border: "1px solid #1e2535", borderRadius: 9, color: "#475569", fontSize: 12, cursor: "pointer" }}
+          >
+            📁 Aggiungi cartella
+          </button>
+          <button
+            onClick={() => { setFiles([]); setDuplicatiNomi(new Set()); setInfoCartella(null); }}
+            style={{ padding: "9px 16px", background: "#161b27", border: "1px solid #ef444430", borderRadius: 9, color: "#ef444480", fontSize: 12, cursor: "pointer" }}
+          >
+            Svuota
+          </button>
+        </div>
+      )}
+
+      <button onClick={startElaboration} disabled={files.length === 0} style={{ width: "100%", padding: "15px", background: files.length > 0 ? "linear-gradient(135deg, #3b82f6, #06b6d4)" : "#1e2535", border: "none", borderRadius: 12, color: files.length > 0 ? "white" : "#334155", fontSize: 15, fontWeight: 800, cursor: files.length > 0 ? "pointer" : "not-allowed" }}>
+        {files.length > 0 ? `⚡ Analizza ${files.length} documenti con AI →` : "Seleziona i file per continuare"}
+      </button>
+      <div style={{ textAlign: "center", marginTop: 12, fontSize: 11, color: "#334155" }}>Dati cifrati · Conforme GDPR · Nessuna registrazione richiesta</div>
+    </div>
+  );
+}
