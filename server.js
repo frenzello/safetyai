@@ -26,24 +26,23 @@ app.use(cors({
 app.use(express.json({ limit: '15mb' }));
 
 // --- RATE LIMITING ----------------------------------------------------------
-// Globale: 60 req / 15 min per IP
+// Globale: configurabile via RATE_LIMIT_GENERAL (default 2000 req / 15 min per IP)
 const limiterGenerale = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 60,
+  max: parseInt(process.env.RATE_LIMIT_GENERAL || '2000', 10),
   standardHeaders: true,
   legacyHeaders: false,
   message: { error: 'Troppe richieste. Riprova tra 15 minuti.' },
 });
 
-// Analisi AI: 15 PDF per IP ogni 24 ore.
-// Ogni PDF e' una chiamata separata -> 15 chiamate = 15 PDF gratuiti/giorno.
-// La modalita' incognito NON cambia l'IP, quindi non aggira questo limite.
+// Analisi AI: configurabile via CLAUDE_DAILY_LIMIT (default 10000 PDF per IP ogni 24 ore).
+// Alto per consentire l'analisi massiva di cartelle/organici; abbassare per esporre un tier gratuito pubblico.
 const limiterClaude = rateLimit({
   windowMs: 24 * 60 * 60 * 1000,
-  max: 15,
+  max: parseInt(process.env.CLAUDE_DAILY_LIMIT || '10000', 10),
   standardHeaders: true,
   legacyHeaders: false,
-  message: { error: 'Hai raggiunto il limite gratuito di 15 PDF al giorno. Riprova domani.' },
+  message: { error: 'Limite giornaliero di analisi raggiunto. Riprova piu tardi.' },
 });
 
 app.use(limiterGenerale);
@@ -178,7 +177,7 @@ app.listen(PORT, () => {
   console.log(' Porta: ' + PORT);
   console.log(' Chiave API: configurata');
   console.log(' CORS: ' + ALLOWED_ORIGINS.join(', '));
-  console.log(' Rate limit: 15 PDF/giorno per IP');
+  console.log(' Rate limit analisi: ' + (process.env.CLAUDE_DAILY_LIMIT || '10000') + ' PDF/giorno per IP');
   console.log('====================================');
   if (PORT === 3001 || PORT === '3001') {
     console.log('');
