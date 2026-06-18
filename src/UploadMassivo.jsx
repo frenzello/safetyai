@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback, useEffect } from "react";
+import { useState, useRef, useCallback, useEffect, Component } from "react";
 import { salvaRisultatiAnalisi } from "./database";
 import { DisclaimerExport } from "./DisclaimerExport";
 import API_URL from "./config";
@@ -269,6 +269,60 @@ function validaEstrazione(r) {
   }
 
   return anomalie;
+}
+
+// ─── SANITIZZAZIONE RISULTATI AI ──────────────────────────────────────────────
+// L'AI a volte restituisce un campo nel tipo sbagliato (es. oggetto invece di stringa):
+// renderizzarlo manderebbe in crash React ("Objects are not valid as a React child").
+// Qui forziamo ogni campo al tipo atteso prima di usarlo o mostrarlo.
+function aStringaONull(v) {
+  if (v == null) return null;
+  if (typeof v === "string") return v;
+  if (typeof v === "number" || typeof v === "boolean") return String(v);
+  return null; // oggetti/array non sono stringhe valide
+}
+function sanitizeRisultato(r) {
+  if (!r || typeof r !== "object") return r;
+  ["tipo_documento", "nome_lavoratore", "codice_fiscale", "data_scadenza", "data_rilascio",
+   "normativa", "ente_erogatore", "problema_conformita", "note", "errore", "categoria"].forEach((k) => {
+    if (k in r) r[k] = aStringaONull(r[k]);
+  });
+  if (r.ore_formazione != null && typeof r.ore_formazione !== "number") {
+    const n = parseInt(r.ore_formazione, 10); r.ore_formazione = isNaN(n) ? null : n;
+  }
+  if (r.confidenza != null && typeof r.confidenza !== "number") {
+    const n = parseInt(r.confidenza, 10); r.confidenza = isNaN(n) ? null : n;
+  }
+  if (r.conforme != null && typeof r.conforme !== "boolean") {
+    r.conforme = (r.conforme === true || r.conforme === "true");
+  }
+  return r;
+}
+
+// ─── ERROR BOUNDARY ───────────────────────────────────────────────────────────
+// Evita la "pagina bianca": qualsiasi errore di rendering viene catturato e
+// mostrato, lasciando all'utente la possibilità di ricaricare.
+class ErrorBoundarySafetyAI extends Component {
+  constructor(props) { super(props); this.state = { error: null }; }
+  static getDerivedStateFromError(error) { return { error }; }
+  componentDidCatch(error, info) { console.error("[SafetyAI] Crash UI:", error, info); }
+  render() {
+    if (this.state.error) {
+      return (
+        <div style={{ fontFamily: "'DM Sans','Segoe UI',sans-serif", background: "#0f1117", minHeight: "100vh", padding: "40px 24px", color: "#e2e8f0", maxWidth: 640, margin: "0 auto" }}>
+          <div style={{ background: "#161b27", border: "1px solid #ef444440", borderRadius: 12, padding: "24px" }}>
+            <div style={{ fontSize: 18, fontWeight: 800, color: "#ef4444", marginBottom: 10 }}>Si e verificato un errore</div>
+            <div style={{ fontSize: 13, color: "#cbd5e1", lineHeight: 1.6, marginBottom: 14 }}>
+              L'analisi ha incontrato un dato imprevisto. Ricarica la pagina e riprova; se persiste, copia il messaggio qui sotto.
+            </div>
+            <pre style={{ fontSize: 11, color: "#fca5a5", background: "#0f1117", padding: "12px", borderRadius: 8, overflow: "auto", whiteSpace: "pre-wrap" }}>{String((this.state.error && this.state.error.message) || this.state.error)}</pre>
+            <button onClick={() => window.location.reload()} style={{ marginTop: 14, padding: "11px 20px", borderRadius: 10, background: "linear-gradient(135deg,#3b82f6,#06b6d4)", border: "none", color: "white", fontSize: 13, fontWeight: 700, cursor: "pointer" }}>Ricarica</button>
+          </div>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
 }
 
 // ─── AI EXTRACTION ────────────────────────────────────────────────────────────
@@ -1162,7 +1216,7 @@ async function traversaCartella(entry, cartellaLav = null) {
 }
 
 // ─── MAIN ─────────────────────────────────────────────────────────────────────
-export default function PortaleUploadMassivo({ azienda }) {
+function PortaleUploadMassivoInner({ azienda }) {
   const [step, setStep] = useState("upload");
   const [files, setFiles] = useState([]);
   const [dragOver, setDragOver] = useState(false);
@@ -1364,6 +1418,7 @@ export default function PortaleUploadMassivo({ azienda }) {
         try {
           const arrayRisultati = await extractDocumentData(file); // sempre un array
           // Validazione logica post-AI — aggiunge _anomalie senza costare token
+          arrayRisultati.forEach(r => sanitizeRisultato(r));
           arrayRisultati.forEach(r => { if (!r.errore) r._anomalie = validaEstrazione(r); });
           if (arrayRisultati.length === 1) {
             // Caso normale: un risultato per file
@@ -1645,5 +1700,14 @@ export default function PortaleUploadMassivo({ azienda }) {
       </button>
       <div style={{ textAlign: "center", marginTop: 12, fontSize: 11, color: "#334155" }}>Dati cifrati · Conforme GDPR · Nessuna registrazione richiesta</div>
     </div>
+  );
+}
+
+// Export con error boundary: l'app non diventa mai una pagina bianca.
+export default function PortaleUploadMassivo(props) {
+  return (
+    <ErrorBoundarySafetyAI>
+      <PortaleUploadMassivoInner {...props} />
+    </ErrorBoundarySafetyAI>
   );
 }
