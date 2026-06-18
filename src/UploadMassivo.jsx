@@ -10,7 +10,20 @@ const DOC_AZIENDALI_TIPI = ["DURC", "Visura camerale", "Polizza RC", "DVR aziend
 
 // ─── REGOLE CONFORMITÀ D.Lgs 81/08 ──────────────────────────────────────────
 const REGOLE_CONFORMITA = `
-REGOLE DI CONFORMITÀ OBBLIGATORIE — D.Lgs 81/08 e normative correlate:
+REGOLE DI CONFORMITÀ OBBLIGATORIE — D.Lgs 81/08, Accordi Stato-Regioni e normative correlate:
+
+QUADRO NORMATIVO FORMAZIONE (aggiornato al nuovo Accordo Stato-Regioni unico):
+- Il nuovo Accordo Stato-Regioni 17/04/2025 (Rep. atti n. 59/CSR), pubblicato in G.U. il 24/05/2025 ed
+  in vigore dal 24/05/2025, ABROGA E SOSTITUISCE integralmente i precedenti accordi del 2011, 2012 e 2016.
+- Periodo transitorio concluso il 24/05/2026: dopo tale data i nuovi minimi orari si applicano ai corsi NUOVI.
+- I corsi svolti secondo gli accordi previgenti restano VALIDI e sono riconosciuti come CREDITO FORMATIVO.
+
+PRINCIPIO TEMPORALE — CRUCIALE PER LE ORE:
+Valuta la durata/ore di un corso SEMPRE rispetto alle regole vigenti ALLA DATA DI RILASCIO del corso,
+mai rispetto a quelle odierne. Un attestato rilasciato quando il minimo era diverso resta conforme.
+NON segnalare un corso come "non conforme" solo perché le ore differiscono dai nuovi minimi 2025:
+applica i nuovi minimi (es. Preposto 12h, Dirigente 12h, Datore di lavoro 16h) SOLO ai corsi rilasciati
+dopo il periodo transitorio (dal 24/05/2026 in poi). In caso di dubbio sull'epoca, NON dichiarare non conforme.
 
 PRINCIPIO FONDAMENTALE — VALUTAZIONE INDIPENDENTE:
 Ogni documento va valutato SOLO rispetto alla propria normativa di riferimento.
@@ -30,11 +43,13 @@ DOCUMENTI SEMPRE VALIDI — NESSUNA SCADENZA — NESSUN CONTROLLO CONFORMITÀ:
    - Se il documento riporta una data di scadenza per la sola formazione generale: ignorala, metti data_scadenza null
    - Se le ore sono diverse da 4: NON CONFORME
 
-2. FORMAZIONE SPECIFICA LAVORATORI (art. 37 D.Lgs 81/08)
+2. FORMAZIONE SPECIFICA LAVORATORI (art. 37 D.Lgs 81/08 — ASR 17/04/2025)
    - Rischio basso: 4 ore (totale con generale: 8h)
    - Rischio medio: 8 ore (totale con generale: 12h)
    - Rischio alto: 12 ore (totale con generale: 16h)
-   - Rinnovo: ogni 5 anni → data_scadenza = data_rilascio + 5 anni
+   - Rinnovo/aggiornamento: ogni 5 anni, minimo 6 ore (uguale per tutti i livelli di rischio)
+     → data_scadenza = data_rilascio + 5 anni
+   - NOTA: con l'Accordo 2025 la formazione del neoassunto è contestuale all'assunzione (aboliti i 60 giorni)
 
 3. FORMAZIONE GENERALE + SPECIFICA COMBINATA SULLO STESSO PDF (caso molto comune)
    REGOLA CRITICA: se un PDF contiene sia la formazione generale che quella specifica,
@@ -69,9 +84,12 @@ DOCUMENTI SEMPRE VALIDI — NESSUNA SCADENZA — NESSUN CONTROLLO CONFORMITÀ:
    - Rinnovo: ogni 5 anni
    - ATTENZIONE: valuta SOLO questo documento, NON confrontarlo con altri documenti del lavoratore
 
-7. CONDUZIONE CARRELLI ELEVATORI (Accordo Stato-Regioni 22/02/2012)
-   - Formazione iniziale: minimo 12 ore
-   - Rinnovo: ogni 5 anni, minimo 4 ore
+7. ATTREZZATURE CON ABILITAZIONE — es. CARRELLI ELEVATORI (art. 73 c.5 D.Lgs 81/08 — ASR 17/04/2025)
+   - L'ASR 17/04/2025 ha sostituito l'Accordo 22/02/2012 per gli addetti all'uso delle attrezzature
+     (carrelli, PLE, autogru, gru a torre, escavatori/pale/terne, trattori, e nuove: carroponte, CRF, CMM)
+   - Formazione iniziale carrelli: minimo 12 ore (teoria + pratica)
+   - Rinnovo/aggiornamento: ogni 5 anni, minimo 4 ore (di cui la parte pratica in presenza)
+   - Gli attestati rilasciati secondo l'Accordo 22/02/2012 restano validi fino alla loro scadenza
 
 8. PIATTAFORME ELEVATRICI / PLE (Accordo Stato-Regioni 17/04/2025 — sostituisce ASR 22/02/2012)
    - Corso PLE con solo stabilizzatori: 8 ore (4h teoria + 4h pratica)
@@ -98,17 +116,29 @@ DOCUMENTI SEMPRE VALIDI — NESSUNA SCADENZA — NESSUN CONTROLLO CONFORMITÀ:
      Testo: "Certificato di idoneità 22/06/2023" (nessuna scadenza esplicita)
      → data_rilascio: "22/06/2023", data_scadenza: "22/06/2024"  (default: +12 mesi)
 
-10. PREPOSTI (Accordo Stato-Regioni 21/12/2011 + Legge 215/2021 art. 37-ter D.Lgs 81/08)
-    - Formazione iniziale: 8 ore, obbligatoriamente IN PRESENZA
-    - CALCOLO SCADENZA OBBLIGATORIO — il documento non riporta la data di scadenza: DEVI calcolarla:
-      * Corso tenuto PRIMA del 21/12/2021: scadenza = data_rilascio + 5 anni (vecchia regola quinquennale)
-      * Corso tenuto DAL 21/12/2021 IN POI: scadenza = data_rilascio + 2 anni (Legge 215/2021, biennale)
-      Esempio: corso del 05/05/2023 → data_scadenza = 05/05/2025
-    - Aggiornamento: 6 ore ogni 2 anni, obbligatoriamente in presenza
+10. PREPOSTI (art. 37 c.7 D.Lgs 81/08 — Legge 215/2021 + ASR 17/04/2025)
+    - Formazione iniziale: 12 ore con l'Accordo 2025 (era 8 ore con gli accordi previgenti).
+      Solo IN PRESENZA o in VIDEOCONFERENZA sincrona — e-learning ESCLUSO.
+      Applica il minimo di 12h solo ai corsi dal 24/05/2026; per i corsi precedenti 8h è regolare.
+    - CALCOLO SCADENZA OBBLIGATORIO — il documento di norma non riporta la scadenza: DEVI calcolarla:
+      * Aggiornamento BIENNALE → scadenza = data_rilascio + 2 anni (Legge 215/2021, confermato ASR 2025)
+      * Solo per corsi molto vecchi tenuti PRIMA del 21/12/2021 vigeva il quinquennale (data_rilascio + 5 anni)
+      Esempio: corso del 05/05/2024 → data_scadenza = 05/05/2026
+    - Aggiornamento: 6 ore ogni 2 anni, in presenza o videoconferenza
     - ATTENZIONE: valuta SOLO questo documento, NON confrontarlo con altri documenti del lavoratore
 
-11. DIRIGENTI (art. 37 D.Lgs 81/08)
-    - Formazione: 16 ore — Rinnovo: ogni 5 anni, 6 ore
+11. DIRIGENTI (art. 37 D.Lgs 81/08 — ASR 17/04/2025)
+    - Formazione: 12 ore con l'Accordo 2025 (era 16 ore); +6 ore modulo cantieri se impresa affidataria
+    - Rinnovo/aggiornamento: ogni 5 anni, minimo 6 ore
+    - Un attestato dirigente da 16h rilasciato sotto il vecchio accordo resta valido (supera comunque il minimo)
+
+11-bis. DATORE DI LAVORO (art. 37 D.Lgs 81/08 — ASR 17/04/2025, OBBLIGO NUOVO)
+    - Novità assoluta dell'Accordo 2025: formazione obbligatoria per TUTTI i datori di lavoro.
+    - Formazione: 16 ore (modulo giuridico-normativo + organizzazione/gestione SSL).
+      +6 ore modulo cantieri per datori di lavoro di imprese affidatarie nei cantieri temporanei/mobili.
+    - Rinnovo/aggiornamento: ogni 5 anni, minimo 6 ore.
+    - Termine per adeguarsi: entro il 24/05/2027. Esonero per chi ha già la formazione RSPP ex art. 34.
+    - Documento amministrativo/abilitante: se manca la scadenza, calcola data_rilascio + 5 anni.
 
 12. PATENTE A CREDITI (D.L. 145/2023 — obbligatoria da 01/10/2024)
     - Solo per cantieri temporanei/mobili — Rilasciata da INL
@@ -288,7 +318,22 @@ async function buildContentParts(file) {
     : file.type === "application/pdf"
       ? { type: "document", source: { type: "base64", media_type: "application/pdf", data: base64 } }
       : { type: "text",     text: `Nome file: ${file.name}` };
-  return [mediaPart, { type: "text", text: PROMPT_ANALISI }];
+
+  const parts = [mediaPart];
+
+  // Suggerimento di contesto: il file proviene da una cartella che, nel flusso tipico,
+  // corrisponde a un singolo lavoratore. È solo un AIUTO all'estrazione del nome — non vincolante.
+  if (file._cartellaLavoratore) {
+    parts.push({ type: "text", text:
+      `SUGGERIMENTO DI CONTESTO (non vincolante): questo documento proviene dalla cartella "${file._cartellaLavoratore}", ` +
+      `che con ogni probabilità corrisponde al nominativo del lavoratore intestatario. ` +
+      `Usalo SOLO come aiuto per estrarre e normalizzare "nome_lavoratore" quando il documento è ambiguo, ` +
+      `poco leggibile o non riporta chiaramente il nome. Dai SEMPRE priorità al nome effettivamente scritto nel ` +
+      `documento: se il documento indica un nome diverso, usa quello del documento. Non inventare dati assenti.` });
+  }
+
+  parts.push({ type: "text", text: PROMPT_ANALISI });
+  return parts;
 }
 
 // Singola chiamata al server proxy → Anthropic API
@@ -1088,11 +1133,17 @@ function isFileAccepted(file) {
 // Attraversa ricorsivamente una FileSystemDirectoryEntry.
 // NOTA: readEntries() restituisce al massimo 100 voci per chiamata — occorre
 // richiamarla in loop finché non restituisce un array vuoto.
-async function traversaCartella(entry) {
+async function traversaCartella(entry, cartellaLav = null) {
   if (entry.isFile) {
-    return new Promise((resolve, reject) => entry.file(resolve, reject));
+    const file = await new Promise((resolve, reject) => entry.file(resolve, reject));
+    // La cartella di primo livello sotto il drop identifica il lavoratore (suggerimento per l'AI)
+    if (cartellaLav) { try { file._cartellaLavoratore = cartellaLav; } catch {} }
+    return [file];
   }
   if (entry.isDirectory) {
+    // La prima cartella incontrata (quella trascinata) = nome del lavoratore.
+    // Eventuali sottocartelle interne mantengono lo stesso lavoratore.
+    const root = cartellaLav || entry.name;
     const reader = entry.createReader();
     const tutteLeVoci = [];
     await new Promise((resolve) => {
@@ -1104,7 +1155,7 @@ async function traversaCartella(entry) {
         });
       leggi();
     });
-    const nested = await Promise.all(tutteLeVoci.map(traversaCartella));
+    const nested = await Promise.all(tutteLeVoci.map((e) => traversaCartella(e, root)));
     return nested.flat();
   }
   return [];
@@ -1134,15 +1185,19 @@ export default function PortaleUploadMassivo({ azienda }) {
   const handleFiles = useCallback((nuoviFile) => {
     const nuoviArr = Array.isArray(nuoviFile) ? nuoviFile : Array.from(nuoviFile);
     setFiles(prev => {
-      const nomiEsistenti = new Set(prev.map(f => f.name));
+      // Chiave duplicati consapevole della cartella: due lavoratori diversi possono
+      // avere file con lo stesso nome (es. "idoneità.pdf") e NON sono duplicati.
+      const chiaveFile = f => `${f._cartellaLavoratore || ""}//${f.name}`;
+      const nomiEsistenti = new Set(prev.map(chiaveFile));
       const dupeNomi = new Set();
       const unici = [];
       for (const f of nuoviArr) {
-        if (nomiEsistenti.has(f.name)) {
+        const k = chiaveFile(f);
+        if (nomiEsistenti.has(k)) {
           dupeNomi.add(f.name);
         } else {
           unici.push(f);
-          nomiEsistenti.add(f.name); // evita dupe nello stesso batch
+          nomiEsistenti.add(k); // evita dupe nello stesso batch
         }
       }
       if (dupeNomi.size > 0) {
@@ -1168,12 +1223,20 @@ export default function PortaleUploadMassivo({ azienda }) {
       const dirHandle = await window.showDirectoryPicker({ mode: "read" });
       setCaricandoCartella(true);
       const allFiles = [];
-      const leggiDir = async (handle) => {
+      const cartelle = new Set();
+      // cartellaLav = cartella di primo livello sotto la radice scelta = lavoratore
+      const leggiDir = async (handle, cartellaLav = null) => {
         for await (const [, entry] of handle.entries()) {
           if (entry.kind === "directory") {
-            await leggiDir(entry);
+            const lav = cartellaLav || entry.name;
+            cartelle.add(lav);
+            await leggiDir(entry, lav);
           } else {
-            try { allFiles.push(await entry.getFile()); } catch {}
+            try {
+              const f = await entry.getFile();
+              if (cartellaLav) { try { f._cartellaLavoratore = cartellaLav; } catch {} }
+              allFiles.push(f);
+            } catch {}
           }
         }
       };
@@ -1181,7 +1244,12 @@ export default function PortaleUploadMassivo({ azienda }) {
       setCaricandoCartella(false);
       const validi = allFiles.filter(isFileAccepted);
       if (validi.length > 0) {
-        setInfoCartella({ nome: dirHandle.name, trovati: validi.length, skippati: allFiles.length - validi.length });
+        setInfoCartella({
+          nome: cartelle.size > 1 ? `${dirHandle.name} · ${cartelle.size} lavoratori` : dirHandle.name,
+          cartelle: cartelle.size || 1,
+          trovati: validi.length,
+          skippati: allFiles.length - validi.length,
+        });
         handleFiles(validi);
       }
     } catch (err) {
@@ -1190,39 +1258,43 @@ export default function PortaleUploadMassivo({ azienda }) {
     }
   }, [handleFiles]);
 
-  // ── Handler drag & drop ──────────────────────────────────────────────────────
-  const handleDrop = useCallback((e) => {
-    e.preventDefault();
-    dragCounter.current = 0; setDragOver(false);
-    // Prova prima webkitGetAsEntry (cartelle); fallback a .files
-    const items = Array.from(e.dataTransfer.items || []);
-    const entries = items.map(i => i.webkitGetAsEntry?.() || null).filter(Boolean);
-    if (entries.length > 0) {
-      (async () => {
-        setCaricandoCartella(true);
-        const tuttiFile = []; let skippati = 0; let nomePrimaCartella = null;
-        try {
-          for (const entry of entries) {
-            if (entry.isDirectory) {
-              if (!nomePrimaCartella) nomePrimaCartella = entry.name;
-              const found = await traversaCartella(entry);
-              const acc = found.filter(isFileAccepted);
-              skippati += found.length - acc.length;
-              tuttiFile.push(...acc);
-            } else {
-              const f = await new Promise((res, rej) => entry.file(res, rej));
-              if (isFileAccepted(f)) tuttiFile.push(f); else skippati++;
-            }
-          }
-        } catch (err) { console.warn("[SafetyAI] Errore entries:", err); }
-        finally { setCaricandoCartella(false); }
-        if (nomePrimaCartella) setInfoCartella({ nome: nomePrimaCartella, trovati: tuttiFile.length, skippati });
-        if (tuttiFile.length > 0) handleFiles(tuttiFile);
-      })();
-    } else {
-      const files = Array.from(e.dataTransfer.files || []).filter(isFileAccepted);
-      if (files.length > 0) handleFiles(files);
+  // ── Elaborazione entry trascinati (file e/o cartelle) ────────────────────────
+  // Riceve gli entry GIÀ estratti sincronamente dal drop (la DataTransfer si invalida
+  // dopo l'handler). Supporta PIÙ cartelle in un solo drop: una per lavoratore.
+  const processaEntries = useCallback(async (entries) => {
+    setCaricandoCartella(true);
+    const tuttiFile = [];
+    let skippati = 0;
+    const cartelle = new Set();
+    try {
+      for (const entry of entries) {
+        if (entry.isDirectory) {
+          cartelle.add(entry.name);
+          // entry.name = nome cartella = lavoratore (suggerimento propagato ai file)
+          const found = await traversaCartella(entry, entry.name);
+          const acc = found.filter(isFileAccepted);
+          skippati += found.length - acc.length;
+          tuttiFile.push(...acc);
+        } else {
+          const f = await new Promise((res, rej) => entry.file(res, rej));
+          if (isFileAccepted(f)) tuttiFile.push(f); else skippati++;
+        }
+      }
+    } catch (err) {
+      console.warn("[SafetyAI] Errore lettura cartelle:", err);
+    } finally {
+      setCaricandoCartella(false);
     }
+    if (cartelle.size > 0) {
+      const nomi = Array.from(cartelle);
+      setInfoCartella({
+        nome: nomi.length === 1 ? nomi[0] : `${nomi.length} cartelle (lavoratori)`,
+        cartelle: nomi.length,
+        trovati: tuttiFile.length,
+        skippati,
+      });
+    }
+    if (tuttiFile.length > 0) handleFiles(tuttiFile);
   }, [handleFiles]);
 
   // ── Drag & drop a livello document ───────────────────────────────────────────
@@ -1236,19 +1308,19 @@ export default function PortaleUploadMassivo({ azienda }) {
     const onDrop = (e) => {
       e.preventDefault();
       dragCounter.current = 0; setDragOver(false);
-      // Prova items.getAsFile() (più affidabile in Firefox)
-      let files = [];
-      if (e.dataTransfer.items?.length > 0) {
-        files = Array.from(e.dataTransfer.items)
-          .filter(i => i.kind === "file")
-          .map(i => i.getAsFile())
-          .filter(Boolean)
-          .filter(isFileAccepted);
+      // Estrai SINCRONAMENTE gli entry (file E cartelle) prima che la DataTransfer si invalidi.
+      // webkitGetAsEntry() è ciò che permette di leggere il contenuto delle cartelle trascinate.
+      const items = Array.from(e.dataTransfer.items || []).filter(i => i.kind === "file");
+      const entries = items
+        .map(i => (i.webkitGetAsEntry ? i.webkitGetAsEntry() : null))
+        .filter(Boolean);
+      if (entries.length > 0) {
+        // Gestisce file singoli e cartelle, anche più cartelle (lavoratori) in un solo drop
+        processaEntries(entries);
+        return;
       }
-      // Fallback a .files
-      if (files.length === 0 && e.dataTransfer.files?.length > 0) {
-        files = Array.from(e.dataTransfer.files).filter(isFileAccepted);
-      }
+      // Fallback per browser senza entry API: solo file singoli
+      const files = Array.from(e.dataTransfer.files || []).filter(isFileAccepted);
       if (files.length > 0) handleFiles(files);
     };
 
@@ -1263,7 +1335,7 @@ export default function PortaleUploadMassivo({ azienda }) {
       window.removeEventListener("dragleave", onDragLeave, opts);
       window.removeEventListener("drop",      onDrop,      opts);
     };
-  }, [step, handleFiles]);
+  }, [step, handleFiles, processaEntries]);
 
   const startElaboration = async () => {
     if (files.length === 0) return;
@@ -1404,11 +1476,28 @@ export default function PortaleUploadMassivo({ azienda }) {
         webkitdirectory="" directory=""
         style={{ display: "none" }}
         onChange={e => {
-          const validi = Array.from(e.target.files).filter(isFileAccepted);
-          const primaCartella = e.target.files[0]?.webkitRelativePath?.split("/")[0];
-          if (primaCartella) {
-            const skippati = e.target.files.length - validi.length;
-            setInfoCartella({ nome: primaCartella, trovati: validi.length, skippati });
+          const tutti = Array.from(e.target.files);
+          // webkitRelativePath = "cartellaScelta/lavoratore/file.pdf" (oppure ".../file.pdf").
+          // Il primo livello SOTTO la cartella scelta identifica il lavoratore.
+          const cartelle = new Set();
+          tutti.forEach(f => {
+            const parts = (f.webkitRelativePath || "").split("/");
+            if (parts.length >= 3) {
+              const lav = parts[1];
+              try { f._cartellaLavoratore = lav; } catch {}
+              cartelle.add(lav);
+            }
+          });
+          const validi = tutti.filter(isFileAccepted);
+          const radice = tutti[0]?.webkitRelativePath?.split("/")[0];
+          if (radice) {
+            const skippati = tutti.length - validi.length;
+            setInfoCartella({
+              nome: cartelle.size > 1 ? `${radice} · ${cartelle.size} lavoratori` : radice,
+              cartelle: cartelle.size || 1,
+              trovati: validi.length,
+              skippati,
+            });
           }
           handleFiles(validi);
           e.target.value = ""; // reset per permettere ri-selezione stessa cartella
@@ -1444,10 +1533,10 @@ export default function PortaleUploadMassivo({ azienda }) {
               {dragOver ? "📂" : "📁"}
             </div>
             <div style={{ fontSize: 15, fontWeight: 700, color: "#94a3b8", marginBottom: 6 }}>
-              {dragOver ? "Lascia qui i file o la cartella" : "Trascina file o cartelle qui"}
+              {dragOver ? "Lascia qui i file o le cartelle" : "Trascina file o cartelle qui"}
             </div>
             <div style={{ fontSize: 12, color: "#475569", marginBottom: 20 }}>
-              PDF, JPG, PNG · Cartelle intere supportate
+              PDF, JPG, PNG · Trascina anche più cartelle insieme (una per lavoratore)
             </div>
             <div style={{ display: "flex", gap: 10, justifyContent: "center" }}>
               <button
@@ -1466,9 +1555,10 @@ export default function PortaleUploadMassivo({ azienda }) {
               <div style={{ marginBottom: 12, padding: "9px 14px", background: "#1e3a5f", border: "1px solid #3b82f640", borderRadius: 9, display: "flex", alignItems: "center", gap: 10, textAlign: "left" }}>
                 <span style={{ fontSize: 16, flexShrink: 0 }}>📁</span>
                 <div style={{ flex: 1 }}>
-                  <div style={{ fontSize: 12, fontWeight: 700, color: "#60a5fa" }}>{infoCartella.nome}/</div>
+                  <div style={{ fontSize: 12, fontWeight: 700, color: "#60a5fa" }}>{infoCartella.nome}</div>
                   <div style={{ fontSize: 11, color: "#475569", marginTop: 1 }}>
                     {infoCartella.trovati} file PDF/immagini trovati
+                    {infoCartella.cartelle > 1 && <span style={{ color: "#60a5fa" }}> · {infoCartella.cartelle} lavoratori riconosciuti dalle cartelle</span>}
                     {infoCartella.skippati > 0 && <span style={{ color: "#f59e0b" }}> · {infoCartella.skippati} ignorati (tipo non supportato)</span>}
                   </div>
                 </div>
