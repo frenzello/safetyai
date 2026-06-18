@@ -1152,7 +1152,7 @@ async function traversaCartella(entry, cartellaLav = null) {
           if (!batch.length) return resolve();
           tutteLeVoci.push(...batch);
           leggi(); // continua finché il batch è vuoto
-        });
+        }, () => resolve()); // su errore: non bloccare, risolvi con quanto raccolto
       leggi();
     });
     const nested = await Promise.all(tutteLeVoci.map((e) => traversaCartella(e, root)));
@@ -1267,21 +1267,28 @@ export default function PortaleUploadMassivo({ azienda }) {
     let skippati = 0;
     const cartelle = new Set();
     try {
-      for (const entry of entries) {
-        if (entry.isDirectory) {
-          cartelle.add(entry.name);
-          // entry.name = nome cartella = lavoratore (suggerimento propagato ai file)
-          const found = await traversaCartella(entry, entry.name);
-          const acc = found.filter(isFileAccepted);
-          skippati += found.length - acc.length;
-          tuttiFile.push(...acc);
-        } else {
+      // IMPORTANTE: leggere TUTTE le cartelle in PARALLELO, nello stesso tick.
+      // Gli entry ottenuti dal drop si invalidano dopo pochi await: con un ciclo
+      // sequenziale veniva letta solo la PRIMA cartella (le altre tornavano vuote).
+      // Mappando subito tutti gli entry, ogni reader parte mentre l'entry e ancora valido.
+      const risultati = await Promise.all(entries.map(async (entry) => {
+        try {
+          if (entry.isDirectory) {
+            cartelle.add(entry.name); // entry.name = cartella = lavoratore (hint per l'AI)
+            const found = await traversaCartella(entry, entry.name);
+            const acc = found.filter(isFileAccepted);
+            return { acc, skip: found.length - acc.length };
+          }
           const f = await new Promise((res, rej) => entry.file(res, rej));
-          if (isFileAccepted(f)) tuttiFile.push(f); else skippati++;
+          return isFileAccepted(f) ? { acc: [f], skip: 0 } : { acc: [], skip: 1 };
+        } catch (err) {
+          console.warn("[SafetyAI] Voce non letta:", entry && entry.name, err);
+          return { acc: [], skip: 0 };
         }
-      }
+      }));
+      for (const r of risultati) { tuttiFile.push(...r.acc); skippati += r.skip; }
     } catch (err) {
-      console.warn("[SafetyAI] Errore lettura cartelle:", err);
+      console.warn("[SafetyAI] Errore lettura drop:", err);
     } finally {
       setCaricandoCartella(false);
     }
