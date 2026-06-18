@@ -9,19 +9,31 @@ try { require('dotenv').config(); } catch (_) {}
 const app = express();
 
 // --- CORS -------------------------------------------------------------------
-const ALLOWED_ORIGINS = process.env.ALLOWED_ORIGINS
-  ? process.env.ALLOWED_ORIGINS.split(',').map(o => o.trim())
-  : ['http://localhost:3000'];
+const ALLOWED_ORIGINS = [
+  'https://safetyai-lluu.vercel.app',
+  'http://localhost:3000',
+  ...(process.env.ALLOWED_ORIGINS ? process.env.ALLOWED_ORIGINS.split(',').map(o => o.trim()) : []),
+];
 
-app.use(cors({
+// Origine consentita se: assente (server-to-server), in lista, o qualsiasi sottodominio *.vercel.app
+function isOriginConsentita(origin) {
+  if (!origin) return true;
+  if (ALLOWED_ORIGINS.includes(origin)) return true;
+  try { return /(^|\.)vercel\.app$/.test(new URL(origin).hostname); } catch (_) { return false; }
+}
+
+const corsOptions = {
   origin: (origin, callback) => {
-    if (!origin && process.env.NODE_ENV !== 'production') return callback(null, true);
-    if (ALLOWED_ORIGINS.includes(origin)) return callback(null, true);
+    if (isOriginConsentita(origin)) return callback(null, true);
     callback(new Error('CORS: origine non consentita - ' + origin));
   },
-  methods: ['POST'],
+  methods: ['GET', 'POST', 'OPTIONS'],
   allowedHeaders: ['Content-Type'],
-}));
+};
+
+app.use(cors(corsOptions));
+// Risponde SEMPRE al preflight CORS (prima il backend dava 404 alle OPTIONS -> tutte le chiamate del browser fallivano)
+app.options('*', cors(corsOptions));
 
 app.use(express.json({ limit: '15mb' }));
 
