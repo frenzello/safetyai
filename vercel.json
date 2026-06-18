@@ -1,5 +1,8 @@
 {
   "buildCommand": "npm run build",
   "outputDirectory": "build",
+  "env": {
+    "REACT_APP_API_URL": "https://safetyai-production-7362.up.railway.app"
+  },
   "rewrites": [{ "source": "/(.*)", "destination": "/" }]
 }
