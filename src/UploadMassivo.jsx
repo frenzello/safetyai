@@ -1415,7 +1415,7 @@ function PortaleUploadMassivoInner({ azienda }) {
   // ── Drag & drop a livello document ───────────────────────────────────────────
   // Intercetta qualsiasi drop sulla pagina; più affidabile degli handler sul div
   useEffect(() => {
-    if (step !== "upload") return;
+    if (step === "elaborazione") return; // drop attivo su upload e risultati, non durante l'analisi
 
     const onDragOver  = (e) => { e.preventDefault(); e.dataTransfer.dropEffect = "copy"; };
     const onDragEnter = (e) => { e.preventDefault(); e.dataTransfer.dropEffect = "copy"; dragCounter.current++; setDragOver(true); };
@@ -1429,14 +1429,22 @@ function PortaleUploadMassivoInner({ azienda }) {
       const entries = items
         .map(i => (i.webkitGetAsEntry ? i.webkitGetAsEntry() : null))
         .filter(Boolean);
+      const looseFiles = entries.length === 0
+        ? Array.from(e.dataTransfer.files || []).filter(isFileAccepted)
+        : [];
+      // Niente di valido trascinato: non fare nulla (evita reset accidentali)
+      if (entries.length === 0 && looseFiles.length === 0) return;
+      // Drop sulla schermata risultati: ricomincia da capo con i nuovi file
+      if (step !== "upload") {
+        setStep("upload"); setElaborati([]); setSalvato(null);
+        setFiles([]); setDuplicatiNomi(new Set()); setInfoCartella(null);
+      }
       if (entries.length > 0) {
         // Gestisce file singoli e cartelle, anche più cartelle (lavoratori) in un solo drop
         processaEntries(entries);
         return;
       }
-      // Fallback per browser senza entry API: solo file singoli
-      const files = Array.from(e.dataTransfer.files || []).filter(isFileAccepted);
-      if (files.length > 0) handleFiles(files);
+      handleFiles(looseFiles); // fallback browser senza entry API
     };
 
     const opts = { passive: false };
