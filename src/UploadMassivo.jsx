@@ -484,6 +484,33 @@ function chiaveRaggruppamento(raw) {
     .join(" ");
 }
 
+// Chiave di IDENTITA del lavoratore, robusta agli errori di trascrizione del nome.
+// Priorita: cartella di provenienza (un lavoratore per cartella nel flusso tipico) ->
+// codice fiscale -> nome normalizzato. Cosi un attestato col nome scritto male
+// (es. "CASPU" invece di "CASAPU") resta unito al lavoratore corretto.
+function chiaveLavoratore(doc) {
+  const r = (doc && doc.risultato) || {};
+  const cart = (doc && doc.file && doc.file._cartellaLavoratore) || (doc && doc._cartella) || null;
+  if (cart) return "DIR:" + chiaveRaggruppamento(cart);
+  const cf = String(r.codice_fiscale || "").toUpperCase().replace(/[^A-Z0-9]/g, "");
+  if (cf.length === 16) return "CF:" + cf;
+  return "NOME:" + chiaveRaggruppamento(r.nome_lavoratore);
+}
+
+// Nome da mostrare per un gruppo: il piu frequente tra quelli letti nei documenti
+// (i refusi sono in minoranza), con fallback al nome della cartella.
+function nomeDisplayGruppo(docs) {
+  const freq = {};
+  docs.forEach(d => {
+    const n = normalizzaNome(d.risultato && d.risultato.nome_lavoratore);
+    if (n) freq[n] = (freq[n] || 0) + 1;
+  });
+  const best = Object.entries(freq).sort((a, b) => b[1] - a[1] || b[0].length - a[0].length)[0];
+  if (best) return best[0];
+  const c = docs.find(d => d.file && d.file._cartellaLavoratore);
+  return c ? normalizzaNome(c.file._cartellaLavoratore) : "\u2014";
+}
+
 // ─── ABBREVIA TIPO DOCUMENTO (max 15 caratteri) ───────────────────────────────
 function abbreviaTipo(tipo) {
   if (!tipo) return "—";
@@ -612,15 +639,13 @@ async function esportaExcel(elaborati, decisioniConformita, azienda) {
   elaborati.forEach(doc => {
     const r = doc.risultato;
     if (!r || r.errore || r.categoria !== "lavoratore" || !r.nome_lavoratore) return;
-    const chiave = chiaveRaggruppamento(r.nome_lavoratore);
+    const chiave = chiaveLavoratore(doc);
     if (!perLavoratore[chiave]) {
-      perLavoratore[chiave] = {
-        nomeDisplay: normalizzaNome(r.nome_lavoratore), // primo nome trovato normalizzato
-        docs: [],
-      };
+      perLavoratore[chiave] = { nomeDisplay: "", docs: [] };
     }
     perLavoratore[chiave].docs.push(doc);
   });
+  Object.values(perLavoratore).forEach(g => { g.nomeDisplay = nomeDisplayGruppo(g.docs); });
 
   // ── 2. Raccoglie tutti i tipi unici e li abbrevia ────────────────────────
   // Per ogni tipo originale, crea un header abbreviato (≤15 char)
@@ -680,7 +705,7 @@ async function esportaExcel(elaborati, decisioniConformita, azienda) {
     tipiOriginali.forEach(tipo => {
       if (docsMap[tipo]) {
         const r = docsMap[tipo].risultato;
-        const chiave = `${chiaveRaggruppamento(r.nome_lavoratore)}__${docsMap[tipo].nomeFile}`;
+        const chiave = `${chiaveLavoratore(docsMap[tipo])}__${docsMap[tipo].nomeFile}`;
         const decisione = decisioniConformita[chiave];
         const nonConforme = r.conforme === false && decisione !== "approvato";
         const giorni = giorniAllaScadenza(r.data_scadenza);
@@ -777,7 +802,7 @@ async function esportaExcel(elaborati, decisioniConformita, azienda) {
   elaborati.forEach(doc => {
     if (!doc.risultato || doc.risultato.errore) return;
     const r = doc.risultato;
-    const chiave = `${chiaveRaggruppamento(r.nome_lavoratore)}__${doc.nomeFile}`;
+    const chiave = `${chiaveLavoratore(doc)}__${doc.nomeFile}`;
     const decisione = decisioniConformita[chiave] || "—";
     const nomeNorm = normalizzaNome(r.nome_lavoratore || r.categoria || "—");
     dettaglioRows.push([
@@ -844,29 +869,37 @@ function SchermatScadenze({ elaborati, azienda, appaltoSelId, appaltatoreSelId, 
 
   const perLavoratore = elaborati.reduce((acc, doc) => {
     if (doc.risultato?.categoria === "lavoratore" && doc.risultato?.nome_lavoratore) {
-      const nome = doc.risultato.nome_lavoratore;
-      const chiave = chiaveRaggruppamento(nome);
-      if (!acc[chiave]) acc[chiave] = { nomeDisplay: normalizzaNome(nome), docs: [] };
+      const chiave = chiaveLavoratore(doc);
+      if (!acc[chiave]) acc[chiave] = { nomeDisplay: "", docs: [] };
       acc[chiave].docs.push(doc);
     }
     return acc;
   }, {});
+  // Nome visualizzato = il piu frequente nei documenti del gruppo (robusto ai refusi)
+  Object.values(perLavoratore).forEach(g => { g.nomeDisplay = nomeDisplayGruppo(g.docs); });
 
-  const docAziendali = elaborati.filter(d =>
-    d.risultato?.categoria === "aziendale" || DOC_AZIENDALI_TIPI.includes(d.risultato?.tipo_documento)
-  );
+  // Aziendali + tipi aziendali noti + QUALSIASI non conforme privo di scheda lavoratore
+  // (cosi e sempre approvabile/scartabile e non blocca per sempre l'export).
+  const docAziendali = elaborati.filter(d => {
+    if (!d.risultato || d.risultato.errore) return false;
+    const inLavoratori = d.risultato.categoria === "lavoratore" && d.risultato.nome_lavoratore;
+    if (inLavoratori) return false;
+    return d.risultato.categoria === "aziendale"
+      || DOC_AZIENDALI_TIPI.includes(d.risultato.tipo_documento)
+      || d.risultato.conforme === false;
+  });
 
   // Conta non conformi ancora in attesa di decisione
   const nonConformiInAttesa = elaborati.filter(d => {
     if (d.risultato?.conforme !== false) return false;
-    const chiave = `${chiaveRaggruppamento(d.risultato?.nome_lavoratore)}__${d.nomeFile}`;
+    const chiave = `${chiaveLavoratore(d)}__${d.nomeFile}`;
     return !decisioniConformita[chiave];
   }).length;
 
   function statoLavoratore(docs) {
     const haaNonConforme = docs.some(d => {
       if (d.risultato?.conforme !== false) return false;
-      const chiave = `${chiaveRaggruppamento(d.risultato?.nome_lavoratore)}__${d.nomeFile}`;
+      const chiave = `${chiaveLavoratore(d)}__${d.nomeFile}`;
       return decisioniConformita[chiave] !== "approvato";
     });
     if (haaNonConforme) return "nonconforme";
@@ -1130,21 +1163,42 @@ function SchermatScadenze({ elaborati, azienda, appaltoSelId, appaltatoreSelId, 
       {/* Doc aziendali */}
       {docAziendali.length > 0 && (
         <div style={{ marginBottom: 24 }}>
-          <div style={{ fontSize: 11, color: "#475569", fontWeight: 700, letterSpacing: "0.5px", marginBottom: 14 }}>DOCUMENTI AZIENDALI — {docAziendali.length}</div>
+          <div style={{ fontSize: 11, color: "#475569", fontWeight: 700, letterSpacing: "0.5px", marginBottom: 14 }}>DOCUMENTI AZIENDALI / DA APPROVARE — {docAziendali.length}</div>
           <div style={{ background: "#161b27", border: "1px solid #1e2535", borderRadius: 12, overflow: "hidden" }}>
             {docAziendali.map((doc, i) => {
               const cfgDoc = STATO_CFG[statoScadenza(doc.risultato?.data_scadenza)];
+              const chiaveDec = `${chiaveLavoratore(doc)}__${doc.nomeFile}`;
+              const decisione = decisioniConformita[chiaveDec];
+              const nonConforme = doc.risultato?.conforme === false;
+              const bordo = nonConforme && decisione !== "approvato" ? "#f97316" : cfgDoc.color;
               return (
-                <div key={i} style={{ padding: "13px 20px", borderBottom: i < docAziendali.length - 1 ? "1px solid #1e253540" : "none", display: "flex", alignItems: "center", gap: 12, borderLeft: `3px solid ${cfgDoc.color}` }}>
-                  <span style={{ fontSize: 18 }}>{fileIcon(doc.nomeFile)}</span>
-                  <div style={{ flex: 1 }}>
-                    <div style={{ fontSize: 13, fontWeight: 600, color: "#cbd5e1" }}>{doc.risultato?.tipo_documento || doc.nomeFile}</div>
-                    {doc.risultato?.data_scadenza && <div style={{ fontSize: 11, color: "#475569", marginTop: 2 }}>Scadenza: <strong style={{ color: cfgDoc.color }}>{doc.risultato.data_scadenza}</strong></div>}
+                <div key={i} style={{ padding: "13px 20px", borderBottom: i < docAziendali.length - 1 ? "1px solid #1e253540" : "none", borderLeft: `3px solid ${bordo}` }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                    <span style={{ fontSize: 18 }}>{fileIcon(doc.nomeFile)}</span>
+                    <div style={{ flex: 1 }}>
+                      <div style={{ fontSize: 13, fontWeight: 600, color: "#cbd5e1" }}>{doc.risultato?.tipo_documento || doc.nomeFile}</div>
+                      {doc.risultato?.data_scadenza && <div style={{ fontSize: 11, color: "#475569", marginTop: 2 }}>Scadenza: <strong style={{ color: cfgDoc.color }}>{doc.risultato.data_scadenza}</strong></div>}
+                    </div>
+                    {doc.file && (
+                      <button onClick={() => window.open(URL.createObjectURL(doc.file), "_blank")} style={{ padding: "6px 10px", background: "#1e2535", border: "1px solid #334155", borderRadius: 7, color: "#94a3b8", fontSize: 11, cursor: "pointer", flexShrink: 0 }}>
+                        👁 Verifica
+                      </button>
+                    )}
                   </div>
-                  {doc.file && (
-                    <button onClick={() => window.open(URL.createObjectURL(doc.file), "_blank")} style={{ padding: "6px 10px", background: "#1e2535", border: "1px solid #334155", borderRadius: 7, color: "#94a3b8", fontSize: 11, cursor: "pointer" }}>
-                      👁 Verifica
-                    </button>
+                  {nonConforme && (
+                    <div style={{ marginTop: 10, padding: "10px 14px", background: "#f9731610", border: "1px solid #f9731630", borderRadius: 8 }}>
+                      <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 12 }}>
+                        <div style={{ fontSize: 11, color: "#fdba74", flex: 1 }}>⚠ <strong>Non conforme:</strong> {doc.risultato?.problema_conformita}</div>
+                        {!decisione && (
+                          <div style={{ display: "flex", gap: 8, flexShrink: 0 }}>
+                            <button onClick={() => setDecisione(chiaveLavoratore(doc), doc.nomeFile, "approvato")} style={{ padding: "4px 12px", background: "#10b98120", border: "1px solid #10b98140", borderRadius: 6, color: "#10b981", fontSize: 11, fontWeight: 700, cursor: "pointer", whiteSpace: "nowrap" }}>✓ Approva</button>
+                            <button onClick={() => setDecisione(chiaveLavoratore(doc), doc.nomeFile, "scartato")} style={{ padding: "4px 12px", background: "#ef444420", border: "1px solid #ef444440", borderRadius: 6, color: "#ef4444", fontSize: 11, fontWeight: 700, cursor: "pointer", whiteSpace: "nowrap" }}>✗ Scarta</button>
+                          </div>
+                        )}
+                        {decisione === "approvato" && (<div style={{ display: "flex", alignItems: "center", gap: 8, flexShrink: 0 }}><span style={{ fontSize: 11, color: "#10b981", fontWeight: 700 }}>✓ Approvato</span><button onClick={() => setDecisione(chiaveLavoratore(doc), doc.nomeFile, null)} style={{ background: "none", border: "none", color: "#475569", fontSize: 10, cursor: "pointer" }}>annulla</button></div>)}
+                        {decisione === "scartato" && (<div style={{ display: "flex", alignItems: "center", gap: 8, flexShrink: 0 }}><span style={{ fontSize: 11, color: "#ef4444", fontWeight: 700 }}>✗ Scartato</span><button onClick={() => setDecisione(chiaveLavoratore(doc), doc.nomeFile, null)} style={{ background: "none", border: "none", color: "#475569", fontSize: 10, cursor: "pointer" }}>annulla</button></div>)}
+                      </div>
+                    </div>
                   )}
                 </div>
               );
