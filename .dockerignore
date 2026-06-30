@@ -1,0 +1,8 @@
+node_modules
+build
+.git
+DIPENDENTI
+PSC_OUTPUT
+*.jpeg
+*.png
+__pycache__
