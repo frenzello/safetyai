@@ -392,16 +392,30 @@ async function buildContentParts(file) {
 
 // Singola chiamata al server proxy → Anthropic API
 async function callClaudeAPI(contentParts, model, maxTokens) {
-  const response = await fetch(`${API_URL}/api/claude`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      model,
-      max_tokens: maxTokens,
-      messages: [{ role: "user", content: contentParts }],
-    }),
-  });
-  const data = await response.json();
+  let response;
+  try {
+    response = await fetch(`${API_URL}/api/claude`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        model,
+        max_tokens: maxTokens,
+        messages: [{ role: "user", content: contentParts }],
+      }),
+    });
+  } catch (e) {
+    // Rete assente / CORS / backend irraggiungibile: NON un PDF illeggibile
+    return [{ errore: "Server di analisi non raggiungibile (connessione o CORS)", _rete: true, confidenza: 0 }];
+  }
+  if (!response.ok) {
+    const msg = response.status === 429
+      ? "Limite giornaliero di analisi raggiunto"
+      : `Errore del server di analisi (${response.status})`;
+    return [{ errore: msg, _rete: true, confidenza: 0 }];
+  }
+  let data;
+  try { data = await response.json(); }
+  catch { return [{ errore: "Risposta del server non valida", _rete: true, confidenza: 0 }]; }
   const text = data.content?.map(b => b.text || "").join("") || "";
   try {
     const parsed = JSON.parse(text.replace(/```json|```/g, "").trim());
@@ -935,12 +949,34 @@ function SchermatScadenze({ elaborati, azienda, appaltoSelId, appaltatoreSelId, 
 
   // Conta documenti con almeno un'anomalia di estrazione
   const totaleAnomalie = elaborati.filter(d => d.risultato?._anomalie?.length > 0).length;
+  const erroriRete = elaborati.filter(d => d.risultato?._rete).length;
+  const erroriDoc = elaborati.filter(d => d.risultato?.errore && !d.risultato?._rete).length;
   const statoColore = { ok: "#10b981", attenzione: "#f59e0b", critico: "#ef4444", scaduto: "#ef4444", nonconforme: "#f97316", nessuna: "#64748b" };
   const statoLabel = { ok: "Valido", attenzione: "In scadenza", critico: "Scadenza imminente", scaduto: "SCADUTO", nonconforme: "Non conforme", nessuna: "—" };
 
   return (
     <div style={{ fontFamily: "'DM Sans','Segoe UI',sans-serif", background: "#0f1117", minHeight: "100vh", padding: "32px 24px", color: "#e2e8f0", maxWidth: 760, margin: "0 auto" }}>
       <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
+
+      {/* Banner errori: rende visibili i fallimenti invece di una schermata vuota */}
+      {erroriRete > 0 && (
+        <div style={{ padding: "14px 18px", marginBottom: 18, background: "#ef444412", border: "1px solid #ef444440", borderRadius: 10, display: "flex", gap: 12, alignItems: "flex-start" }}>
+          <span style={{ fontSize: 18, flexShrink: 0 }}>⚠</span>
+          <div>
+            <div style={{ fontSize: 13, fontWeight: 700, color: "#ef4444", marginBottom: 4 }}>
+              {erroriRete} {erroriRete === 1 ? "documento non analizzato" : "documenti non analizzati"}: il server non ha risposto
+            </div>
+            <div style={{ fontSize: 12, color: "#fca5a5", lineHeight: 1.5 }}>
+              Possibili cause: connessione assente, backend non raggiungibile o limite giornaliero. Controlla e riprova — questi documenti NON sono nel registro.
+            </div>
+          </div>
+        </div>
+      )}
+      {erroriDoc > 0 && (
+        <div style={{ padding: "12px 18px", marginBottom: 18, background: "#f59e0b0e", border: "1px solid #f59e0b30", borderRadius: 10, fontSize: 12, color: "#ca8a04" }}>
+          {erroriDoc} {erroriDoc === 1 ? "documento illeggibile" : "documenti illeggibili"} (qualità scarsa o formato non supportato): verifica manualmente.
+        </div>
+      )}
 
       {/* Disclaimer export — modale con avviso responsabilita' */}
       {showDisclaimer && (
@@ -1502,7 +1538,7 @@ function PortaleUploadMassivoInner({ azienda }) {
             };
           }
         } catch {
-          results[i + bi] = { ...results[i + bi], stato: "errore", risultato: { errore: "Errore di connessione", confidenza: 0 } };
+          results[i + bi] = { ...results[i + bi], stato: "errore", risultato: { errore: "Errore di connessione", _rete: true, confidenza: 0 } };
         }
         setProgress(p => ({ ...p, fatto: p.fatto + 1 }));
         setElaborati([...results]);
