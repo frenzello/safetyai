@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { creaAzienda, accettaPrivacy, genId } from "./database";
+import { accettaPrivacy, genId } from "./database";
+import { creaAzienda } from "./dbSupabase";
 import API_URL from "./config";
 
 // ─── PDF BASE64 EMBEDDED ──────────────────────────────────────────────────────
@@ -345,6 +346,8 @@ function CreaAzienda({ onCreata, isFirst = false }) {
     figure: { datoreLavoro: "", rspp: "", medicoCompetente: "", rls: "" },
     rischi: [],
   });
+  const [salvataggio, setSalvataggio] = useState(false);
+  const [erroreSalva, setErroreSalva] = useState(null);
 
   const LIVELLI = ["basso", "medio", "alto"];
   const LIVELLO_CFG = {
@@ -379,9 +382,16 @@ function CreaAzienda({ onCreata, isFirst = false }) {
     finally { setAnalizzando(false); }
   }
 
-  function salvaAzienda() {
-    const nuova = creaAzienda({ ...form, dipendenti: form.dipendenti ? parseInt(form.dipendenti) : null });
-    onCreata(nuova);
+  async function salvaAzienda() {
+    setSalvataggio(true); setErroreSalva(null);
+    try {
+      const nuova = await creaAzienda({ ...form, dipendenti: form.dipendenti ? parseInt(form.dipendenti) : null });
+      onCreata(nuova);
+    } catch (e) {
+      setErroreSalva(e.message || "Errore di salvataggio. Riprova.");
+    } finally {
+      setSalvataggio(false);
+    }
   }
 
   const inputStyle = { width: "100%", padding: "10px 14px", background: "#0f1117", border: "1px solid #1e2535", borderRadius: 8, color: "#cbd5e1", fontSize: 13, fontFamily: "inherit", boxSizing: "border-box" };
@@ -523,9 +533,14 @@ function CreaAzienda({ onCreata, isFirst = false }) {
         )}
       </div>
 
-      <button onClick={salvaAzienda} disabled={!form.nome.trim()}
-        style={{ width: "100%", padding: "14px", background: form.nome.trim() ? "linear-gradient(135deg, #10b981, #06b6d4)" : "#1e2535", border: "none", borderRadius: 12, color: form.nome.trim() ? "white" : "#334155", fontSize: 15, fontWeight: 800, cursor: form.nome.trim() ? "pointer" : "not-allowed", fontFamily: "inherit" }}>
-        ✓ Crea profilo azienda
+      {erroreSalva && (
+        <div style={{ marginBottom: 10, padding: "10px 14px", background: "#ef444412", border: "1px solid #ef444430", borderRadius: 9, fontSize: 12, color: "#f87171" }}>
+          {erroreSalva}
+        </div>
+      )}
+      <button onClick={salvaAzienda} disabled={!form.nome.trim() || salvataggio}
+        style={{ width: "100%", padding: "14px", background: form.nome.trim() && !salvataggio ? "linear-gradient(135deg, #10b981, #06b6d4)" : "#1e2535", border: "none", borderRadius: 12, color: form.nome.trim() && !salvataggio ? "white" : "#334155", fontSize: 15, fontWeight: 800, cursor: form.nome.trim() && !salvataggio ? "pointer" : "not-allowed", fontFamily: "inherit" }}>
+        {salvataggio ? "Salvataggio…" : "✓ Crea profilo azienda"}
       </button>
     </div>
   );

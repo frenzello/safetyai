@@ -13,9 +13,11 @@ import PrivacyResponsabilita from "./PrivacyResponsabilita";
 import TerminiServizio from "./TerminiServizio";
 import { SchermataBenvenuto, CreaAzienda } from "./Onboarding";
 import {
-  leggiDB, salvaDB, privacyAccettata,
+  privacyAccettata,
   statoScadenza, giorniAllaScadenza, calcolaStatAzienda,
 } from "./database";
+import { listaAziende, caricaAziendaCompleta } from "./dbSupabase";
+import { logout } from "./AuthSupabase";
 
 // ─── MODALITA' MVP ────────────────────────────────────────────────────────────
 // Per riabilitare TUTTA la navigazione: imposta MVP_MODE = false
@@ -320,35 +322,69 @@ function ProfiloAzienda({ azienda }) {
 // ─── APP SHELL ────────────────────────────────────────────────────────────────
 export default function SafetyAIApp() {
   const [privacyOk, setPrivacyOk] = useState(privacyAccettata());
-  const [db, setDb] = useState(() => leggiDB());
+  const [aziende, setAziende] = useState([]);
+  const [aziendaAttiva, setAziendaAttiva] = useState(null);
   const [aziendaAttivaId, setAziendaAttivaId] = useState(null);
+  const [caricamento, setCaricamento] = useState(true);
+  const [erroreDati, setErroreDati] = useState(null);
   const [modulo, setModulo] = useState("dashboard");
   const [showSelettore, setShowSelettore] = useState(false);
   const [showNuovaAzienda, setShowNuovaAzienda] = useState(false);
 
-  // Seleziona automaticamente la prima azienda disponibile
-  useEffect(() => {
-    if (db.aziende.length > 0 && !aziendaAttivaId) {
-      setAziendaAttivaId(db.aziende[0].id);
+  // Carica l'elenco aziende da Supabase (isolate per account via RLS)
+  async function ricaricaDB() {
+    try {
+      setErroreDati(null);
+      const lista = await listaAziende();
+      setAziende(lista);
+      if (lista.length > 0 && !aziendaAttivaId) {
+        setAziendaAttivaId(lista[0].id);
+      } else if (aziendaAttivaId && !lista.some(a => a.id === aziendaAttivaId)) {
+        setAziendaAttivaId(lista[0]?.id || null);
+      } else if (aziendaAttivaId) {
+        setAziendaAttiva(await caricaAziendaCompleta(aziendaAttivaId));
+      }
+    } catch (e) {
+      console.error("Errore caricamento dati:", e);
+      setErroreDati(e.message || "Errore di caricamento dati");
+    } finally {
+      setCaricamento(false);
     }
-  }, [db.aziende, aziendaAttivaId]);
-
-  const aziendaAttiva = db.aziende.find(a => a.id === aziendaAttivaId) || null;
-
-  function ricaricaDB() {
-    setDb(leggiDB());
   }
 
+  useEffect(() => { ricaricaDB(); }, []);
+
+  // Al cambio di azienda attiva (o rientrando in un modulo) ricarica l'albero completo
+  useEffect(() => {
+    let annullato = false;
+    if (!aziendaAttivaId) { setAziendaAttiva(null); return; }
+    caricaAziendaCompleta(aziendaAttivaId)
+      .then(az => { if (!annullato) setAziendaAttiva(az); })
+      .catch(e => {
+        if (!annullato) { console.error(e); setErroreDati(e.message || "Errore di caricamento azienda"); }
+      });
+    return () => { annullato = true; };
+  }, [aziendaAttivaId, modulo]);
+
   function onAziendaCreata(nuova) {
-    ricaricaDB();
-    setAziendaAttivaId(nuova.id);
     setShowNuovaAzienda(false);
     setModulo("dashboard");
+    setAziendaAttivaId(nuova.id);
+    ricaricaDB();
   }
 
   // ── SCHERMATA PRIVACY (prima volta) ──
   if (!privacyOk) {
     return <SchermataBenvenuto onAccetta={() => setPrivacyOk(true)} />;
+  }
+
+  // ── CARICAMENTO INIZIALE DATI (da Supabase) ──
+  if (caricamento) {
+    return (
+      <div style={{ minHeight: "100vh", background: "#0f1117", display: "flex", alignItems: "center", justifyContent: "center", color: "#64748b", fontFamily: "'DM Sans','Segoe UI',sans-serif", fontSize: 14 }}>
+        Caricamento dati…
+      </div>
+    );
   }
 
   // ── SCHERMATA NUOVA AZIENDA ──
@@ -363,7 +399,7 @@ export default function SafetyAIApp() {
           </div>
         </div>
         <div style={{ padding: "40px 24px" }}>
-          <CreaAzienda onCreata={onAziendaCreata} isFirst={db.aziende.length === 0} />
+          <CreaAzienda onCreata={onAziendaCreata} isFirst={aziende.length === 0} />
         </div>
       </div>
     );
@@ -403,7 +439,7 @@ export default function SafetyAIApp() {
       {/* Selettore aziende */}
       {showSelettore && (
         <SelettoreAziende
-          aziende={db.aziende}
+          aziende={aziende}
           aziendaAttiva={aziendaAttiva}
           onSeleziona={az => { setAziendaAttivaId(az.id); setModulo("dashboard"); }}
           onNuova={() => setShowNuovaAzienda(true)}
@@ -505,10 +541,11 @@ export default function SafetyAIApp() {
         {/* User */}
         <div style={{ padding: "14px 20px", borderTop: "1px solid #1e2535", display: "flex", alignItems: "center", gap: 10 }}>
           <div style={{ width: 28, height: 28, borderRadius: "50%", background: "linear-gradient(135deg,#3b82f6,#8b5cf6)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontWeight: 800, color: "white" }}>RS</div>
-          <div>
+          <div style={{ flex: 1, minWidth: 0 }}>
             <div style={{ fontSize: 12, color: "#cbd5e1", fontWeight: 600 }}>RSPP Esterno</div>
-            <div style={{ fontSize: 10, color: "#475569" }}>{db.aziende.length} aziende gestite</div>
+            <div style={{ fontSize: 10, color: "#475569" }}>{aziende.length} aziende gestite</div>
           </div>
+          <button onClick={() => logout()} title="Esci dall'account" style={{ background: "none", border: "1px solid #1e2535", borderRadius: 7, color: "#64748b", fontSize: 11, padding: "5px 10px", cursor: "pointer", fontFamily: "inherit" }}>Esci</button>
         </div>
       </div>
 
@@ -543,6 +580,14 @@ export default function SafetyAIApp() {
             )}
           </div>
         </div>
+
+        {/* Banner errore caricamento dati */}
+        {erroreDati && (
+          <div style={{ margin: "12px 28px 0", padding: "10px 16px", background: "#ef444412", border: "1px solid #ef444430", borderRadius: 8, fontSize: 12, color: "#ef4444" }}>
+            Errore dati: {erroreDati}
+            <span onClick={() => ricaricaDB()} style={{ textDecoration: "underline", cursor: "pointer", marginLeft: 8 }}>Riprova</span>
+          </div>
+        )}
 
         {/* Content */}
         <div style={{ flex: 1, overflowY: "auto", padding: modulo === "privacy" ? 0 : 28 }}>

@@ -2,9 +2,8 @@
 // owner_id viene popolato dal database (default auth.uid()) e la Row Level Security
 // garantisce che ogni account veda SOLO i propri dati.
 //
-// NOTA DI MIGRAZIONE: queste funzioni sono ASINCRONE. I chiamanti attuali (App.js,
-// moduli) usano le versioni sincrone di database.js: al momento dello "switch" andranno
-// adattati con async/await. Questo file non è ancora importato da nessuna parte.
+// NOTA UI: le letture normalizzano i campi nel formato che l'interfaccia si aspetta
+// (camelCase, date "GG/MM/AAAA") così i moduli esistenti funzionano invariati.
 import { supabase } from "./supabaseClient";
 
 // ─── AZIENDE ──────────────────────────────────────────────────────────────────
@@ -67,6 +66,32 @@ export async function creaLavoratore(appaltatoreId, dati) {
   return data;
 }
 
+// ─── APPALTO/APPALTATORE DI DEFAULT ───────────────────────────────────────────
+// L'MVP non ha ancora una UI di selezione appalto/appaltatore: al salvataggio
+// dei risultati usa (o crea) un contenitore di default per l'azienda attiva.
+export async function trovaOCreaAppaltatoreDefault(aziendaId) {
+  const { data: appalti, error: e1 } = await supabase
+    .from("appalti").select("id").eq("azienda_id", aziendaId)
+    .order("creato_il", { ascending: true }).limit(1);
+  if (e1) throw e1;
+  let appaltoId = appalti?.[0]?.id;
+  if (!appaltoId) {
+    const nuovo = await creaAppalto(aziendaId, { titolo: "Appalto generale" });
+    appaltoId = nuovo.id;
+  }
+
+  const { data: apps, error: e2 } = await supabase
+    .from("appaltatori").select("id").eq("appalto_id", appaltoId).is("parent_id", null)
+    .order("creato_il", { ascending: true }).limit(1);
+  if (e2) throw e2;
+  let appaltatoreId = apps?.[0]?.id;
+  if (!appaltatoreId) {
+    const nuovo = await creaAppaltatore(appaltoId, { nome: "Organico documenti" });
+    appaltatoreId = nuovo.id;
+  }
+  return appaltatoreId;
+}
+
 // ─── CARICAMENTO NIDIFICATO (per l'UI, che lavora con la struttura ad albero) ──
 export async function caricaAziendaCompleta(aziendaId) {
   const [az, appalti, appaltatori, lavoratori, attestati] = await Promise.all([
@@ -78,7 +103,7 @@ export async function caricaAziendaCompleta(aziendaId) {
   ]);
   for (const r of [az, appalti, appaltatori, lavoratori, attestati]) if (r.error) throw r.error;
 
-  const attByLav = groupBy(attestati.data || [], "lavoratore_id");
+  const attByLav = groupBy((attestati.data || []).map(normalizzaAttestato), "lavoratore_id");
   const lavByApp = groupBy(lavoratori.data || [], "appaltatore_id");
   const appByAppalto = groupBy((appaltatori.data || []).filter(a => !a.parent_id), "appalto_id");
   const subByParent = groupBy((appaltatori.data || []).filter(a => a.parent_id), "parent_id");
@@ -93,9 +118,30 @@ export async function caricaAziendaCompleta(aziendaId) {
     ...az.data,
     appalti: (appalti.data || []).map(ap => ({
       ...ap,
+      dataInizio: ap.data_inizio || "",
+      dataFine: ap.data_fine || "",
+      cseNome: ap.cse_nome || "",
       appaltatori: (appByAppalto[ap.id] || []).map(buildApp),
     })),
   };
+}
+
+// Adatta un attestato dal formato Supabase (snake_case, date ISO) a quello UI
+function normalizzaAttestato(a) {
+  return {
+    ...a,
+    rilascio: dataITda(a.rilascio),
+    scadenza: dataITda(a.scadenza),
+    problemaConformita: a.problema_conformita || "",
+    decisioneOperatore: a.decisione_operatore || null,
+  };
+}
+
+// "AAAA-MM-GG" -> "GG/MM/AAAA" (formato usato dalla UI e dagli helper scadenze)
+function dataITda(iso) {
+  if (!iso || typeof iso !== "string") return null;
+  const m = iso.match(/^(\d{4})-(\d{2})-(\d{2})/);
+  return m ? `${m[3]}/${m[2]}/${m[1]}` : iso;
 }
 
 function groupBy(rows, key) {
@@ -104,12 +150,23 @@ function groupBy(rows, key) {
 
 // ─── SALVA RISULTATI ANALISI AI ───────────────────────────────────────────────
 // Equivalente async di salvaRisultatiAnalisi: crea lavoratori/attestati mancanti.
+// Dedup come la versione localStorage: salta attestati con stesso tipo+rilascio.
 export async function salvaRisultatiAnalisi(appaltatoreId, elaborati, decisioniConformita = {}) {
   const { data: lavEsistenti, error: e1 } = await supabase
     .from("lavoratori").select("id, nome").eq("appaltatore_id", appaltatoreId);
   if (e1) throw e1;
 
   const perNome = new Map((lavEsistenti || []).map(l => [l.nome.toLowerCase().trim(), l]));
+
+  const idsLav = (lavEsistenti || []).map(l => l.id);
+  const esistenti = new Set();
+  if (idsLav.length > 0) {
+    const { data: attEsist, error: e0 } = await supabase
+      .from("attestati").select("lavoratore_id, tipo, rilascio").in("lavoratore_id", idsLav);
+    if (e0) throw e0;
+    for (const a of attEsist || []) esistenti.add(`${a.lavoratore_id}__${a.tipo}__${a.rilascio || ""}`);
+  }
+
   let nuoviLavoratori = 0, nuoviAttestati = 0;
 
   for (const doc of elaborati) {
@@ -124,11 +181,15 @@ export async function salvaRisultatiAnalisi(appaltatoreId, elaborati, decisioniC
       nuoviLavoratori++;
     }
 
+    const rilascioISO = toISO(r.data_rilascio);
+    const chiaveAtt = `${lav.id}__${r.tipo_documento || ""}__${rilascioISO || ""}`;
+    if (esistenti.has(chiaveAtt)) continue;
+
     const chiave = `${r.nome_lavoratore}__${doc.nomeFile}`;
     const { error: e2 } = await supabase.from("attestati").insert({
       lavoratore_id: lav.id,
       tipo: r.tipo_documento || "",
-      rilascio: toISO(r.data_rilascio),
+      rilascio: rilascioISO,
       scadenza: toISO(r.data_scadenza),
       ore: r.ore_formazione ?? null,
       ente: r.ente_erogatore || "",
@@ -140,6 +201,7 @@ export async function salvaRisultatiAnalisi(appaltatoreId, elaborati, decisioniC
       note: r.note || "",
     });
     if (e2) throw e2;
+    esistenti.add(chiaveAtt);
     nuoviAttestati++;
   }
   return { nuoviLavoratori, nuoviAttestati };

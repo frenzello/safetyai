@@ -1,5 +1,5 @@
 import { useState, useRef, useCallback, useEffect, Component } from "react";
-import { salvaRisultatiAnalisi } from "./database";
+import { salvaRisultatiAnalisi, trovaOCreaAppaltatoreDefault } from "./dbSupabase";
 import { DisclaimerExport } from "./DisclaimerExport";
 import API_URL from "./config";
 
@@ -1244,12 +1244,19 @@ function SchermatScadenze({ elaborati, azienda, appaltoSelId, appaltatoreSelId, 
       )}
 
       {/* Salva nel database */}
-      {azienda && appaltoSelId && appaltatoreSelId && (
+      {azienda && (
         <div style={{ marginBottom: 10 }}>
           {salvato ? (
-            <div style={{ padding: "12px 16px", background: "rgba(16,185,129,.08)", border: "1px solid rgba(16,185,129,.2)", borderRadius: 9, fontSize: 13, color: "#34d399", display: "flex", alignItems: "center", gap: 8 }}>
-              ✓ Salvato nel database — {salvato.nuoviLavoratori} nuovi lavoratori, {salvato.nuoviAttestati} nuovi attestati
-            </div>
+            salvato.errore ? (
+              <div style={{ padding: "12px 16px", background: "rgba(239,68,68,.08)", border: "1px solid rgba(239,68,68,.2)", borderRadius: 9, fontSize: 13, color: "#f87171", display: "flex", alignItems: "center", gap: 8 }}>
+                ✗ Salvataggio fallito: {salvato.errore}
+                <span onClick={() => onSalvaDB(elaborati, decisioniConformita)} style={{ textDecoration: "underline", cursor: "pointer" }}>Riprova</span>
+              </div>
+            ) : (
+              <div style={{ padding: "12px 16px", background: "rgba(16,185,129,.08)", border: "1px solid rgba(16,185,129,.2)", borderRadius: 9, fontSize: 13, color: "#34d399", display: "flex", alignItems: "center", gap: 8 }}>
+                ✓ Salvato nel database — {salvato.nuoviLavoratori} nuovi lavoratori, {salvato.nuoviAttestati} nuovi attestati
+              </div>
+            )
           ) : (
             <button
               onClick={() => onSalvaDB(elaborati, decisioniConformita)}
@@ -1566,10 +1573,16 @@ function PortaleUploadMassivoInner({ azienda }) {
         appaltoSelId={appaltoSelId}
         appaltatoreSelId={appaltatoreSelId}
         salvato={salvato}
-        onSalvaDB={(elaboratiFinali, decisioni) => {
-          if (azienda && appaltoSelId && appaltatoreSelId) {
-            const res = salvaRisultatiAnalisi(azienda.id, appaltoSelId, appaltatoreSelId, elaboratiFinali, decisioni);
+        onSalvaDB={async (elaboratiFinali, decisioni) => {
+          if (!azienda) return;
+          try {
+            // Trova (o crea) l'appalto/appaltatore di default dell'azienda su Supabase
+            const appaltatoreId = appaltatoreSelId || await trovaOCreaAppaltatoreDefault(azienda.id);
+            const res = await salvaRisultatiAnalisi(appaltatoreId, elaboratiFinali, decisioni);
             setSalvato(res);
+          } catch (e) {
+            console.error("Errore salvataggio su Supabase:", e);
+            setSalvato({ errore: e.message || "Errore di salvataggio" });
           }
         }}
         onRicarica={() => { setStep("upload"); setFiles([]); setElaborati([]); setSalvato(null); }}

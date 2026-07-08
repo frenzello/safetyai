@@ -6,6 +6,22 @@ const path = require('path');
 
 try { require('dotenv').config(); } catch (_) {}
 
+// --- SENTRY (monitoraggio errori) --------------------------------------------
+// Attivo solo se SENTRY_DSN e configurata (es. su Railway); in locale resta spento.
+let Sentry = null;
+if (process.env.SENTRY_DSN) {
+  try {
+    Sentry = require('@sentry/node');
+    Sentry.init({
+      dsn: process.env.SENTRY_DSN,
+      environment: process.env.NODE_ENV || 'production',
+    });
+    console.log('[sentry] Inizializzato');
+  } catch (err) {
+    console.warn('[sentry] Non inizializzato:', err.message);
+  }
+}
+
 const app = express();
 
 // --- CORS -------------------------------------------------------------------
@@ -137,6 +153,7 @@ app.post('/api/claude', limiterClaude, async (req, res) => {
     res.json(data);
   } catch (err) {
     console.error('[claude] Errore connessione:', err.message);
+    if (Sentry) Sentry.captureException(err);
     res.status(500).json({ error: 'Errore interno del server. Riprova.' });
   }
 });
