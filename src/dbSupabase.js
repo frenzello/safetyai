@@ -48,6 +48,24 @@ export async function creaAppalto(aziendaId, dati) {
   return data;
 }
 
+export async function aggiornaAppalto(appaltoId, patch) {
+  const payload = {};
+  if (patch.titolo !== undefined) payload.titolo = patch.titolo;
+  if (patch.area !== undefined) payload.area = patch.area;
+  if (patch.dataInizio !== undefined) payload.data_inizio = patch.dataInizio || null;
+  if (patch.dataFine !== undefined) payload.data_fine = patch.dataFine || null;
+  if (patch.stato !== undefined) payload.stato = patch.stato;
+  if (patch.cseNome !== undefined) payload.cse_nome = patch.cseNome;
+  const { data, error } = await supabase.from("appalti").update(payload).eq("id", appaltoId).select().single();
+  if (error) throw error;
+  return data;
+}
+
+export async function eliminaAppalto(appaltoId) {
+  const { error } = await supabase.from("appalti").delete().eq("id", appaltoId);
+  if (error) throw error;
+}
+
 export async function creaAppaltatore(appaltoId, dati, parentId = null) {
   const { data, error } = await supabase.from("appaltatori").insert({
     appalto_id: appaltoId, parent_id: parentId,
@@ -56,6 +74,25 @@ export async function creaAppaltatore(appaltoId, dati, parentId = null) {
   }).select().single();
   if (error) throw error;
   return data;
+}
+
+export async function aggiornaAppaltatore(appaltatoreId, patch) {
+  const payload = {};
+  if (patch.nome !== undefined) payload.nome = patch.nome;
+  if (patch.piva !== undefined) payload.piva = patch.piva;
+  if (patch.referente !== undefined) payload.referente = patch.referente;
+  if (patch.email !== undefined) payload.email = patch.email;
+  if (patch.telefono !== undefined) payload.telefono = patch.telefono;
+  const { data, error } = await supabase.from("appaltatori").update(payload).eq("id", appaltatoreId).select().single();
+  if (error) throw error;
+  return data;
+}
+
+// Elimina un appaltatore o un subappaltatore (stessa tabella, parent_id li distingue).
+// Il cascade dello schema elimina anche i lavoratori/attestati collegati.
+export async function eliminaAppaltatore(appaltatoreId) {
+  const { error } = await supabase.from("appaltatori").delete().eq("id", appaltatoreId);
+  if (error) throw error;
 }
 
 export async function creaLavoratore(appaltatoreId, dati) {

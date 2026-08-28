@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { tutteLeScadenze, statoScadenza, giorniAllaScadenza } from "./database";
+import { tutteLeScadenze, statoScadenza, giorniAllaScadenza } from "./scadenzeUtils";
 
 const STATO_CFG = {
   ok:        { color: "#10b981", bg: "#10b98112", label: "Valido" },

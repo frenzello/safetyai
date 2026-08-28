@@ -1,0 +1,38 @@
+name: CI
+
+# Blocca i problemi PRIMA del deploy: lock disallineato, build rotta, sintassi backend.
+# (È esattamente ciò che avrebbe intercettato il fallimento dei deploy Railway.)
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20.x"
+          cache: npm
+
+      # npm ci fallisce se package-lock.json non è allineato a package.json
+      # (il bug che ha tenuto il backend bloccato per giorni).
+      - name: Install dipendenze (verifica lock allineato)
+        run: npm ci
+
+      # Compila il frontend: intercetta errori di sintassi/JSX e import mancanti.
+      - name: Build frontend (CRA)
+        run: npm run build
+        env:
+          CI: "false" # non trasformare i warning in errori
+
+      # Verifica sintattica del backend prima che finisca su Railway.
+      - name: Check sintassi backend
+        run: node --check server.js

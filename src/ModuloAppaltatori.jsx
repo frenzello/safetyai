@@ -1,9 +1,8 @@
 import { useState } from "react";
 import {
-  leggiDB, salvaDB, genId,
-  creaAppalto, creaAppaltatore, creaSubappaltatore,
-  eliminaAppaltatore, eliminaSubappaltatore, eliminaAppalto,
-} from "./database";
+  creaAppalto, creaAppaltatore,
+  eliminaAppaltatore, eliminaAppalto,
+} from "./dbSupabase";
 
 const inputStyle = {
   width: "100%", padding: "9px 12px",
@@ -18,10 +17,12 @@ const labelStyle = {
 
 function FormAppalto({ aziendaId, onSalva, onAnnulla }) {
   const [form, setForm] = useState({ titolo: "", area: "", dataInizio: "", cseNome: "" });
-  function salva() {
+  async function salva() {
     if (!form.titolo.trim()) return;
-    const nuovo = creaAppalto(aziendaId, form);
-    onSalva(nuovo);
+    try {
+      const nuovo = await creaAppalto(aziendaId, form);
+      onSalva(nuovo);
+    } catch (e) { alert(e.message || "Errore di salvataggio"); }
   }
   return (
     <div style={{ background: "#161b27", border: "1px solid #1e2535", borderRadius: 12, padding: "20px 24px", marginBottom: 16 }}>
@@ -114,36 +115,42 @@ export default function ModuloAppaltatori({ azienda, onUpdate }) {
     setAppaltoAperto(nuovo.id);
   }
 
-  function handleNuovoAppaltatore(appaltoId, dati) {
-    creaAppaltatore(azienda.id, appaltoId, dati);
-    onUpdate();
-    setShowNuovoApp(null);
+  async function handleNuovoAppaltatore(appaltoId, dati) {
+    try {
+      await creaAppaltatore(appaltoId, dati);
+      onUpdate();
+      setShowNuovoApp(null);
+    } catch (e) { alert(e.message || "Errore di salvataggio"); }
   }
 
-  function handleNuovoSubappaltatore(appaltoId, appaltatoreId, dati) {
-    creaSubappaltatore(azienda.id, appaltoId, appaltatoreId, dati);
-    onUpdate();
-    setShowNuovoSub(null);
-    setSubParent(null);
+  async function handleNuovoSubappaltatore(appaltoId, appaltatoreId, dati) {
+    try {
+      await creaAppaltatore(appaltoId, dati, appaltatoreId);
+      onUpdate();
+      setShowNuovoSub(null);
+      setSubParent(null);
+    } catch (e) { alert(e.message || "Errore di salvataggio"); }
   }
 
-  function handleEliminaAppaltatore(appaltoId, appaltatoreId) {
+  async function handleEliminaAppaltatore(appaltoId, appaltatoreId) {
     if (!window.confirm("Eliminare questo appaltatore e tutti i suoi lavoratori?")) return;
-    eliminaAppaltatore(azienda.id, appaltoId, appaltatoreId);
-    onUpdate();
+    try { await eliminaAppaltatore(appaltatoreId); onUpdate(); }
+    catch (e) { alert(e.message || "Errore durante l'eliminazione"); }
   }
 
-  function handleEliminaSubappaltatore(appaltoId, appaltatoreId, subId) {
+  async function handleEliminaSubappaltatore(appaltoId, appaltatoreId, subId) {
     if (!window.confirm("Eliminare questo subappaltatore?")) return;
-    eliminaSubappaltatore(azienda.id, appaltoId, appaltatoreId, subId);
-    onUpdate();
+    try { await eliminaAppaltatore(subId); onUpdate(); }
+    catch (e) { alert(e.message || "Errore durante l'eliminazione"); }
   }
 
-  function handleEliminaAppalto(appaltoId) {
+  async function handleEliminaAppalto(appaltoId) {
     if (!window.confirm("Eliminare questo appalto e tutti i suoi dati?")) return;
-    eliminaAppalto(azienda.id, appaltoId);
-    onUpdate();
-    setAppaltoAperto(null);
+    try {
+      await eliminaAppalto(appaltoId);
+      onUpdate();
+      setAppaltoAperto(null);
+    } catch (e) { alert(e.message || "Errore durante l'eliminazione"); }
   }
 
   const appalti = azienda.appalti || [];

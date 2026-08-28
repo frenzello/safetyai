@@ -6,7 +6,7 @@ echo  ====================================
 echo.
 
 :: Imposta la chiave API - SOSTITUISCI CON LA TUA CHIAVE
-set ANTHROPIC_KEY=INCOLLA-QUI-LA-TUA-CHIAVE-API
+::set ANTHROPIC_KEY=INCOLLA-QUI-LA-TUA-CHIAVE-API
 
 :: Verifica che la chiave sia stata impostata
 if "%ANTHROPIC_KEY%"=="INCOLLA-QUI-LA-TUA-CHIAVE-API" (

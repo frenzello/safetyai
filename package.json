@@ -6,6 +6,7 @@
     "@sentry/node": "^10.64.0",
     "@sentry/react": "^10.64.0",
     "@supabase/supabase-js": "^2.106.2",
+    "@surma/rollup-plugin-off-main-thread": "^2.2.3",
     "cors": "^2.8.6",
     "docx": "^8.5.0",
     "dotenv": "^16.0.0",

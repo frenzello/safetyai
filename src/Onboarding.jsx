@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { accettaPrivacy, genId } from "./database";
+import { accettaPrivacy } from "./consensoLocale";
+import { genId } from "./scadenzeUtils";
 import { creaAzienda } from "./dbSupabase";
 import API_URL from "./config";
 

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { tutteLeScadenze, statoScadenza, giorniAllaScadenza } from "./database";
+import { tutteLeScadenze, statoScadenza, giorniAllaScadenza } from "./scadenzeUtils";
 
 // ─── COSTANTI ─────────────────────────────────────────────────────────────────
 const CFG_KEY = "safetyai_notifiche_cfg";

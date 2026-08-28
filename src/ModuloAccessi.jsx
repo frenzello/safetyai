@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { leggiDB, salvaDB, statoScadenza, giorniAllaScadenza } from "./database";
+import { statoScadenza, giorniAllaScadenza } from "./scadenzeUtils";
 
 // ─── COSTANTI ─────────────────────────────────────────────────────────────────
 const LOG_KEY = "safetyai_accessi_log";
