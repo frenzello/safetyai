@@ -37,9 +37,9 @@ function ModaleDocumento({ tipo, onChiudi }) {
       titolo: "Informativa Privacy",
       colore: "#3b82f6",
       icona: "🔒",
-      intro: "Questo documento spiega come SafetyAI tratta i dati personali che carichi, in conformità al GDPR.",
+      intro: "Questo documento spiega come Agile81 tratta i dati personali che carichi, in conformità al GDPR.",
       punti: [
-        { titolo: "Chi è il Titolare", testo: "Sei tu — il professionista che usa SafetyAI. SafetyAI è il Responsabile che elabora i dati per conto tuo." },
+        { titolo: "Chi è il Titolare", testo: "Sei tu — il professionista che usa Agile81. Agile81 è il Responsabile che elabora i dati per conto tuo." },
         { titolo: "Quali dati trattiamo", testo: "Nomi e codici fiscali dei lavoratori, attestati di formazione, idoneità sanitarie, dati aziendali. Le idoneità sanitarie sono dati sensibili ex art. 9 GDPR." },
         { titolo: "Come li trattiamo", testo: "I file originali non vengono mai archiviati. Vengono analizzati in memoria dall'AI e immediatamente scartati. I dati estratti rimangono solo sul tuo dispositivo." },
         { titolo: "Chi li vede", testo: "Solo Anthropic (il motore AI) li elabora momentaneamente, senza conservarli e senza usarli per addestrare modelli. Nessun altro." },
@@ -50,10 +50,10 @@ function ModaleDocumento({ tipo, onChiudi }) {
       titolo: "Data Processing Agreement",
       colore: "#a78bfa",
       icona: "📄",
-      intro: "Il DPA è il contratto obbligatorio tra te (Titolare) e SafetyAI (Responsabile) richiesto dall'art. 28 GDPR quando affidi dati personali a uno strumento esterno.",
+      intro: "Il DPA è il contratto obbligatorio tra te (Titolare) e Agile81 (Responsabile) richiesto dall'art. 28 GDPR quando affidi dati personali a uno strumento esterno.",
       punti: [
-        { titolo: "Perché esiste", testo: "Il GDPR obbliga a formalizzare per iscritto chi può fare cosa con i dati. Senza questo contratto non potresti legittimamente usare SafetyAI per trattare dati di terzi." },
-        { titolo: "Cosa garantisce SafetyAI", testo: "Nessun uso dei dati per finalità proprie, nessuna cessione a terzi, notifica entro 72h in caso di violazione, supporto per le richieste degli interessati." },
+        { titolo: "Perché esiste", testo: "Il GDPR obbliga a formalizzare per iscritto chi può fare cosa con i dati. Senza questo contratto non potresti legittimamente usare Agile81 per trattare dati di terzi." },
+        { titolo: "Cosa garantisce Agile81", testo: "Nessun uso dei dati per finalità proprie, nessuna cessione a terzi, notifica entro 72h in caso di violazione, supporto per le richieste degli interessati." },
         { titolo: "I sub-responsabili", testo: "Anthropic è nominato sub-responsabile. Riceve i dati solo per l'analisi AI e non li conserva né li usa per addestrare modelli." },
         { titolo: "Trasferimento USA", testo: "Anthropic ha sede negli USA. Il trasferimento avviene con le garanzie richieste dal Capo V GDPR." },
         { titolo: "Cosa fare", testo: "Accettando questo DPA formalizzi il rapporto contrattuale. Per uso professionale continuativo è consigliabile una revisione legale." },
@@ -115,7 +115,7 @@ function ModaleDocumento({ tipo, onChiudi }) {
                 👁 Apri nel browser
               </button>
               <button
-                onClick={() => scaricaPDF(isPrivacy ? PDF_PRIVACY_B64 : PDF_DPA_B64, isPrivacy ? "SafetyAI_Informativa_Privacy.pdf" : "SafetyAI_DPA.pdf")}
+                onClick={() => scaricaPDF(isPrivacy ? PDF_PRIVACY_B64 : PDF_DPA_B64, isPrivacy ? "Agile81_Informativa_Privacy.pdf" : "Agile81_DPA.pdf")}
                 style={{ flex: 1, padding: "9px 14px", background: `${doc.colore}20`, border: `1px solid ${doc.colore}40`, borderRadius: 8, color: doc.colore, fontSize: 12, fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>
                 ↓ Scarica PDF
               </button>
@@ -156,7 +156,7 @@ function SchermataBenvenuto({ onAccetta }) {
     {
       check: checkDPA, setCheck: setCheckDPA,
       titolo: "Data Processing Agreement",
-      testo: "Accetto il DPA ai sensi dell'art. 28 GDPR, che regola il rapporto tra me (Titolare) e SafetyAI (Responsabile).",
+      testo: "Accetto il DPA ai sensi dell'art. 28 GDPR, che regola il rapporto tra me (Titolare) e Agile81 (Responsabile).",
       icona: "📄",
       linkLabel: "Leggi il DPA completo →",
       tipoModale: "dpa",
@@ -164,7 +164,7 @@ function SchermataBenvenuto({ onAccetta }) {
     {
       check: checkResp, setCheck: setCheckResp,
       titolo: "Responsabilità professionale",
-      testo: "Comprendo che SafetyAI è uno strumento di supporto. Le decisioni finali e la responsabilità rimangono in capo a me.",
+      testo: "Comprendo che Agile81 è uno strumento di supporto. Le decisioni finali e la responsabilità rimangono in capo a me.",
       icona: "⚖️",
       linkLabel: null,
       tipoModale: null,
@@ -180,8 +180,8 @@ function SchermataBenvenuto({ onAccetta }) {
       <div style={{ maxWidth: 560, width: "100%" }}>
         {/* Logo */}
         <div style={{ textAlign: "center", marginBottom: 40 }}>
-          <div style={{ width: 56, height: 56, margin: "0 auto 16px", background: "linear-gradient(135deg, #3b82f6, #06b6d4)", borderRadius: 16, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 28, fontWeight: 800, color: "white" }}>S</div>
-          <div style={{ fontSize: 26, fontWeight: 800, color: "#f1f5f9", letterSpacing: "-0.5px" }}>Benvenuto in SafetyAI</div>
+          <div style={{ width: 56, height: 56, margin: "0 auto 16px", background: "linear-gradient(135deg, #3b82f6, #06b6d4)", borderRadius: 16, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 28, fontWeight: 800, color: "white" }}>A</div>
+          <div style={{ fontSize: 26, fontWeight: 800, color: "#f1f5f9", letterSpacing: "-0.5px" }}>Benvenuto in Agile81</div>
           <div style={{ fontSize: 14, color: "#475569", marginTop: 8, lineHeight: 1.6 }}>Il gestionale HSE per professionisti della sicurezza sul lavoro</div>
         </div>
 
@@ -246,7 +246,7 @@ function SchermataBenvenuto({ onAccetta }) {
             cursor: tuttoAccettato ? "pointer" : "not-allowed",
             fontFamily: "inherit", transition: "all 0.2s",
           }}>
-          {tuttoAccettato ? "Inizia a usare SafetyAI →" : "Leggi e accetta tutti e tre i punti per continuare"}
+          {tuttoAccettato ? "Inizia a usare Agile81 →" : "Leggi e accetta tutti e tre i punti per continuare"}
         </button>
       </div>
     </div>

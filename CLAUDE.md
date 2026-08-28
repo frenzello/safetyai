@@ -1,19 +1,22 @@
-# CLAUDE.md — SafetyAI
+# CLAUDE.md — Agile81
 
 Gestionale HSE per RSPP esterni e CSE italiani, con analisi AI dei documenti (attestati di formazione, visure, DVR) tramite API Anthropic. Lingua del progetto: **italiano** (codice, commenti, UI, commit).
 
+> **Nota rebrand (28/08/2026):** il prodotto si chiamava "SafetyAI", rinominato in **Agile81** (nome libero sul mercato, dominio target `agile81.it` da acquistare). Cartella locale, repo GitHub (`frenzello/safetyai`) e progetti Vercel/Railway restano con il vecchio nome per ora — si rinominano quando si acquista il dominio. Non stupirti quindi di trovare "safetyai" in percorsi, URL infrastrutturali, file legali/moduli non ancora aggiornati (vedi elenco più sotto) o nella cronologia git.
+
 ## Documenti guida — leggerli prima di lavorare
 
-- `SafetyAI_PIANO_90_GIORNI.md` — posizionamento, priorità e criterio di successo (10 clienti paganti in 90 giorni). **L'ordine delle priorità tecniche è lì e va rispettato: niente funzionalità nuove prima della validazione.**
-- `SafetyAI_TODO.md` — lista attività dettagliata (attenzione: aggiornata a maggio 2026, alcune voci di sicurezza sono già risolte in `server.js`).
+- `Agile81_PIANO_90_GIORNI.md` — posizionamento, priorità e criterio di successo (10 clienti paganti in 90 giorni). **L'ordine delle priorità tecniche è lì e va rispettato: niente funzionalità nuove prima della validazione.**
+- `Agile81_TODO.md` — lista attività dettagliata (attenzione: aggiornata a maggio 2026, alcune voci di sicurezza sono già risolte in `server.js`).
 
 ## Architettura
 
-- **Front-end**: React 18 (create-react-app, porta 3000). Tutto in `src/`, componenti a file singolo.
+- **Front-end**: React 18 (create-react-app, porta 3000). Tutto in `src/`, componenti a file singolo. `App.js` esporta due shell: `AppMVP` (freemium, nessun login, monta solo `UploadMassivo` — quella live in produzione, `MVP_MODE = true`) e `AppCompleta` (multi-azienda dietro Supabase, dormiente, non montata).
 - **Back-end**: `server.js` — Express (porta 3001). Fa da proxy sicuro verso l'API Anthropic (`/api/claude`) e genera il cartiglio PSC via Python (`/api/genera-cartiglio`). Ha già: chiave in variabile d'ambiente (`ANTHROPIC_KEY`), rate limiting configurabile, CORS con whitelist, validazione modello/allegati, Sentry opzionale.
-- **AI**: Claude Haiku via API, chiamato SOLO attraverso il server, mai dal client.
-- **Storage**: transizione in corso da localStorage (`src/database.js`) a Supabase (`src/dbSupabase.js`, `src/supabaseClient.js`, `src/AuthSupabase.jsx`, schema in `supabase/schema.sql`). Obiettivo: dismettere `database.js`.
-- **Deploy**: front-end su Vercel (safetyai-lluu.vercel.app), server su Railway (config in `railway.json`, `Dockerfile`, `nixpacks.toml`).
+- **AI**: Claude Haiku (con escalation a Sonnet) via API, chiamato SOLO attraverso il server, mai dal client.
+- **Storage**: nel flusso live (`AppMVP`) non c'è persistenza — analisi client-side, nessun database. `AppCompleta` (dormiente) ha una migrazione da localStorage (`src/database.js`, rimosso) a Supabase (`src/dbSupabase.js`, `src/supabaseClient.js`, `src/AuthSupabase.jsx`, schema in `supabase/schema.sql`) per un eventuale tier a pagamento futuro.
+- **Deploy**: front-end su Vercel (dominio attuale `safetyai-lluu.vercel.app`, da migrare a `agile81.it`), server su Railway (config in `railway.json`, `Dockerfile`, `nixpacks.toml`). `REACT_APP_API_URL` deve essere impostata nelle Environment Variables del progetto Vercel (tipo **Config**, non Secret — è un URL pubblico) altrimenti il front-end ricade su `localhost:3001` anche in produzione.
+- **Rebrand in corso**: testi UI, titolo pagina e documenti di progetto sono già "Agile81"; restano da aggiornare (non urgente, moduli non raggiungibili dal flusso live): `ModuloPSC.jsx`, `ModuloBadge.jsx`, `ModuloAccessi.jsx`, `ModuloNotifiche.jsx`, `RegistroScadenze.jsx`, `AuthSupabase.jsx`, `AccessGate.jsx`, `PrivacyResponsabilita.jsx`, `DPA.jsx`, `TerminiServizio.jsx`, gli script Python `genera_psc_*.py`, `supabase/schema.sql`, `legal/*.md`, `safetyai_website.html` (sito marketing, non ancora pubblicato).
 
 ## Comandi
 
@@ -24,15 +27,15 @@ Gestionale HSE per RSPP esterni e CSE italiani, con analisi AI dei documenti (at
 
 ## Mappa dei moduli principali (src/)
 
-- `App.js` — shell, sidebar, navigazione, selettore multi-azienda
-- `UploadMassivo.jsx` — cuore del prodotto: upload attestati, analisi AI, controllo conformità D.Lgs 81/08 (14 regole), export Excel colorato
-- `Onboarding.jsx` — creazione azienda con AI da visura camerale + DVR
-- `ModuloScadenze.jsx` / `RegistroScadenze.jsx` — scadenzario
-- `ModuloNotifiche.jsx` — notifiche scadenze (da collegare ai dati reali)
-- `ModuloAppaltatori.jsx`, `ModuloAccessi.jsx`, `ModuloBadge.jsx` — appalti, accessi, badge CR80
-- `ModuloPSC.jsx`, `POS.jsx`, `TemplatesPOS.jsx`, `TemplatesDUVRIDVR.jsx` — documenti cantiere (PSC/POS/DUVRI)
-- `PrivacyResponsabilita.jsx`, `DPA.jsx`, `DisclaimerExport.jsx`, `TerminiServizio.jsx` — parte legale/privacy
-- `database.js` (localStorage, da dismettere) vs `dbSupabase.js` (destinazione)
+- `App.js` — `AppMVP` (live: header + `UploadMassivo`, nessuna azienda/sidebar) e `AppCompleta` (dormiente: shell, sidebar, navigazione, selettore multi-azienda)
+- `UploadMassivo.jsx` — cuore del prodotto: upload attestati, analisi AI, controllo conformità D.Lgs 81/08, rilevamento schede lavoratore duplicate, export Excel colorato
+- `Onboarding.jsx` — schermata di consenso privacy/DPA (live) + creazione azienda con AI da visura camerale + DVR (dormiente, solo `AppCompleta`)
+- `ModuloScadenze.jsx` / `RegistroScadenze.jsx` — scadenzario (dormiente)
+- `ModuloNotifiche.jsx` — notifiche scadenze (dormiente, da collegare ai dati reali)
+- `ModuloAppaltatori.jsx`, `ModuloAccessi.jsx`, `ModuloBadge.jsx` — appalti, accessi, badge CR80 (dormiente)
+- `ModuloPSC.jsx`, `POS.jsx`, `TemplatesPOS.jsx`, `TemplatesDUVRIDVR.jsx` — documenti cantiere (PSC/POS/DUVRI, dormiente)
+- `PrivacyResponsabilita.jsx`, `DPA.jsx`, `DisclaimerExport.jsx`, `TerminiServizio.jsx` — parte legale/privacy (`DisclaimerExport.jsx` live, gli altri tre dormienti)
+- `dbSupabase.js` — CRUD multi-tenant per `AppCompleta` (dormiente, nessun uso nel flusso live)
 
 ## Regole vincolanti
 

@@ -347,10 +347,10 @@ function sanitizeRisultato(r) {
 // ─── ERROR BOUNDARY ───────────────────────────────────────────────────────────
 // Evita la "pagina bianca": qualsiasi errore di rendering viene catturato e
 // mostrato, lasciando all'utente la possibilità di ricaricare.
-class ErrorBoundarySafetyAI extends Component {
+class ErrorBoundaryAgile81 extends Component {
   constructor(props) { super(props); this.state = { error: null }; }
   static getDerivedStateFromError(error) { return { error }; }
-  componentDidCatch(error, info) { console.error("[SafetyAI] Crash UI:", error, info); }
+  componentDidCatch(error, info) { console.error("[Agile81] Crash UI:", error, info); }
   render() {
     if (this.state.error) {
       return (
@@ -501,7 +501,7 @@ async function extractDocumentData(file) {
   );
 
   if (necessitaRetry) {
-    console.log(`[SafetyAI] Escalation Sonnet: ${file.name}`);
+    console.log(`[Agile81] Escalation Sonnet: ${file.name}`);
     try {
       const sonnetRis = await callClaudeAPI(contentParts, "claude-sonnet-4-6", 2000);
       // Usa Sonnet se non ha errori e la confidenza media è maggiore o uguale
@@ -510,7 +510,7 @@ async function extractDocumentData(file) {
         risultati.forEach(r => { r._usatoSonnet = true; });
       }
     } catch (e) {
-      console.warn("[SafetyAI] Retry Sonnet fallito, uso risultati Haiku:", e.message);
+      console.warn("[Agile81] Retry Sonnet fallito, uso risultati Haiku:", e.message);
     }
   }
 
@@ -816,7 +816,7 @@ async function esportaExcel(elaborati, decisioniConformita, azienda, fusioni) {
   const nomeAzienda = azienda?.nome || "Azienda";
 
   const titleRow = [`REGISTRO ATTESTATI SICUREZZA — ${nomeAzienda}`, ...Array(tipiOriginali.length).fill("")];
-  const infoRow  = [`Generato: ${oggi} | SafetyAI`, ...Array(tipiOriginali.length).fill("")];
+  const infoRow  = [`Generato: ${oggi} | Agile81`, ...Array(tipiOriginali.length).fill("")];
   const emptyRow = Array(tipiOriginali.length + 1).fill("");
   const headerRow = ["LAVORATORE", ...tipiOriginali.map(t => t.toUpperCase())];
 
@@ -969,7 +969,7 @@ async function esportaExcel(elaborati, decisioniConformita, azienda, fusioni) {
   XLSX.utils.book_append_sheet(wb, ws2, "Dettaglio");
 
   const dataOggi = new Date().toLocaleDateString("it-IT").replace(/\//g, "-");
-  XLSX.writeFile(wb, `SafetyAI_Attestati_${dataOggi}.xlsx`);
+  XLSX.writeFile(wb, `Agile81_Attestati_${dataOggi}.xlsx`);
 }
 
 // ─── HELPERS UI ───────────────────────────────────────────────────────────────
@@ -1154,11 +1154,11 @@ function SchermatScadenze({ elaborati, azienda, appaltoSelId, appaltatoreSelId, 
       <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: 24, gap: 16 }}>
         <div>
           <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8 }}>
-            <div style={{ width: 32, height: 32, background: "linear-gradient(135deg, #3b82f6, #06b6d4)", borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16, fontWeight: 800, color: "white" }}>S</div>
-            <span style={{ fontSize: 14, fontWeight: 700, color: "#f1f5f9" }}>SafetyAI</span>
+            <div style={{ width: 32, height: 32, background: "linear-gradient(135deg, #3b82f6, #06b6d4)", borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16, fontWeight: 800, color: "white" }}>A</div>
+            <span style={{ fontSize: 14, fontWeight: 700, color: "#f1f5f9" }}>Agile81</span>
           </div>
           <div style={{ fontSize: 20, fontWeight: 800, color: "#f1f5f9", letterSpacing: "-0.4px" }}>Situazione documentale</div>
-          <div style={{ fontSize: 12, color: "#475569", marginTop: 2 }}>{azienda?.nome || "SafetyAI"}</div>
+          <div style={{ fontSize: 12, color: "#475569", marginTop: 2 }}>{azienda?.nome || "Agile81"}</div>
         </div>
         <button
           onClick={handleExport}
@@ -1614,7 +1614,7 @@ function PortaleUploadMassivoInner({ azienda }) {
       }
     } catch (err) {
       setCaricandoCartella(false);
-      if (err.name !== "AbortError") console.error("[SafetyAI] picker error:", err);
+      if (err.name !== "AbortError") console.error("[Agile81] picker error:", err);
     }
   }, [handleFiles]);
 
@@ -1642,13 +1642,13 @@ function PortaleUploadMassivoInner({ azienda }) {
           const f = await new Promise((res, rej) => entry.file(res, rej));
           return isFileAccepted(f) ? { acc: [f], skip: 0 } : { acc: [], skip: 1 };
         } catch (err) {
-          console.warn("[SafetyAI] Voce non letta:", entry && entry.name, err);
+          console.warn("[Agile81] Voce non letta:", entry && entry.name, err);
           return { acc: [], skip: 0 };
         }
       }));
       for (const r of risultati) { tuttiFile.push(...r.acc); skippati += r.skip; }
     } catch (err) {
-      console.warn("[SafetyAI] Errore lettura drop:", err);
+      console.warn("[Agile81] Errore lettura drop:", err);
     } finally {
       setCaricandoCartella(false);
     }
@@ -1838,8 +1838,8 @@ function PortaleUploadMassivoInner({ azienda }) {
       <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
       <div style={{ marginBottom: 32 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 20 }}>
-          <div style={{ width: 32, height: 32, background: "linear-gradient(135deg, #3b82f6, #06b6d4)", borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16, fontWeight: 800, color: "white" }}>S</div>
-          <span style={{ fontSize: 14, fontWeight: 700, color: "#f1f5f9" }}>SafetyAI</span>
+          <div style={{ width: 32, height: 32, background: "linear-gradient(135deg, #3b82f6, #06b6d4)", borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16, fontWeight: 800, color: "white" }}>A</div>
+          <span style={{ fontSize: 14, fontWeight: 700, color: "#f1f5f9" }}>Agile81</span>
         </div>
         <div style={{ background: "#161b27", border: "1px solid #1e2535", borderRadius: 12, padding: "20px 24px", marginBottom: 24 }}>
           <div style={{ fontSize: 11, color: "#3b82f6", fontWeight: 700, letterSpacing: "0.8px", marginBottom: 8 }}>CARICA DOCUMENTI</div>
@@ -2026,8 +2026,8 @@ function PortaleUploadMassivoInner({ azienda }) {
 // Export con error boundary: l'app non diventa mai una pagina bianca.
 export default function PortaleUploadMassivo(props) {
   return (
-    <ErrorBoundarySafetyAI>
+    <ErrorBoundaryAgile81>
       <PortaleUploadMassivoInner {...props} />
-    </ErrorBoundarySafetyAI>
+    </ErrorBoundaryAgile81>
   );
 }

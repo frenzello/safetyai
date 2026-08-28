@@ -319,7 +319,7 @@ function ProfiloAzienda({ azienda }) {
 
 // ─── APP FREEMIUM (MVP) ───────────────────────────────────────────────────────
 // Nessun login, nessun database: carica PDF -> analisi AI -> Excel. E' il canale
-// di acquisizione (vedi SafetyAI_PIANO_90_GIORNI.md). Non tocca Supabase.
+// di acquisizione (vedi Agile81_PIANO_90_GIORNI.md). Non tocca Supabase.
 function AppMVP() {
   const [privacyOk, setPrivacyOk] = useState(privacyAccettata());
 
@@ -331,9 +331,9 @@ function AppMVP() {
     <div style={{ fontFamily: "'DM Sans','Segoe UI',sans-serif", background: "#0f1117", minHeight: "100vh", color: "#e2e8f0" }}>
       <div style={{ borderBottom: "1px solid #1e2535", padding: "16px 28px", display: "flex", alignItems: "center", justifyContent: "space-between", background: "#161b27", position: "sticky", top: 0, zIndex: 10 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-          <div style={{ width: 32, height: 32, background: "linear-gradient(135deg,#3b82f6,#06b6d4)", borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16, fontWeight: 800, color: "white" }}>S</div>
+          <div style={{ width: 32, height: 32, background: "linear-gradient(135deg,#3b82f6,#06b6d4)", borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16, fontWeight: 800, color: "white" }}>A</div>
           <div>
-            <div style={{ fontSize: 15, fontWeight: 800, color: "#f1f5f9", letterSpacing: "-0.3px" }}>SafetyAI</div>
+            <div style={{ fontSize: 15, fontWeight: 800, color: "#f1f5f9", letterSpacing: "-0.3px" }}>Agile81</div>
             <div style={{ fontSize: 9, color: "#64748b", letterSpacing: "1px" }}>ANALISI ATTESTATI</div>
           </div>
         </div>
@@ -423,8 +423,8 @@ function AppCompleta() {
         <div style={{ borderBottom: "1px solid #1e2535", padding: "16px 32px", display: "flex", alignItems: "center", gap: 16, background: "#161b27", position: "sticky", top: 0, zIndex: 10 }}>
           <button onClick={() => setShowNuovaAzienda(false)} style={{ background: "none", border: "none", color: "#3b82f6", fontSize: 13, cursor: "pointer", fontFamily: "inherit" }}>← Torna</button>
           <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-            <div style={{ width: 28, height: 28, background: "linear-gradient(135deg, #3b82f6, #06b6d4)", borderRadius: 7, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 14, fontWeight: 800, color: "white" }}>S</div>
-            <span style={{ fontSize: 14, fontWeight: 700, color: "#f1f5f9" }}>SafetyAI</span>
+            <div style={{ width: 28, height: 28, background: "linear-gradient(135deg, #3b82f6, #06b6d4)", borderRadius: 7, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 14, fontWeight: 800, color: "white" }}>A</div>
+            <span style={{ fontSize: 14, fontWeight: 700, color: "#f1f5f9" }}>Agile81</span>
           </div>
         </div>
         <div style={{ padding: "40px 24px" }}>
@@ -482,9 +482,9 @@ function AppCompleta() {
         {/* Logo */}
         <div style={{ padding: "16px 20px", borderBottom: "1px solid #1e2535" }}>
           <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-            <div style={{ width: 32, height: 32, background: "linear-gradient(135deg,#3b82f6,#06b6d4)", borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16, fontWeight: 800, color: "white" }}>S</div>
+            <div style={{ width: 32, height: 32, background: "linear-gradient(135deg,#3b82f6,#06b6d4)", borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16, fontWeight: 800, color: "white" }}>A</div>
             <div>
-              <div style={{ fontSize: 15, fontWeight: 800, color: "#f1f5f9", letterSpacing: "-0.3px" }}>SafetyAI</div>
+              <div style={{ fontSize: 15, fontWeight: 800, color: "#f1f5f9", letterSpacing: "-0.3px" }}>Agile81</div>
               <div style={{ fontSize: 9, color: "#64748b", letterSpacing: "1px" }}>GESTIONALE HSE</div>
             </div>
           </div>
@@ -656,6 +656,6 @@ function AppCompleta() {
 // In MVP_MODE (freemium, nessun login) monta AppMVP: nessuna chiamata a Supabase.
 // A MVP_MODE = false si torna alla versione pro multi-azienda (richiede login,
 // da rimontare dietro AuthSupabase in index.js quando si riattiva).
-export default function SafetyAIApp() {
+export default function Agile81App() {
   return MVP_MODE ? <AppMVP /> : <AppCompleta />;
 }
