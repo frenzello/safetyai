@@ -27,6 +27,8 @@ const app = express();
 // --- CORS -------------------------------------------------------------------
 const ALLOWED_ORIGINS = [
   'https://safetyai-lluu.vercel.app',
+  'https://agile81.it',
+  'https://www.agile81.it',
   'http://localhost:3000',
   ...(process.env.ALLOWED_ORIGINS ? process.env.ALLOWED_ORIGINS.split(',').map(o => o.trim()) : []),
 ];
