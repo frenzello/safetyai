@@ -8,6 +8,26 @@ import API_URL from "./config";
 
 const DOC_AZIENDALI_TIPI = ["DURC", "Visura camerale", "Polizza RC", "DVR aziendale"];
 
+// Categorie fisse per le colonne del registro Excel. L'AI sceglie SEMPRE una di
+// queste (vedi CATEGORIA_CORSO nel prompt) invece di lasciare che ogni corso
+// generi una colonna a sè: prima di questo elenco, due formulazioni diverse
+// dello stesso corso (o due corsi diversi non censiti nel dizionario di
+// abbreviazione) finivano abbreviate allo stesso modo e collidevano in colonne
+// ambigue tipo "Formazione", "Formazione 2".
+const CATEGORIE_CORSO = [
+  "Formazione Generale", "Form. Specifica Basso", "Form. Specifica Medio", "Form. Specifica Alto",
+  "Agg. Form. Specifica", "Primo Soccorso", "Agg. Primo Soccorso",
+  "Antincendio Liv.1", "Antincendio Liv.2", "Antincendio Liv.3", "Agg. Antincendio",
+  "Lavoro in Quota/DPI 3a", "Carrelli Elevatori", "Agg. Carrelli Elevatori",
+  "PLE", "Agg. PLE", "Semoventi/Sollevatori", "Gru a Torre", "Gru su Autocarro",
+  "Escavatori/Pale/Terne", "Agg. Escav./Pale/Terne", "Ponteggio",
+  "Idoneità Sanitaria", "Formazione Preposti", "Agg. Preposti",
+  "Formazione Dirigenti", "Formazione Datore Lavoro", "Patente a Crediti",
+  "Consegna DPI", "Nomina (RSPP/RLS/altro)", "Verbale Riunione",
+  "Carta Identità", "Tessera Sanitaria", "Permesso Soggiorno", "Comunicazione Assunzione",
+  "DURC", "Visura Camerale", "Polizza RC", "DVR Aziendale", "Vaccinazione", "Altro",
+];
+
 // ─── REGOLE CONFORMITÀ D.Lgs 81/08 ──────────────────────────────────────────
 const REGOLE_CONFORMITA = `
 REGOLE DI CONFORMITÀ OBBLIGATORIE — D.Lgs 81/08, Accordi Stato-Regioni e normative correlate:
@@ -283,10 +303,17 @@ function aStringaONull(v) {
 }
 function sanitizeRisultato(r) {
   if (!r || typeof r !== "object") return r;
-  ["tipo_documento", "nome_lavoratore", "codice_fiscale", "data_scadenza", "data_rilascio",
+  ["tipo_documento", "categoria_corso", "nome_lavoratore", "codice_fiscale", "data_scadenza", "data_rilascio",
    "normativa", "ente_erogatore", "problema_conformita", "note", "errore", "categoria"].forEach((k) => {
     if (k in r) r[k] = aStringaONull(r[k]);
   });
+  // L'AI a volte non rispetta l'elenco fisso alla lettera (spazi, maiuscole):
+  // se non corrisponde esattamente a nessuna categoria ammessa, la scartiamo qui
+  // cosi' l'export sa gia' che deve ricadere sul fallback invece di creare una
+  // colonna con un'etichetta improvvisata.
+  if (r.categoria_corso && !CATEGORIE_CORSO.includes(r.categoria_corso)) {
+    r.categoria_corso = null;
+  }
   if (r.ore_formazione != null && typeof r.ore_formazione !== "number") {
     const n = parseInt(r.ore_formazione, 10); r.ore_formazione = isNaN(n) ? null : n;
   }
@@ -338,10 +365,18 @@ Se il PDF contiene più corsi o formazioni diverse (es. "Formazione generale" + 
 Ogni formazione ha la propria data di scadenza, normativa e ore indipendenti.
 Esempio: un PDF con "Formazione generale (4h, nessuna scadenza)" + "Formazione specifica rischio medio (8h, scade 2028)" → array con 2 oggetti distinti.
 
+CATEGORIA_CORSO — OBBLIGATORIO E A SCELTA VINCOLATA:
+Oltre a "tipo_documento" (testo libero e descrittivo), classifica SEMPRE il documento in ESATTAMENTE
+una delle etichette fisse elencate sotto — copiala testualmente, senza modificarla, senza aggiungere
+o abbreviare parole. Serve a raggruppare le colonne del registro Excel: NON inventare etichette nuove
+e NON creare varianti. Se davvero nessuna è pertinente usa "Altro".
+Etichette ammesse (scegli una): ${CATEGORIE_CORSO.join(" | ")}
+
 Restituisci SEMPRE un array JSON, anche se c'è un solo documento:
 [
   {
     "tipo_documento": "descrizione precisa del corso — sii specifico (es. 'Formazione specifica rischio medio' non solo 'Formazione')",
+    "categoria_corso": "una delle etichette fisse elencate sopra, copiata esattamente",
     "categoria": "aziendale oppure lavoratore",
     "nome_lavoratore": "nome e cognome nel formato 'Cognome Nome' (prima il cognome, poi il nome, iniziali maiuscole, resto minuscolo — es. 'Rossi Mario'). Normalizza sempre in questo formato indipendentemente da come è scritto nel documento. null se assente.",
     "codice_fiscale": "codice fiscale se presente, null se assente",
@@ -502,13 +537,25 @@ function chiaveRaggruppamento(raw) {
 // Priorita: cartella di provenienza (un lavoratore per cartella nel flusso tipico) ->
 // codice fiscale -> nome normalizzato. Cosi un attestato col nome scritto male
 // (es. "CASPU" invece di "CASAPU") resta unito al lavoratore corretto.
-function chiaveLavoratore(doc) {
+// "fusioni" (opzionale) e' la mappa { chiaveOrigine: chiaveDestinazione } prodotta
+// dall'operatore quando unisce manualmente due schede lavoratore duplicate (es. per
+// un refuso nel nome che ha creato due chiavi diverse). Non facciamo unione
+// automatica per somiglianza: in uno strumento di conformita' un match sbagliato
+// nasconderebbe un attestato scaduto sotto il profilo sbagliato, quindi la fusione
+// resta una decisione esplicita dell'operatore.
+function chiaveLavoratore(doc, fusioni) {
   const r = (doc && doc.risultato) || {};
   const cart = (doc && doc.file && doc.file._cartellaLavoratore) || (doc && doc._cartella) || null;
-  if (cart) return "DIR:" + chiaveRaggruppamento(cart);
-  const cf = String(r.codice_fiscale || "").toUpperCase().replace(/[^A-Z0-9]/g, "");
-  if (cf.length === 16) return "CF:" + cf;
-  return "NOME:" + chiaveRaggruppamento(r.nome_lavoratore);
+  let chiave = cart ? "DIR:" + chiaveRaggruppamento(cart) : null;
+  if (!chiave) {
+    const cf = String(r.codice_fiscale || "").toUpperCase().replace(/[^A-Z0-9]/g, "");
+    chiave = cf.length === 16 ? "CF:" + cf : "NOME:" + chiaveRaggruppamento(r.nome_lavoratore);
+  }
+  if (fusioni) {
+    const visti = new Set();
+    while (fusioni[chiave] && !visti.has(chiave)) { visti.add(chiave); chiave = fusioni[chiave]; }
+  }
+  return chiave;
 }
 
 // Nome da mostrare per un gruppo: il piu frequente tra quelli letti nei documenti
@@ -642,18 +689,31 @@ function abbreviaTipo(tipo) {
   return result.charAt(0).toUpperCase() + result.slice(1);
 }
 
-async function esportaExcel(elaborati, decisioniConformita, azienda) {
+// Colonna Excel a cui appartiene un documento: preferisce sempre la categoria
+// fissa scelta dall'AI (categoria_corso, vedi CATEGORIE_CORSO); se assente
+// (risposta vecchia in cache, o l'AI non ha rispettato l'elenco) ricade sul
+// vecchio dizionario di abbreviazione, e in ultima istanza su "Altro" —
+// mai su un troncamento improvvisato che rischia di collidere con altre colonne.
+function categoriaColonna(d) {
+  const r = d && d.risultato;
+  if (!r) return "Altro";
+  if (r.categoria_corso) return r.categoria_corso;
+  return abbreviaTipo(r.tipo_documento) || "Altro";
+}
+
+async function esportaExcel(elaborati, decisioniConformita, azienda, fusioni) {
   const XLSX = await import("xlsx-js-style");
 
   // ── 1. Raggruppa per lavoratore normalizzato ──────────────────────────────
-  // chiave = versione ordinata del nome (per unificare varianti)
+  // chiave = versione ordinata del nome (per unificare varianti), risolta
+  // attraverso eventuali fusioni manuali dell'operatore (vedi chiaveLavoratore)
   // valore = { nomeDisplay, docs[] }
   const perLavoratore = {};
 
   elaborati.forEach(doc => {
     const r = doc.risultato;
     if (!r || r.errore || r.categoria !== "lavoratore" || !r.nome_lavoratore) return;
-    const chiave = chiaveLavoratore(doc);
+    const chiave = chiaveLavoratore(doc, fusioni);
     if (!perLavoratore[chiave]) {
       perLavoratore[chiave] = { nomeDisplay: "", docs: [] };
     }
@@ -661,29 +721,12 @@ async function esportaExcel(elaborati, decisioniConformita, azienda) {
   });
   Object.values(perLavoratore).forEach(g => { g.nomeDisplay = nomeDisplayGruppo(g.docs); });
 
-  // ── 2. Raccoglie tutti i tipi unici e li abbrevia ────────────────────────
-  // Per ogni tipo originale, crea un header abbreviato (≤15 char)
-  // Gestisce duplicati di abbreviazione aggiungendo un suffisso numerico
-  const tipiOriginali = []; // ordine di inserimento
+  // ── 2. Raccoglie tutte le categorie di colonna presenti, nell'ordine in cui compaiono ──
+  const tipiOriginali = [];
   const tipiSet = new Set();
   elaborati.forEach(d => {
-    const t = d.risultato?.tipo_documento;
-    if (t && !tipiSet.has(t)) { tipiSet.add(t); tipiOriginali.push(t); }
-  });
-
-  // Mappa tipo originale → abbreviazione (senza duplicati)
-  const abbrUsate = new Map(); // abbr → count
-  const tipoAbbrMap = new Map(); // tipo originale → abbr finale
-  tipiOriginali.forEach(t => {
-    let abbr = abbreviaTipo(t);
-    if (abbrUsate.has(abbr)) {
-      const n = abbrUsate.get(abbr) + 1;
-      abbrUsate.set(abbr, n);
-      abbr = abbr.slice(0, 12) + " " + n;
-    } else {
-      abbrUsate.set(abbr, 1);
-    }
-    tipoAbbrMap.set(t, abbr);
+    const cat = categoriaColonna(d);
+    if (cat && !tipiSet.has(cat)) { tipiSet.add(cat); tipiOriginali.push(cat); }
   });
 
   const wb = XLSX.utils.book_new();
@@ -695,16 +738,16 @@ async function esportaExcel(elaborati, decisioniConformita, azienda) {
   const titleRow = [`REGISTRO ATTESTATI SICUREZZA — ${nomeAzienda}`, ...Array(tipiOriginali.length).fill("")];
   const infoRow  = [`Generato: ${oggi} | SafetyAI`, ...Array(tipiOriginali.length).fill("")];
   const emptyRow = Array(tipiOriginali.length + 1).fill("");
-  const headerRow = ["LAVORATORE", ...tipiOriginali.map(t => tipoAbbrMap.get(t).toUpperCase())];
+  const headerRow = ["LAVORATORE", ...tipiOriginali.map(t => t.toUpperCase())];
 
   const allRows = [titleRow, infoRow, emptyRow, headerRow];
 
-  // Per ogni lavoratore (riga unica) cerca il documento migliore per ogni tipo
+  // Per ogni lavoratore (riga unica) cerca il documento migliore per ogni categoria
   Object.values(perLavoratore).forEach(({ nomeDisplay, docs }) => {
-    // Costruisci mappa tipo → doc più recente (o più conforme)
+    // Costruisci mappa categoria → doc più recente (o più conforme)
     const docsMap = {};
     docs.forEach(d => {
-      const tipo = d.risultato?.tipo_documento;
+      const tipo = categoriaColonna(d);
       if (!tipo) return;
       const prev = docsMap[tipo];
       // Se già presente, tieni il più recente o quello conforme
@@ -719,7 +762,7 @@ async function esportaExcel(elaborati, decisioniConformita, azienda) {
     tipiOriginali.forEach(tipo => {
       if (docsMap[tipo]) {
         const r = docsMap[tipo].risultato;
-        const chiave = `${chiaveLavoratore(docsMap[tipo])}__${docsMap[tipo].nomeFile}`;
+        const chiave = `${chiaveLavoratore(docsMap[tipo], fusioni)}__${docsMap[tipo].nomeFile}`;
         const decisione = decisioniConformita[chiave];
         const nonConforme = r.conforme === false && decisione !== "approvato";
         const giorni = giorniAllaScadenza(r.data_scadenza);
@@ -816,7 +859,7 @@ async function esportaExcel(elaborati, decisioniConformita, azienda) {
   elaborati.forEach(doc => {
     if (!doc.risultato || doc.risultato.errore) return;
     const r = doc.risultato;
-    const chiave = `${chiaveLavoratore(doc)}__${doc.nomeFile}`;
+    const chiave = `${chiaveLavoratore(doc, fusioni)}__${doc.nomeFile}`;
     const decisione = decisioniConformita[chiave] || "—";
     const nomeNorm = normalizzaNome(r.nome_lavoratore || r.categoria || "—");
     dettaglioRows.push([
@@ -880,10 +923,13 @@ function SchermatScadenze({ elaborati, azienda, appaltoSelId, appaltatoreSelId, 
   const [showDisclaimer, setShowDisclaimer] = useState(false);
   // chiave: "nomeLavoratore__nomeFile" → "approvato" | "scartato"
   const [decisioniConformita, setDecisioniConformita] = useState({});
+  // Fusioni manuali di schede lavoratore duplicate: { chiaveOrigine: chiaveDestinazione }.
+  // Popolata solo dall'operatore (bottone "Unisci" sulla scheda) — mai in automatico.
+  const [fusioni, setFusioni] = useState({});
 
   const perLavoratore = elaborati.reduce((acc, doc) => {
     if (doc.risultato?.categoria === "lavoratore" && doc.risultato?.nome_lavoratore) {
-      const chiave = chiaveLavoratore(doc);
+      const chiave = chiaveLavoratore(doc, fusioni);
       if (!acc[chiave]) acc[chiave] = { nomeDisplay: "", docs: [] };
       acc[chiave].docs.push(doc);
     }
@@ -891,6 +937,20 @@ function SchermatScadenze({ elaborati, azienda, appaltoSelId, appaltatoreSelId, 
   }, {});
   // Nome visualizzato = il piu frequente nei documenti del gruppo (robusto ai refusi)
   Object.values(perLavoratore).forEach(g => { g.nomeDisplay = nomeDisplayGruppo(g.docs); });
+
+  // Unisce la scheda "origine" nella scheda "destinazione": da quel momento tutti i
+  // documenti dell'origine vengono raggruppati (e esportati) sotto la destinazione.
+  function fondiLavoratore(origine, destinazione) {
+    if (!destinazione || destinazione === origine) return;
+    const nomeOrigine = perLavoratore[origine]?.nomeDisplay || origine;
+    const nomeDestinazione = perLavoratore[destinazione]?.nomeDisplay || destinazione;
+    if (!window.confirm(`Unire "${nomeOrigine}" in "${nomeDestinazione}"? Verificale entrambe: un'unione sbagliata puo' nascondere un attestato scaduto sotto il profilo sbagliato. Puoi annullarla prima di esportare.`)) return;
+    setFusioni(prev => ({ ...prev, [origine]: destinazione }));
+  }
+
+  function annullaTutteLeFusioni() {
+    setFusioni({});
+  }
 
   // Aziendali + tipi aziendali noti + QUALSIASI non conforme privo di scheda lavoratore
   // (cosi e sempre approvabile/scartabile e non blocca per sempre l'export).
@@ -906,14 +966,14 @@ function SchermatScadenze({ elaborati, azienda, appaltoSelId, appaltatoreSelId, 
   // Conta non conformi ancora in attesa di decisione
   const nonConformiInAttesa = elaborati.filter(d => {
     if (d.risultato?.conforme !== false) return false;
-    const chiave = `${chiaveLavoratore(d)}__${d.nomeFile}`;
+    const chiave = `${chiaveLavoratore(d, fusioni)}__${d.nomeFile}`;
     return !decisioniConformita[chiave];
   }).length;
 
   function statoLavoratore(docs) {
     const haaNonConforme = docs.some(d => {
       if (d.risultato?.conforme !== false) return false;
-      const chiave = `${chiaveLavoratore(d)}__${d.nomeFile}`;
+      const chiave = `${chiaveLavoratore(d, fusioni)}__${d.nomeFile}`;
       return decisioniConformita[chiave] !== "approvato";
     });
     if (haaNonConforme) return "nonconforme";
@@ -942,7 +1002,7 @@ function SchermatScadenze({ elaborati, azienda, appaltoSelId, appaltatoreSelId, 
   async function doExport() {
     setShowDisclaimer(false);
     setExportando(true);
-    try { await esportaExcel(elaborati, decisioniConformita, azienda); }
+    try { await esportaExcel(elaborati, decisioniConformita, azienda, fusioni); }
     catch (e) { alert("Errore durante l'export: " + e.message); }
     finally { setExportando(false); }
   }
@@ -1048,9 +1108,23 @@ function SchermatScadenze({ elaborati, azienda, appaltoSelId, appaltatoreSelId, 
       {/* Lavoratori */}
       {Object.keys(perLavoratore).length > 0 && (
         <div style={{ marginBottom: 24 }}>
-          <div style={{ fontSize: 11, color: "#475569", fontWeight: 700, letterSpacing: "0.5px", marginBottom: 14 }}>
-            LAVORATORI — {Object.keys(perLavoratore).length}
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 14 }}>
+            <div style={{ fontSize: 11, color: "#475569", fontWeight: 700, letterSpacing: "0.5px" }}>
+              LAVORATORI — {Object.keys(perLavoratore).length}
+            </div>
+            {Object.keys(fusioni).length > 0 && (
+              <div style={{ fontSize: 11, color: "#64748b" }}>
+                {Object.keys(fusioni).length} {Object.keys(fusioni).length === 1 ? "scheda unita" : "schede unite"}
+                {" · "}
+                <span onClick={annullaTutteLeFusioni} style={{ color: "#f87171", textDecoration: "underline", cursor: "pointer" }}>annulla tutte</span>
+              </div>
+            )}
           </div>
+          {Object.keys(perLavoratore).length > 1 && (
+            <div style={{ fontSize: 11, color: "#475569", marginBottom: 14, lineHeight: 1.5 }}>
+              Due schede per la stessa persona (es. un nome scritto in modo diverso per un refuso)? Usa "🔗 Unisci con…" su una delle due.
+            </div>
+          )}
           <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
             {Object.entries(perLavoratore).map(([chiaveLav, { nomeDisplay, docs }]) => {
               const stato = statoLavoratore(docs);
@@ -1068,6 +1142,18 @@ function SchermatScadenze({ elaborati, azienda, appaltoSelId, appaltatoreSelId, 
                       <div style={{ fontSize: 11, color: "#475569", marginTop: 2 }}>{docs.length} documenti</div>
                     </div>
                     <span style={{ padding: "4px 10px", borderRadius: 20, background: colore + "20", color: colore, fontSize: 11, fontWeight: 700 }}>{label}</span>
+                    {Object.keys(perLavoratore).length > 1 && (
+                      <select
+                        value=""
+                        onChange={e => { const dest = e.target.value; e.target.value = ""; if (dest) fondiLavoratore(chiaveLav, dest); }}
+                        title="Unisci questa scheda in un'altra (es. stesso lavoratore con il nome scritto in modo diverso)"
+                        style={{ background: "#1e2535", border: "1px solid #334155", borderRadius: 6, color: "#94a3b8", fontSize: 10, padding: "5px 6px", cursor: "pointer", flexShrink: 0, maxWidth: 120 }}>
+                        <option value="">🔗 Unisci con…</option>
+                        {Object.entries(perLavoratore).filter(([k]) => k !== chiaveLav).map(([k, v]) => (
+                          <option key={k} value={k}>{v.nomeDisplay}</option>
+                        ))}
+                      </select>
+                    )}
                   </div>
 
                   <div style={{ borderTop: "1px solid #1e2535" }}>
@@ -1203,7 +1289,7 @@ function SchermatScadenze({ elaborati, azienda, appaltoSelId, appaltatoreSelId, 
           <div style={{ background: "#161b27", border: "1px solid #1e2535", borderRadius: 12, overflow: "hidden" }}>
             {docAziendali.map((doc, i) => {
               const cfgDoc = STATO_CFG[statoScadenza(doc.risultato?.data_scadenza)];
-              const chiaveDec = `${chiaveLavoratore(doc)}__${doc.nomeFile}`;
+              const chiaveDec = `${chiaveLavoratore(doc, fusioni)}__${doc.nomeFile}`;
               const decisione = decisioniConformita[chiaveDec];
               const nonConforme = doc.risultato?.conforme === false;
               const bordo = nonConforme && decisione !== "approvato" ? "#f97316" : cfgDoc.color;
@@ -1227,12 +1313,12 @@ function SchermatScadenze({ elaborati, azienda, appaltoSelId, appaltatoreSelId, 
                         <div style={{ fontSize: 11, color: "#fdba74", flex: 1 }}>⚠ <strong>Non conforme:</strong> {doc.risultato?.problema_conformita}</div>
                         {!decisione && (
                           <div style={{ display: "flex", gap: 8, flexShrink: 0 }}>
-                            <button onClick={() => setDecisione(chiaveLavoratore(doc), doc.nomeFile, "approvato")} style={{ padding: "4px 12px", background: "#10b98120", border: "1px solid #10b98140", borderRadius: 6, color: "#10b981", fontSize: 11, fontWeight: 700, cursor: "pointer", whiteSpace: "nowrap" }}>✓ Approva</button>
-                            <button onClick={() => setDecisione(chiaveLavoratore(doc), doc.nomeFile, "scartato")} style={{ padding: "4px 12px", background: "#ef444420", border: "1px solid #ef444440", borderRadius: 6, color: "#ef4444", fontSize: 11, fontWeight: 700, cursor: "pointer", whiteSpace: "nowrap" }}>✗ Scarta</button>
+                            <button onClick={() => setDecisione(chiaveLavoratore(doc, fusioni), doc.nomeFile, "approvato")} style={{ padding: "4px 12px", background: "#10b98120", border: "1px solid #10b98140", borderRadius: 6, color: "#10b981", fontSize: 11, fontWeight: 700, cursor: "pointer", whiteSpace: "nowrap" }}>✓ Approva</button>
+                            <button onClick={() => setDecisione(chiaveLavoratore(doc, fusioni), doc.nomeFile, "scartato")} style={{ padding: "4px 12px", background: "#ef444420", border: "1px solid #ef444440", borderRadius: 6, color: "#ef4444", fontSize: 11, fontWeight: 700, cursor: "pointer", whiteSpace: "nowrap" }}>✗ Scarta</button>
                           </div>
                         )}
-                        {decisione === "approvato" && (<div style={{ display: "flex", alignItems: "center", gap: 8, flexShrink: 0 }}><span style={{ fontSize: 11, color: "#10b981", fontWeight: 700 }}>✓ Approvato</span><button onClick={() => setDecisione(chiaveLavoratore(doc), doc.nomeFile, null)} style={{ background: "none", border: "none", color: "#475569", fontSize: 10, cursor: "pointer" }}>annulla</button></div>)}
-                        {decisione === "scartato" && (<div style={{ display: "flex", alignItems: "center", gap: 8, flexShrink: 0 }}><span style={{ fontSize: 11, color: "#ef4444", fontWeight: 700 }}>✗ Scartato</span><button onClick={() => setDecisione(chiaveLavoratore(doc), doc.nomeFile, null)} style={{ background: "none", border: "none", color: "#475569", fontSize: 10, cursor: "pointer" }}>annulla</button></div>)}
+                        {decisione === "approvato" && (<div style={{ display: "flex", alignItems: "center", gap: 8, flexShrink: 0 }}><span style={{ fontSize: 11, color: "#10b981", fontWeight: 700 }}>✓ Approvato</span><button onClick={() => setDecisione(chiaveLavoratore(doc, fusioni), doc.nomeFile, null)} style={{ background: "none", border: "none", color: "#475569", fontSize: 10, cursor: "pointer" }}>annulla</button></div>)}
+                        {decisione === "scartato" && (<div style={{ display: "flex", alignItems: "center", gap: 8, flexShrink: 0 }}><span style={{ fontSize: 11, color: "#ef4444", fontWeight: 700 }}>✗ Scartato</span><button onClick={() => setDecisione(chiaveLavoratore(doc, fusioni), doc.nomeFile, null)} style={{ background: "none", border: "none", color: "#475569", fontSize: 10, cursor: "pointer" }}>annulla</button></div>)}
                       </div>
                     </div>
                   )}

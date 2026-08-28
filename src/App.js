@@ -12,10 +12,8 @@ import ModuloPSC from "./ModuloPSC";
 import PrivacyResponsabilita from "./PrivacyResponsabilita";
 import TerminiServizio from "./TerminiServizio";
 import { SchermataBenvenuto, CreaAzienda } from "./Onboarding";
-import {
-  privacyAccettata,
-  statoScadenza, giorniAllaScadenza, calcolaStatAzienda,
-} from "./database";
+import { privacyAccettata } from "./consensoLocale";
+import { statoScadenza, giorniAllaScadenza, calcolaStatAzienda } from "./scadenzeUtils";
 import { listaAziende, caricaAziendaCompleta } from "./dbSupabase";
 import { logout } from "./AuthSupabase";
 
@@ -319,8 +317,39 @@ function ProfiloAzienda({ azienda }) {
   );
 }
 
-// ─── APP SHELL ────────────────────────────────────────────────────────────────
-export default function SafetyAIApp() {
+// ─── APP FREEMIUM (MVP) ───────────────────────────────────────────────────────
+// Nessun login, nessun database: carica PDF -> analisi AI -> Excel. E' il canale
+// di acquisizione (vedi SafetyAI_PIANO_90_GIORNI.md). Non tocca Supabase.
+function AppMVP() {
+  const [privacyOk, setPrivacyOk] = useState(privacyAccettata());
+
+  if (!privacyOk) {
+    return <SchermataBenvenuto onAccetta={() => setPrivacyOk(true)} />;
+  }
+
+  return (
+    <div style={{ fontFamily: "'DM Sans','Segoe UI',sans-serif", background: "#0f1117", minHeight: "100vh", color: "#e2e8f0" }}>
+      <div style={{ borderBottom: "1px solid #1e2535", padding: "16px 28px", display: "flex", alignItems: "center", justifyContent: "space-between", background: "#161b27", position: "sticky", top: 0, zIndex: 10 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+          <div style={{ width: 32, height: 32, background: "linear-gradient(135deg,#3b82f6,#06b6d4)", borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16, fontWeight: 800, color: "white" }}>S</div>
+          <div>
+            <div style={{ fontSize: 15, fontWeight: 800, color: "#f1f5f9", letterSpacing: "-0.3px" }}>SafetyAI</div>
+            <div style={{ fontSize: 9, color: "#64748b", letterSpacing: "1px" }}>ANALISI ATTESTATI</div>
+          </div>
+        </div>
+        <div style={{ padding: "5px 12px", background: "#3b82f610", border: "1px solid #3b82f630", borderRadius: 7, fontSize: 11, color: "#60a5fa", fontWeight: 600, letterSpacing: "0.3px" }}>
+          BETA — nessuna registrazione richiesta
+        </div>
+      </div>
+      <div style={{ padding: 28, maxWidth: 1200, margin: "0 auto" }}>
+        <UploadMassivo azienda={null} />
+      </div>
+    </div>
+  );
+}
+
+// ─── APP SHELL (versione pro, multi-azienda, dietro Supabase) ─────────────────
+function AppCompleta() {
   const [privacyOk, setPrivacyOk] = useState(privacyAccettata());
   const [aziende, setAziende] = useState([]);
   const [aziendaAttiva, setAziendaAttiva] = useState(null);
@@ -621,4 +650,12 @@ export default function SafetyAIApp() {
       </div>
     </div>
   );
+}
+
+// ─── ENTRY POINT ──────────────────────────────────────────────────────────────
+// In MVP_MODE (freemium, nessun login) monta AppMVP: nessuna chiamata a Supabase.
+// A MVP_MODE = false si torna alla versione pro multi-azienda (richiede login,
+// da rimontare dietro AuthSupabase in index.js quando si riattiva).
+export default function SafetyAIApp() {
+  return MVP_MODE ? <AppMVP /> : <AppCompleta />;
 }
