@@ -84,6 +84,20 @@ DOCUMENTI SEMPRE VALIDI — NESSUNA SCADENZA — NESSUN CONTROLLO CONFORMITÀ:
    → [{tipo: "Formazione Generale Lavoratori", ore: 4, data_scadenza: null},
       {tipo: "Formazione Specifica Rischio Basso", ore: 4, data_scadenza: "21/04/2028"}]
 
+   NON INVENTARE MAI UNA FORMAZIONE GENERALE CHE NON C'È — ERRORE GRAVE DA EVITARE:
+   Questa regola 3 si applica SOLO quando il documento contiene ESPLICITAMENTE ed
+   ESPLICITAMENTE ENTRAMBI i moduli (un modulo generale distinto + un modulo specifico
+   distinto). Un corso abilitante o specifico da solo — es. "Addetto ai lavori in quota
+   e D.P.I. 3° categoria", PLE, carrelli, primo soccorso, antincendio, preposti,
+   dirigenti, gru, ponteggio — NON implica MAI una formazione generale abbinata, anche se
+   copre teoria+pratica o dura un totale di ore che "assomiglia" a 4+specifica.
+   NON restituire un secondo oggetto "Formazione Generale Lavoratori" dedotto o presunto
+   per far quadrare le ore totali: se il documento non nomina esplicitamente un modulo di
+   formazione generale separato, restituisci UN SOLO oggetto per il corso effettivamente
+   descritto, con il tipo_documento e la categoria_corso corretti per QUEL corso.
+   In caso di dubbio se un modulo generale sia davvero presente: NON crearlo — ometterlo
+   e' sempre preferibile a un oggetto inventato che risulta poi (a ragione) non conforme.
+
 4. PRIMO SOCCORSO (D.M. 388/2003)
    - Gruppo A (aziende a rischio elevato): 16 ore iniziali + 6 ore aggiornamento ogni 3 anni
    - Gruppo B/C (aziende a rischio medio/basso): 12 ore iniziali + 4 ore aggiornamento ogni 3 anni
@@ -178,6 +192,10 @@ ISTRUZIONI FINALI:
 - NON cercare conflitti tra documenti diversi dello stesso lavoratore
 - Se le ore non sono indicate nel documento: segnala "ore non verificabili" ma non dichiarare non conforme
 - Dichiarazioni di consegna DPI, nomine e verbali: sempre conforme: true, data_scadenza: null
+- Un oggetto nell'array deve sempre corrispondere a un contenuto REALMENTE presente nel
+  documento: non dividere un corso specifico in "generale + specifica" per abitudine o
+  per far tornare le ore — vedi il punto 3 sopra. Un oggetto inventato che poi risulta
+  non conforme e' un errore dell'estrazione, non un problema del lavoratore.
 `;
 
 // ─── HELPERS SCADENZE ─────────────────────────────────────────────────────────
@@ -531,6 +549,68 @@ function chiaveRaggruppamento(raw) {
     .filter(w => !["A", "DI", "DE", "DEL", "DELLA", "LO", "LA", "IL"].includes(w))
     .sort()
     .join(" ");
+}
+
+// ─── RILEVAMENTO SCHEDE LAVORATORE POSSIBILMENTE DUPLICATE ──────────────────
+// Su nomi stranieri o poco leggibili l'AI legge lo stesso lavoratore in modi
+// diversi da un documento all'altro (es. "Firon"/"Firor", "Dumitru"/"Dimitru"/
+// "Dumiltru", o un cognome mancante) — troppe schede per unirle a mano una per
+// una. Qui suggeriamo i possibili duplicati; l'unione resta comunque una
+// conferma esplicita dell'operatore (vedi nota su chiaveLavoratore).
+function distanzaLevenshtein(a, b) {
+  const m = a.length, n = b.length;
+  const dp = Array.from({ length: m + 1 }, (_, i) => [i, ...new Array(n).fill(0)]);
+  for (let j = 0; j <= n; j++) dp[0][j] = j;
+  for (let i = 1; i <= m; i++) {
+    for (let j = 1; j <= n; j++) {
+      dp[i][j] = a[i - 1] === b[j - 1]
+        ? dp[i - 1][j - 1]
+        : 1 + Math.min(dp[i - 1][j], dp[i][j - 1], dp[i - 1][j - 1]);
+    }
+  }
+  return dp[m][n];
+}
+
+function paroleSimili(w1, w2) {
+  if (w1 === w2) return true;
+  if (w1.length < 3 || w2.length < 3) return false; // troppo corte per un confronto affidabile
+  const d = distanzaLevenshtein(w1, w2);
+  return d <= 2 && d <= Math.ceil(Math.max(w1.length, w2.length) * 0.3);
+}
+
+// Due nomi sono un possibile duplicato se le parole del nome piu' corto trovano
+// quasi tutte un corrispondente simile in quello piu' lungo (gestisce sia i refusi
+// carattere per carattere sia un nome/cognome mancante in uno dei due documenti).
+function nomiPossibileDuplicato(nomeA, nomeB) {
+  if (!nomeA || !nomeB || nomeA === nomeB) return false;
+  const paroleA = nomeA.split(" ").filter(Boolean);
+  const paroleB = nomeB.split(" ").filter(Boolean);
+  if (!paroleA.length || !paroleB.length) return false;
+  const [corte, lunghe] = paroleA.length <= paroleB.length ? [paroleA, paroleB] : [paroleB, paroleA];
+  const matchate = corte.filter(p => lunghe.some(q => paroleSimili(p, q)));
+  const soglia = corte.length === 1 ? 1 : Math.max(2, Math.ceil(corte.length / 2));
+  return matchate.length >= soglia;
+}
+
+// Raggruppa le chiavi lavoratore in cluster di possibili duplicati (union-find semplice
+// via mappa parent). Ritorna solo i cluster con almeno 2 schede.
+function trovaGruppiSimili(perLavoratore) {
+  const chiavi = Object.keys(perLavoratore);
+  const parent = Object.fromEntries(chiavi.map(c => [c, c]));
+  function trova(c) { while (parent[c] !== c) c = parent[c]; return c; }
+  function unisci(a, b) { const ra = trova(a), rb = trova(b); if (ra !== rb) parent[ra] = rb; }
+
+  for (let i = 0; i < chiavi.length; i++) {
+    for (let j = i + 1; j < chiavi.length; j++) {
+      if (nomiPossibileDuplicato(perLavoratore[chiavi[i]].nomeDisplay, perLavoratore[chiavi[j]].nomeDisplay)) {
+        unisci(chiavi[i], chiavi[j]);
+      }
+    }
+  }
+
+  const clusterMap = {};
+  chiavi.forEach(c => { const r = trova(c); (clusterMap[r] = clusterMap[r] || []).push(c); });
+  return Object.values(clusterMap).filter(g => g.length >= 2);
 }
 
 // Chiave di IDENTITA del lavoratore, robusta agli errori di trascrizione del nome.
@@ -952,6 +1032,30 @@ function SchermatScadenze({ elaborati, azienda, appaltoSelId, appaltatoreSelId, 
     setFusioni({});
   }
 
+  // Cluster di schede con nomi simili (refusi/OCR), esclusi quelli gia' ignorati dall'operatore
+  const [suggerimentiIgnorati, setSuggerimentiIgnorati] = useState(new Set());
+  const gruppiSimili = trovaGruppiSimili(perLavoratore)
+    .filter(g => !suggerimentiIgnorati.has(g.slice().sort().join("|")));
+
+  // Unisce in un colpo solo tutte le schede del cluster nella scheda con piu' documenti
+  // (un'unica conferma invece di N-1 unioni manuali una per una)
+  function fondiGruppoSuggerito(chiavi) {
+    const ancora = chiavi.slice().sort((a, b) => (perLavoratore[b]?.docs.length || 0) - (perLavoratore[a]?.docs.length || 0))[0];
+    const altre = chiavi.filter(c => c !== ancora);
+    const nomi = altre.map(c => perLavoratore[c]?.nomeDisplay || c);
+    const nomeAncora = perLavoratore[ancora]?.nomeDisplay || ancora;
+    if (!window.confirm(`Unire queste schede in "${nomeAncora}"?\n\n${nomi.join("\n")}\n\nVerifica che siano davvero la stessa persona: un'unione sbagliata puo' nascondere un attestato scaduto sotto il profilo sbagliato. Puoi annullarla prima di esportare.`)) return;
+    setFusioni(prev => {
+      const next = { ...prev };
+      altre.forEach(c => { next[c] = ancora; });
+      return next;
+    });
+  }
+
+  function ignoraGruppoSuggerito(chiavi) {
+    setSuggerimentiIgnorati(prev => new Set(prev).add(chiavi.slice().sort().join("|")));
+  }
+
   // Aziendali + tipi aziendali noti + QUALSIASI non conforme privo di scheda lavoratore
   // (cosi e sempre approvabile/scartabile e non blocca per sempre l'export).
   const docAziendali = elaborati.filter(d => {
@@ -1102,6 +1206,25 @@ function SchermatScadenze({ elaborati, azienda, appaltoSelId, appaltatoreSelId, 
               I documenti segnalati con <strong>⚠ Verifica</strong> vanno controllati prima dell'export.
             </div>
           </div>
+        </div>
+      )}
+
+      {/* Suggerimenti duplicati rilevati automaticamente (nomi simili tra schede diverse) */}
+      {gruppiSimili.length > 0 && (
+        <div style={{ marginBottom: 20, display: "flex", flexDirection: "column", gap: 10 }}>
+          {gruppiSimili.map((chiavi, i) => (
+            <div key={i} style={{ padding: "12px 16px", background: "#3b82f610", border: "1px solid #3b82f630", borderRadius: 10, display: "flex", alignItems: "center", gap: 14, flexWrap: "wrap" }}>
+              <span style={{ fontSize: 16, flexShrink: 0 }}>🔍</span>
+              <div style={{ flex: 1, minWidth: 220 }}>
+                <div style={{ fontSize: 12, fontWeight: 700, color: "#60a5fa" }}>Possibile duplicato: stesso lavoratore letto in modo diverso?</div>
+                <div style={{ fontSize: 12, color: "#94a3b8", marginTop: 2 }}>{chiavi.map(c => perLavoratore[c]?.nomeDisplay).join("  ·  ")}</div>
+              </div>
+              <div style={{ display: "flex", gap: 8, flexShrink: 0 }}>
+                <button onClick={() => ignoraGruppoSuggerito(chiavi)} style={{ padding: "6px 12px", background: "transparent", border: "1px solid #334155", borderRadius: 7, color: "#64748b", fontSize: 12, cursor: "pointer" }}>Ignora</button>
+                <button onClick={() => fondiGruppoSuggerito(chiavi)} style={{ padding: "6px 12px", background: "#3b82f6", border: "none", borderRadius: 7, color: "white", fontSize: 12, fontWeight: 700, cursor: "pointer" }}>🔗 Unisci tutte</button>
+              </div>
+            </div>
+          ))}
         </div>
       )}
 
