@@ -35,7 +35,7 @@ function ModaleDocumento({ tipo, onChiudi }) {
   const RIASSUNTI = {
     privacy: {
       titolo: "Informativa Privacy",
-      colore: "#3b82f6",
+      colore: "#33513B",
       icona: "🔒",
       intro: "Questo documento spiega come Agile81 tratta i dati personali che carichi, in conformità al GDPR.",
       punti: [
@@ -48,7 +48,7 @@ function ModaleDocumento({ tipo, onChiudi }) {
     },
     dpa: {
       titolo: "Data Processing Agreement",
-      colore: "#a78bfa",
+      colore: "#B85C3B",
       icona: "📄",
       intro: "Il DPA è il contratto obbligatorio tra te (Titolare) e Agile81 (Responsabile) richiesto dall'art. 28 GDPR quando affidi dati personali a uno strumento esterno.",
       punti: [
@@ -66,52 +66,52 @@ function ModaleDocumento({ tipo, onChiudi }) {
   return (
     <div style={{ position: "fixed", inset: 0, zIndex: 300, display: "flex", alignItems: "center", justifyContent: "center", padding: 24, background: "#000000cc" }}>
       <div style={{
-        background: "#161b27", border: "1px solid #1e2535",
+        background: "#FBF8F1", border: "1px solid #1A140D",
         borderRadius: 16, width: "100%", maxWidth: 600,
         maxHeight: "85vh", display: "flex", flexDirection: "column",
         overflow: "hidden", boxShadow: "0 24px 60px #00000080",
       }}>
         {/* Header modale */}
-        <div style={{ padding: "18px 24px", borderBottom: "1px solid #1e2535", display: "flex", alignItems: "center", gap: 12, background: `${doc.colore}10` }}>
+        <div style={{ padding: "18px 24px", borderBottom: "1px solid #1A140D", display: "flex", alignItems: "center", gap: 12, background: `${doc.colore}10` }}>
           <span style={{ fontSize: 20 }}>{doc.icona}</span>
           <div style={{ flex: 1 }}>
-            <div style={{ fontSize: 15, fontWeight: 800, color: "#f1f5f9" }}>{doc.titolo}</div>
-            <div style={{ fontSize: 11, color: "#475569", marginTop: 1 }}>Documento completo disponibile per il download</div>
+            <div style={{ fontSize: 15, fontWeight: 800, color: "#241D14" }}>{doc.titolo}</div>
+            <div style={{ fontSize: 11, color: "#5C5545", marginTop: 1 }}>Documento completo disponibile per il download</div>
           </div>
-          <button onClick={onChiudi} style={{ background: "none", border: "none", color: "#475569", fontSize: 20, cursor: "pointer", padding: "0 4px", lineHeight: 1 }}>✕</button>
+          <button onClick={onChiudi} style={{ background: "none", border: "none", color: "#5C5545", fontSize: 20, cursor: "pointer", padding: "0 4px", lineHeight: 1 }}>✕</button>
         </div>
 
         {/* Corpo scrollabile */}
         <div style={{ flex: 1, overflowY: "auto", padding: "20px 24px" }}>
           {/* Intro */}
-          <div style={{ padding: "12px 16px", background: `${doc.colore}12`, border: `1px solid ${doc.colore}25`, borderRadius: 8, fontSize: 13, color: "#94a3b8", lineHeight: 1.6, marginBottom: 20 }}>
+          <div style={{ padding: "12px 16px", background: `${doc.colore}12`, border: `1px solid ${doc.colore}25`, borderRadius: 8, fontSize: 13, color: "#5C5545", lineHeight: 1.6, marginBottom: 20 }}>
             {doc.intro}
           </div>
 
           {/* Punti salienti */}
-          <div style={{ fontSize: 11, color: "#475569", fontWeight: 700, letterSpacing: "0.5px", marginBottom: 12 }}>PUNTI SALIENTI</div>
+          <div style={{ fontSize: 11, color: "#5C5545", fontWeight: 700, letterSpacing: "0.5px", marginBottom: 12 }}>PUNTI SALIENTI</div>
           <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 24 }}>
             {doc.punti.map((p, i) => (
-              <div key={i} style={{ background: "#0f1117", borderRadius: 8, padding: "12px 14px", display: "flex", gap: 12 }}>
+              <div key={i} style={{ background: "#EFE9DD", borderRadius: 8, padding: "12px 14px", display: "flex", gap: 12 }}>
                 <div style={{ width: 22, height: 22, borderRadius: 6, background: `${doc.colore}20`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 10, fontWeight: 800, color: doc.colore, flexShrink: 0 }}>{i + 1}</div>
                 <div>
-                  <div style={{ fontSize: 12, fontWeight: 700, color: "#cbd5e1", marginBottom: 3 }}>{p.titolo}</div>
-                  <div style={{ fontSize: 12, color: "#64748b", lineHeight: 1.6 }}>{p.testo}</div>
+                  <div style={{ fontSize: 12, fontWeight: 700, color: "#241D14", marginBottom: 3 }}>{p.titolo}</div>
+                  <div style={{ fontSize: 12, color: "#5C5545", lineHeight: 1.6 }}>{p.testo}</div>
                 </div>
               </div>
             ))}
           </div>
 
           {/* Download */}
-          <div style={{ background: "#0f1117", border: "1px solid #1e2535", borderRadius: 10, padding: "16px 18px" }}>
-            <div style={{ fontSize: 12, fontWeight: 700, color: "#f1f5f9", marginBottom: 4 }}>Documento completo</div>
-            <div style={{ fontSize: 11, color: "#475569", marginBottom: 12 }}>
+          <div style={{ background: "#EFE9DD", border: "1px solid #1A140D", borderRadius: 10, padding: "16px 18px" }}>
+            <div style={{ fontSize: 12, fontWeight: 700, color: "#241D14", marginBottom: 4 }}>Documento completo</div>
+            <div style={{ fontSize: 11, color: "#5C5545", marginBottom: 12 }}>
               Il documento integrale in formato PDF, stampabile e archiviabile.
             </div>
             <div style={{ display: "flex", gap: 10 }}>
               <button
                 onClick={() => apriPDFInTab(isPrivacy ? PDF_PRIVACY_B64 : PDF_DPA_B64)}
-                style={{ flex: 1, padding: "9px 14px", background: "#1e2535", border: "1px solid #334155", borderRadius: 8, color: "#94a3b8", fontSize: 12, cursor: "pointer", fontFamily: "inherit" }}>
+                style={{ flex: 1, padding: "9px 14px", background: "#1A140D", border: "1px solid #8A8271", borderRadius: 8, color: "#5C5545", fontSize: 12, cursor: "pointer", fontFamily: "inherit" }}>
                 👁 Apri nel browser
               </button>
               <button
@@ -124,10 +124,10 @@ function ModaleDocumento({ tipo, onChiudi }) {
         </div>
 
         {/* Footer modale */}
-        <div style={{ padding: "14px 24px", borderTop: "1px solid #1e2535" }}>
+        <div style={{ padding: "14px 24px", borderTop: "1px solid #1A140D" }}>
           <button
             onClick={onChiudi}
-            style={{ width: "100%", padding: "11px", background: "linear-gradient(135deg, #3b82f6, #06b6d4)", border: "none", borderRadius: 9, color: "white", fontSize: 13, fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>
+            style={{ width: "100%", padding: "11px", background: "#33513B", border: "3px solid #1A140D", boxShadow: "4px 4px 0 #1A140D", borderRadius: 2, color: "#F2EEE0", fontSize: 13, fontWeight: 800, fontFamily: "'Big Shoulders',sans-serif", textTransform: "uppercase", cursor: "pointer" }}>
             Ho letto, chiudi
           </button>
         </div>
@@ -172,7 +172,7 @@ function SchermataBenvenuto({ onAccetta }) {
   ];
 
   return (
-    <div style={{ minHeight: "100vh", background: "#0f1117", display: "flex", alignItems: "center", justifyContent: "center", padding: 24, fontFamily: "'DM Sans','Segoe UI',sans-serif" }}>
+    <div style={{ minHeight: "100vh", background: "#EFE9DD", display: "flex", alignItems: "center", justifyContent: "center", padding: 24, fontFamily: "'Work Sans','Segoe UI',sans-serif" }}>
       <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
 
       {modale && <ModaleDocumento tipo={modale} onChiudi={() => setModale(null)} />}
@@ -180,27 +180,27 @@ function SchermataBenvenuto({ onAccetta }) {
       <div style={{ maxWidth: 560, width: "100%" }}>
         {/* Logo */}
         <div style={{ textAlign: "center", marginBottom: 40 }}>
-          <div style={{ width: 56, height: 56, margin: "0 auto 16px", background: "linear-gradient(135deg, #3b82f6, #06b6d4)", borderRadius: 16, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 28, fontWeight: 800, color: "white" }}>A</div>
-          <div style={{ fontSize: 26, fontWeight: 800, color: "#f1f5f9", letterSpacing: "-0.5px" }}>Benvenuto in Agile81</div>
-          <div style={{ fontSize: 14, color: "#475569", marginTop: 8, lineHeight: 1.6 }}>Il gestionale HSE per professionisti della sicurezza sul lavoro</div>
+          <div style={{ width: 56, height: 56, margin: "0 auto 16px", background: "#33513B", border: "3px solid #1A140D", boxShadow: "4px 4px 0 #1A140D", borderRadius: 3, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 28, fontWeight: 900, fontFamily: "'Big Shoulders',sans-serif", color: "#F2EEE0" }}>A</div>
+          <div style={{ fontSize: 28, fontWeight: 900, fontFamily: "'Big Shoulders',sans-serif", textTransform: "uppercase", letterSpacing: "-0.01em", color: "#241D14" }}>Benvenuto in <span style={{ color: "#B85C3B" }}>Agile81</span></div>
+          <div style={{ fontSize: 14, color: "#5C5545", marginTop: 8, lineHeight: 1.6 }}>Il gestionale HSE per professionisti della sicurezza sul lavoro</div>
         </div>
 
         {/* Card consensi */}
-        <div style={{ background: "#161b27", border: "1px solid #1e2535", borderRadius: 16, overflow: "hidden", marginBottom: 20 }}>
-          <div style={{ padding: "16px 24px", borderBottom: "1px solid #1e2535", background: "#0f111780" }}>
-            <div style={{ fontSize: 13, fontWeight: 700, color: "#f1f5f9" }}>Prima di iniziare, leggi e accetta</div>
-            <div style={{ fontSize: 12, color: "#475569", marginTop: 2 }}>Obbligatorio per l'utilizzo professionale del servizio</div>
+        <div style={{ background: "#FBF8F1", border: "3px solid #1A140D", boxShadow: "5px 5px 0 #1A140D", borderRadius: 3, overflow: "hidden", marginBottom: 20 }}>
+          <div style={{ padding: "16px 24px", borderBottom: "1px solid #1A140D", background: "#EFE9DD80" }}>
+            <div style={{ fontSize: 13, fontWeight: 700, color: "#241D14" }}>Prima di iniziare, leggi e accetta</div>
+            <div style={{ fontSize: 12, color: "#5C5545", marginTop: 2 }}>Obbligatorio per l'utilizzo professionale del servizio</div>
           </div>
 
           <div style={{ padding: "8px 0" }}>
             {voci.map((item, i, arr) => (
-              <div key={i} style={{ padding: "16px 24px", borderBottom: i < arr.length - 1 ? "1px solid #1e253540" : "none", background: item.check ? "#3b82f608" : "transparent" }}>
+              <div key={i} style={{ padding: "16px 24px", borderBottom: i < arr.length - 1 ? "1px solid #1A140D40" : "none", background: item.check ? "#33513B08" : "transparent" }}>
                 <div style={{ display: "flex", gap: 14, cursor: "pointer" }} onClick={() => item.setCheck(!item.check)}>
                   {/* Checkbox */}
                   <div style={{
                     width: 20, height: 20, borderRadius: 5, flexShrink: 0, marginTop: 2,
-                    border: `2px solid ${item.check ? "#3b82f6" : "#334155"}`,
-                    background: item.check ? "#3b82f6" : "transparent",
+                    border: `2px solid ${item.check ? "#33513B" : "#8A8271"}`,
+                    background: item.check ? "#33513B" : "transparent",
                     display: "flex", alignItems: "center", justifyContent: "center",
                     transition: "all 0.15s",
                   }}>
@@ -209,9 +209,9 @@ function SchermataBenvenuto({ onAccetta }) {
                   <div style={{ flex: 1 }}>
                     <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
                       <span style={{ fontSize: 16 }}>{item.icona}</span>
-                      <span style={{ fontSize: 13, fontWeight: 700, color: "#f1f5f9" }}>{item.titolo}</span>
+                      <span style={{ fontSize: 13, fontWeight: 700, color: "#241D14" }}>{item.titolo}</span>
                     </div>
-                    <div style={{ fontSize: 12, color: "#64748b", lineHeight: 1.6 }}>{item.testo}</div>
+                    <div style={{ fontSize: 12, color: "#5C5545", lineHeight: 1.6 }}>{item.testo}</div>
                   </div>
                 </div>
 
@@ -220,7 +220,7 @@ function SchermataBenvenuto({ onAccetta }) {
                   <div style={{ marginTop: 10, marginLeft: 34 }}>
                     <button
                       onClick={e => { e.stopPropagation(); setModale(item.tipoModale); }}
-                      style={{ background: "none", border: "none", color: "#3b82f6", fontSize: 12, cursor: "pointer", fontFamily: "inherit", padding: 0, textDecoration: "underline" }}>
+                      style={{ background: "none", border: "none", color: "#33513B", fontSize: 12, cursor: "pointer", fontFamily: "inherit", padding: 0, textDecoration: "underline" }}>
                       {item.linkLabel}
                     </button>
                   </div>
@@ -230,21 +230,23 @@ function SchermataBenvenuto({ onAccetta }) {
           </div>
         </div>
 
-        <div style={{ padding: "12px 16px", marginBottom: 20, background: "#f59e0b08", border: "1px solid #f59e0b20", borderRadius: 10, fontSize: 12, color: "#94a3b8", lineHeight: 1.6 }}>
-          Puoi consultare i documenti in qualsiasi momento dalla sezione <strong style={{ color: "#f1f5f9" }}>🔒 Privacy & DPA</strong> nella sidebar.
+        <div style={{ padding: "12px 16px", marginBottom: 20, background: "#C4872E08", border: "1px solid #C4872E20", borderRadius: 10, fontSize: 12, color: "#5C5545", lineHeight: 1.6 }}>
+          Puoi consultare i documenti in qualsiasi momento dalla sezione <strong style={{ color: "#241D14" }}>🔒 Privacy & DPA</strong> nella sidebar.
         </div>
 
         <button
           onClick={() => { if (tuttoAccettato) { accettaPrivacy(); onAccetta(); } }}
           disabled={!tuttoAccettato}
           style={{
-            width: "100%", padding: "15px",
-            background: tuttoAccettato ? "linear-gradient(135deg, #3b82f6, #06b6d4)" : "#1e2535",
-            border: "none", borderRadius: 12,
-            color: tuttoAccettato ? "white" : "#334155",
-            fontSize: 15, fontWeight: 800,
+            width: "100%", padding: "16px",
+            background: tuttoAccettato ? "#B85C3B" : "#DCD5C4",
+            border: tuttoAccettato ? "3px solid #1A140D" : "3px solid #A79D89",
+            boxShadow: tuttoAccettato ? "5px 5px 0 #1A140D" : "none",
+            borderRadius: 3,
+            color: tuttoAccettato ? "#FBF3ED" : "#A79D89",
+            fontSize: 15, fontWeight: 900, fontFamily: "'Big Shoulders',sans-serif", textTransform: "uppercase", letterSpacing: "0.02em",
             cursor: tuttoAccettato ? "pointer" : "not-allowed",
-            fontFamily: "inherit", transition: "all 0.2s",
+            transition: "all 0.2s",
           }}>
           {tuttoAccettato ? "Inizia a usare Agile81 →" : "Leggi e accetta tutti e tre i punti per continuare"}
         </button>
@@ -352,9 +354,9 @@ function CreaAzienda({ onCreata, isFirst = false }) {
 
   const LIVELLI = ["basso", "medio", "alto"];
   const LIVELLO_CFG = {
-    basso: { color: "#10b981", bg: "#10b98115" },
-    medio: { color: "#f59e0b", bg: "#f59e0b15" },
-    alto:  { color: "#ef4444", bg: "#ef444415" },
+    basso: { color: "#33513B", bg: "#33513B15" },
+    medio: { color: "#C4872E", bg: "#C4872E15" },
+    alto:  { color: "#B85C3B", bg: "#B85C3B15" },
   };
 
   async function avviaAnalisi() {
@@ -395,24 +397,24 @@ function CreaAzienda({ onCreata, isFirst = false }) {
     }
   }
 
-  const inputStyle = { width: "100%", padding: "10px 14px", background: "#0f1117", border: "1px solid #1e2535", borderRadius: 8, color: "#cbd5e1", fontSize: 13, fontFamily: "inherit", boxSizing: "border-box" };
-  const labelStyle = { fontSize: 11, color: "#64748b", fontWeight: 700, display: "block", marginBottom: 6, letterSpacing: "0.3px" };
+  const inputStyle = { width: "100%", padding: "10px 14px", background: "#EFE9DD", border: "1px solid #1A140D", borderRadius: 8, color: "#241D14", fontSize: 13, fontFamily: "inherit", boxSizing: "border-box" };
+  const labelStyle = { fontSize: 11, color: "#5C5545", fontWeight: 700, display: "block", marginBottom: 6, letterSpacing: "0.3px" };
 
   const DropZone = ({ file, setFile, inputId, label, sublabel }) => (
     <div style={{ marginBottom: 16 }}>
-      <div style={{ fontSize: 12, fontWeight: 700, color: "#94a3b8", marginBottom: 8 }}>
-        {label} <span style={{ color: "#475569", fontWeight: 400 }}>{sublabel}</span>
+      <div style={{ fontSize: 12, fontWeight: 700, color: "#5C5545", marginBottom: 8 }}>
+        {label} <span style={{ color: "#5C5545", fontWeight: 400 }}>{sublabel}</span>
       </div>
       <div onClick={() => document.getElementById(inputId).click()}
-        style={{ border: `2px dashed ${file ? "#10b981" : "#1e2535"}`, borderRadius: 12, padding: "20px 24px", textAlign: "center", cursor: "pointer", background: file ? "#10b98108" : "#161b27", transition: "all 0.2s" }}>
+        style={{ border: `2px dashed ${file ? "#33513B" : "#1A140D"}`, borderRadius: 12, padding: "20px 24px", textAlign: "center", cursor: "pointer", background: file ? "#33513B08" : "#FBF8F1", transition: "all 0.2s" }}>
         <input id={inputId} type="file" accept=".pdf" style={{ display: "none" }} onChange={e => setFile(e.target.files[0])} />
         {file ? (
           <div>
-            <div style={{ fontSize: 13, color: "#10b981", fontWeight: 600 }}>✓ {file.name}</div>
-            <div style={{ fontSize: 11, color: "#475569", marginTop: 4 }}>{(file.size / 1024 / 1024).toFixed(1)} MB</div>
+            <div style={{ fontSize: 13, color: "#33513B", fontWeight: 600 }}>✓ {file.name}</div>
+            <div style={{ fontSize: 11, color: "#5C5545", marginTop: 4 }}>{(file.size / 1024 / 1024).toFixed(1)} MB</div>
           </div>
         ) : (
-          <div style={{ fontSize: 13, color: "#475569" }}>Clicca o trascina il PDF qui</div>
+          <div style={{ fontSize: 13, color: "#5C5545" }}>Clicca o trascina il PDF qui</div>
         )}
       </div>
     </div>
@@ -423,23 +425,23 @@ function CreaAzienda({ onCreata, isFirst = false }) {
       <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
       {isFirst && (
         <div style={{ textAlign: "center", marginBottom: 32 }}>
-          <div style={{ fontSize: 22, fontWeight: 800, color: "#f1f5f9", marginBottom: 8 }}>Aggiungi la tua prima azienda</div>
-          <div style={{ fontSize: 14, color: "#475569", lineHeight: 1.6 }}>Carica la visura camerale e il DVR — l'AI crea il profilo completo automaticamente.</div>
+          <div style={{ fontSize: 22, fontWeight: 800, color: "#241D14", marginBottom: 8 }}>Aggiungi la tua prima azienda</div>
+          <div style={{ fontSize: 14, color: "#5C5545", lineHeight: 1.6 }}>Carica la visura camerale e il DVR — l'AI crea il profilo completo automaticamente.</div>
         </div>
       )}
       <DropZone file={visuraFile} setFile={setVisuraFile} inputId="input-visura" label="📄 Visura camerale" sublabel="(consigliata)" />
       <DropZone file={dvrFile} setFile={setDvrFile} inputId="input-dvr" label="📋 DVR aziendale" sublabel="(anche centinaia di pagine — analizzate le prime 30)" />
       {erroreAnalisi && (
-        <div style={{ padding: "12px 16px", background: "#ef444415", border: "1px solid #ef444430", borderRadius: 8, fontSize: 12, color: "#fca5a5", marginBottom: 16 }}>
+        <div style={{ padding: "12px 16px", background: "#B85C3B15", border: "1px solid #B85C3B30", borderRadius: 8, fontSize: 12, color: "#B85C3B", marginBottom: 16 }}>
           ⚠ Errore durante l'analisi. Puoi procedere con l'inserimento manuale.
         </div>
       )}
       <div style={{ display: "flex", gap: 10 }}>
-        <button onClick={() => setStep("manuale")} style={{ flex: 1, padding: "12px", background: "#161b27", border: "1px solid #1e2535", borderRadius: 10, color: "#64748b", fontSize: 13, cursor: "pointer", fontFamily: "inherit" }}>
+        <button onClick={() => setStep("manuale")} style={{ flex: 1, padding: "12px", background: "#FBF8F1", border: "1px solid #1A140D", borderRadius: 10, color: "#5C5545", fontSize: 13, cursor: "pointer", fontFamily: "inherit" }}>
           Inserisci manualmente
         </button>
         <button onClick={avviaAnalisi} disabled={(!visuraFile && !dvrFile) || analizzando}
-          style={{ flex: 2, padding: "12px", background: (visuraFile || dvrFile) && !analizzando ? "linear-gradient(135deg, #3b82f6, #06b6d4)" : "#1e2535", border: "none", borderRadius: 10, color: (visuraFile || dvrFile) && !analizzando ? "white" : "#334155", fontSize: 13, fontWeight: 800, cursor: "pointer", fontFamily: "inherit", display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
+          style={{ flex: 2, padding: "12px", background: (visuraFile || dvrFile) && !analizzando ? "#33513B" : "#1A140D", border: "none", borderRadius: 10, color: (visuraFile || dvrFile) && !analizzando ? "white" : "#8A8271", fontSize: 13, fontWeight: 800, cursor: "pointer", fontFamily: "inherit", display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
           {analizzando ? <><span style={{ display: "inline-block", animation: "spin 0.8s linear infinite" }}>⟳</span>Analisi in corso...</> : "⚡ Analizza con AI →"}
         </button>
       </div>
@@ -449,20 +451,20 @@ function CreaAzienda({ onCreata, isFirst = false }) {
   return (
     <div style={{ maxWidth: 640, margin: "0 auto" }}>
       {step === "revisione" && (
-        <div style={{ padding: "12px 16px", background: "#10b98110", border: "1px solid #10b98130", borderRadius: 10, marginBottom: 24, fontSize: 12, color: "#10b981" }}>
+        <div style={{ padding: "12px 16px", background: "#33513B10", border: "1px solid #33513B30", borderRadius: 10, marginBottom: 24, fontSize: 12, color: "#33513B" }}>
           ✓ L'AI ha estratto i dati. Verifica e correggi se necessario, poi salva.
         </div>
       )}
       {step === "manuale" && (
         <div style={{ marginBottom: 24, display: "flex", alignItems: "center", gap: 12 }}>
-          <button onClick={() => setStep("upload")} style={{ background: "none", border: "none", color: "#3b82f6", fontSize: 13, cursor: "pointer", fontFamily: "inherit" }}>← Torna</button>
-          <div style={{ fontSize: 16, fontWeight: 800, color: "#f1f5f9" }}>Inserimento manuale</div>
+          <button onClick={() => setStep("upload")} style={{ background: "none", border: "none", color: "#33513B", fontSize: 13, cursor: "pointer", fontFamily: "inherit" }}>← Torna</button>
+          <div style={{ fontSize: 16, fontWeight: 800, color: "#241D14" }}>Inserimento manuale</div>
         </div>
       )}
 
       {/* Dati aziendali */}
-      <div style={{ background: "#161b27", border: "1px solid #1e2535", borderRadius: 12, padding: "20px 24px", marginBottom: 16 }}>
-        <div style={{ fontSize: 12, fontWeight: 700, color: "#3b82f6", letterSpacing: "0.5px", marginBottom: 16 }}>DATI AZIENDALI</div>
+      <div style={{ background: "#FBF8F1", border: "1px solid #1A140D", borderRadius: 12, padding: "20px 24px", marginBottom: 16 }}>
+        <div style={{ fontSize: 12, fontWeight: 700, color: "#33513B", letterSpacing: "0.5px", marginBottom: 16 }}>DATI AZIENDALI</div>
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
           <div style={{ gridColumn: "1 / -1" }}>
             <label style={labelStyle}>RAGIONE SOCIALE *</label>
@@ -492,8 +494,8 @@ function CreaAzienda({ onCreata, isFirst = false }) {
       </div>
 
       {/* Figure */}
-      <div style={{ background: "#161b27", border: "1px solid #1e2535", borderRadius: 12, padding: "20px 24px", marginBottom: 16 }}>
-        <div style={{ fontSize: 12, fontWeight: 700, color: "#a78bfa", letterSpacing: "0.5px", marginBottom: 16 }}>FIGURE DELLA SICUREZZA</div>
+      <div style={{ background: "#FBF8F1", border: "1px solid #1A140D", borderRadius: 12, padding: "20px 24px", marginBottom: 16 }}>
+        <div style={{ fontSize: 12, fontWeight: 700, color: "#B85C3B", letterSpacing: "0.5px", marginBottom: 16 }}>FIGURE DELLA SICUREZZA</div>
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
           {[["datoreLavoro","DATORE DI LAVORO"],["rspp","RSPP"],["medicoCompetente","MEDICO COMPETENTE"],["rls","RLS"]].map(([key, label]) => (
             <div key={key}>
@@ -505,29 +507,29 @@ function CreaAzienda({ onCreata, isFirst = false }) {
       </div>
 
       {/* Rischi */}
-      <div style={{ background: "#161b27", border: "1px solid #1e2535", borderRadius: 12, padding: "20px 24px", marginBottom: 24 }}>
+      <div style={{ background: "#FBF8F1", border: "1px solid #1A140D", borderRadius: 12, padding: "20px 24px", marginBottom: 24 }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
-          <div style={{ fontSize: 12, fontWeight: 700, color: "#f59e0b", letterSpacing: "0.5px" }}>RISCHI AZIENDALI {form.rischi.length > 0 && `— ${form.rischi.length}`}</div>
+          <div style={{ fontSize: 12, fontWeight: 700, color: "#C4872E", letterSpacing: "0.5px" }}>RISCHI AZIENDALI {form.rischi.length > 0 && `— ${form.rischi.length}`}</div>
           <button onClick={() => setForm(f => ({ ...f, rischi: [...f.rischi, { id: genId("r"), categoria: "", descrizione: "", livello: "medio" }] }))}
-            style={{ padding: "5px 12px", background: "#f59e0b15", border: "1px solid #f59e0b30", borderRadius: 6, color: "#f59e0b", fontSize: 11, fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>
+            style={{ padding: "5px 12px", background: "#C4872E15", border: "1px solid #C4872E30", borderRadius: 6, color: "#C4872E", fontSize: 11, fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>
             + Aggiungi
           </button>
         </div>
         {form.rischi.length === 0 ? (
-          <div style={{ textAlign: "center", padding: "20px", fontSize: 13, color: "#334155" }}>Nessun rischio — aggiungili manualmente o carica il DVR</div>
+          <div style={{ textAlign: "center", padding: "20px", fontSize: 13, color: "#8A8271" }}>Nessun rischio — aggiungili manualmente o carica il DVR</div>
         ) : (
           <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
             {form.rischi.map(r => (
-              <div key={r.id} style={{ background: "#0f1117", borderRadius: 8, padding: "10px 12px", display: "flex", gap: 10, alignItems: "center" }}>
+              <div key={r.id} style={{ background: "#EFE9DD", borderRadius: 8, padding: "10px 12px", display: "flex", gap: 10, alignItems: "center" }}>
                 <div style={{ flex: 1, display: "grid", gridTemplateColumns: "1fr 2fr auto", gap: 8 }}>
                   <input value={r.categoria} onChange={e => setForm(f => ({ ...f, rischi: f.rischi.map(x => x.id === r.id ? { ...x, categoria: e.target.value } : x) }))} placeholder="Categoria" style={{ ...inputStyle, fontSize: 12 }} />
                   <input value={r.descrizione} onChange={e => setForm(f => ({ ...f, rischi: f.rischi.map(x => x.id === r.id ? { ...x, descrizione: e.target.value } : x) }))} placeholder="Descrizione" style={{ ...inputStyle, fontSize: 12 }} />
                   <select value={r.livello} onChange={e => setForm(f => ({ ...f, rischi: f.rischi.map(x => x.id === r.id ? { ...x, livello: e.target.value } : x) }))}
-                    style={{ padding: "8px 10px", background: LIVELLO_CFG[r.livello]?.bg || "#1e2535", border: `1px solid ${LIVELLO_CFG[r.livello]?.color || "#334155"}40`, borderRadius: 6, color: LIVELLO_CFG[r.livello]?.color || "#64748b", fontSize: 12, fontWeight: 700, fontFamily: "inherit", cursor: "pointer" }}>
+                    style={{ padding: "8px 10px", background: LIVELLO_CFG[r.livello]?.bg || "#1A140D", border: `1px solid ${LIVELLO_CFG[r.livello]?.color || "#8A8271"}40`, borderRadius: 6, color: LIVELLO_CFG[r.livello]?.color || "#5C5545", fontSize: 12, fontWeight: 700, fontFamily: "inherit", cursor: "pointer" }}>
                     {LIVELLI.map(l => <option key={l} value={l}>{l.charAt(0).toUpperCase() + l.slice(1)}</option>)}
                   </select>
                 </div>
-                <button onClick={() => setForm(f => ({ ...f, rischi: f.rischi.filter(x => x.id !== r.id) }))} style={{ background: "none", border: "none", color: "#334155", fontSize: 16, cursor: "pointer", padding: "0 4px" }}>✕</button>
+                <button onClick={() => setForm(f => ({ ...f, rischi: f.rischi.filter(x => x.id !== r.id) }))} style={{ background: "none", border: "none", color: "#8A8271", fontSize: 16, cursor: "pointer", padding: "0 4px" }}>✕</button>
               </div>
             ))}
           </div>
@@ -535,12 +537,12 @@ function CreaAzienda({ onCreata, isFirst = false }) {
       </div>
 
       {erroreSalva && (
-        <div style={{ marginBottom: 10, padding: "10px 14px", background: "#ef444412", border: "1px solid #ef444430", borderRadius: 9, fontSize: 12, color: "#f87171" }}>
+        <div style={{ marginBottom: 10, padding: "10px 14px", background: "#B85C3B12", border: "1px solid #B85C3B30", borderRadius: 9, fontSize: 12, color: "#B85C3B" }}>
           {erroreSalva}
         </div>
       )}
       <button onClick={salvaAzienda} disabled={!form.nome.trim() || salvataggio}
-        style={{ width: "100%", padding: "14px", background: form.nome.trim() && !salvataggio ? "linear-gradient(135deg, #10b981, #06b6d4)" : "#1e2535", border: "none", borderRadius: 12, color: form.nome.trim() && !salvataggio ? "white" : "#334155", fontSize: 15, fontWeight: 800, cursor: form.nome.trim() && !salvataggio ? "pointer" : "not-allowed", fontFamily: "inherit" }}>
+        style={{ width: "100%", padding: "14px", background: form.nome.trim() && !salvataggio ? "#33513B" : "#1A140D", border: "none", borderRadius: 12, color: form.nome.trim() && !salvataggio ? "white" : "#8A8271", fontSize: 15, fontWeight: 800, cursor: form.nome.trim() && !salvataggio ? "pointer" : "not-allowed", fontFamily: "inherit" }}>
         {salvataggio ? "Salvataggio…" : "✓ Crea profilo azienda"}
       </button>
     </div>

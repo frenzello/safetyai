@@ -250,11 +250,11 @@ function statoScadenza(dataStr) {
 }
 
 const STATO_CFG = {
-  ok:        { color: "#10b981", bg: "#10b98112", label: "Valido" },
-  attenzione:{ color: "#f59e0b", bg: "#f59e0b12", label: "In scadenza" },
-  critico:   { color: "#ef4444", bg: "#ef444412", label: "Scadenza imminente" },
-  scaduto:   { color: "#ef4444", bg: "#ef444420", label: "SCADUTO" },
-  nessuna:   { color: "#64748b", bg: "#64748b12", label: "Nessuna scadenza" },
+  ok:        { color: "#33513B", bg: "#33513B12", label: "Valido" },
+  attenzione:{ color: "#C4872E", bg: "#C4872E12", label: "In scadenza" },
+  critico:   { color: "#B85C3B", bg: "#B85C3B12", label: "Scadenza imminente" },
+  scaduto:   { color: "#B85C3B", bg: "#B85C3B20", label: "SCADUTO" },
+  nessuna:   { color: "#5C5545", bg: "#5C554512", label: "Nessuna scadenza" },
 };
 
 // ─── VALIDAZIONE POST-ESTRAZIONE ──────────────────────────────────────────────
@@ -354,14 +354,14 @@ class ErrorBoundaryAgile81 extends Component {
   render() {
     if (this.state.error) {
       return (
-        <div style={{ fontFamily: "'DM Sans','Segoe UI',sans-serif", background: "#0f1117", minHeight: "100vh", padding: "40px 24px", color: "#e2e8f0", maxWidth: 640, margin: "0 auto" }}>
-          <div style={{ background: "#161b27", border: "1px solid #ef444440", borderRadius: 12, padding: "24px" }}>
-            <div style={{ fontSize: 18, fontWeight: 800, color: "#ef4444", marginBottom: 10 }}>Si e verificato un errore</div>
-            <div style={{ fontSize: 13, color: "#cbd5e1", lineHeight: 1.6, marginBottom: 14 }}>
+        <div style={{ fontFamily: "'Work Sans','Segoe UI',sans-serif", background: "#EFE9DD", minHeight: "100vh", padding: "40px 24px", color: "#241D14", maxWidth: 640, margin: "0 auto" }}>
+          <div style={{ background: "#FBF8F1", border: "1px solid #B85C3B40", borderRadius: 12, padding: "24px" }}>
+            <div style={{ fontSize: 18, fontWeight: 800, color: "#B85C3B", marginBottom: 10 }}>Si e verificato un errore</div>
+            <div style={{ fontSize: 13, color: "#241D14", lineHeight: 1.6, marginBottom: 14 }}>
               L'analisi ha incontrato un dato imprevisto. Ricarica la pagina e riprova; se persiste, copia il messaggio qui sotto.
             </div>
-            <pre style={{ fontSize: 11, color: "#fca5a5", background: "#0f1117", padding: "12px", borderRadius: 8, overflow: "auto", whiteSpace: "pre-wrap" }}>{String((this.state.error && this.state.error.message) || this.state.error)}</pre>
-            <button onClick={() => window.location.reload()} style={{ marginTop: 14, padding: "11px 20px", borderRadius: 10, background: "linear-gradient(135deg,#3b82f6,#06b6d4)", border: "none", color: "white", fontSize: 13, fontWeight: 700, cursor: "pointer" }}>Ricarica</button>
+            <pre style={{ fontSize: 11, color: "#B85C3B", background: "#EFE9DD", padding: "12px", borderRadius: 8, overflow: "auto", whiteSpace: "pre-wrap" }}>{String((this.state.error && this.state.error.message) || this.state.error)}</pre>
+            <button onClick={() => window.location.reload()} style={{ marginTop: 14, padding: "11px 20px", borderRadius: 3, border: "3px solid #1A140D", boxShadow: "4px 4px 0 #1A140D", background: "#B85C3B", color: "#FBF3ED", fontSize: 13, fontWeight: 800, fontFamily: "'Big Shoulders',sans-serif", textTransform: "uppercase", cursor: "pointer" }}>Ricarica</button>
           </div>
         </div>
       );
@@ -983,11 +983,11 @@ function fileIcon(name) {
 
 function StatoBadge({ stato }) {
   const cfg = {
-    elaborazione: { bg: "#3b82f615", color: "#60a5fa", label: "Elaborazione..." },
-    ok:           { bg: "#10b98115", color: "#10b981", label: "Classificato" },
-    errore:       { bg: "#ef444415", color: "#ef4444", label: "Errore lettura" },
-    attesa:       { bg: "#1e2535",   color: "#475569", label: "In coda" },
-  }[stato] || { bg: "#1e2535", color: "#475569", label: stato };
+    elaborazione: { bg: "#33513B15", color: "#33513B", label: "Elaborazione..." },
+    ok:           { bg: "#33513B15", color: "#33513B", label: "Classificato" },
+    errore:       { bg: "#B85C3B15", color: "#B85C3B", label: "Errore lettura" },
+    attesa:       { bg: "#1A140D",   color: "#5C5545", label: "In coda" },
+  }[stato] || { bg: "#1A140D", color: "#5C5545", label: stato };
 
   return (
     <span style={{ padding: "3px 9px", borderRadius: 20, background: cfg.bg, color: cfg.color, fontSize: 11, fontWeight: 700, display: "inline-flex", alignItems: "center", gap: 4 }}>
@@ -1115,29 +1115,29 @@ function SchermatScadenze({ elaborati, azienda, appaltoSelId, appaltatoreSelId, 
   const totaleAnomalie = elaborati.filter(d => d.risultato?._anomalie?.length > 0).length;
   const erroriRete = elaborati.filter(d => d.risultato?._rete).length;
   const erroriDoc = elaborati.filter(d => d.risultato?.errore && !d.risultato?._rete).length;
-  const statoColore = { ok: "#10b981", attenzione: "#f59e0b", critico: "#ef4444", scaduto: "#ef4444", nonconforme: "#f97316", nessuna: "#64748b" };
+  const statoColore = { ok: "#33513B", attenzione: "#C4872E", critico: "#B85C3B", scaduto: "#B85C3B", nonconforme: "#B85C3B", nessuna: "#5C5545" };
   const statoLabel = { ok: "Valido", attenzione: "In scadenza", critico: "Scadenza imminente", scaduto: "SCADUTO", nonconforme: "Non conforme", nessuna: "—" };
 
   return (
-    <div style={{ fontFamily: "'DM Sans','Segoe UI',sans-serif", background: "#0f1117", minHeight: "100vh", padding: "32px 24px", color: "#e2e8f0", maxWidth: 760, margin: "0 auto" }}>
+    <div style={{ fontFamily: "'Work Sans','Segoe UI',sans-serif", background: "#EFE9DD", minHeight: "100vh", padding: "32px 24px", color: "#241D14", maxWidth: 760, margin: "0 auto" }}>
       <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
 
       {/* Banner errori: rende visibili i fallimenti invece di una schermata vuota */}
       {erroriRete > 0 && (
-        <div style={{ padding: "14px 18px", marginBottom: 18, background: "#ef444412", border: "1px solid #ef444440", borderRadius: 10, display: "flex", gap: 12, alignItems: "flex-start" }}>
+        <div style={{ padding: "14px 18px", marginBottom: 18, background: "#F3E4DB", border: "3px solid #B85C3B", borderRadius: 2, display: "flex", gap: 12, alignItems: "flex-start" }}>
           <span style={{ fontSize: 18, flexShrink: 0 }}>⚠</span>
           <div>
-            <div style={{ fontSize: 13, fontWeight: 700, color: "#ef4444", marginBottom: 4 }}>
+            <div style={{ fontSize: 13, fontWeight: 800, color: "#B85C3B", marginBottom: 4 }}>
               {erroriRete} {erroriRete === 1 ? "documento non analizzato" : "documenti non analizzati"}: il server non ha risposto
             </div>
-            <div style={{ fontSize: 12, color: "#fca5a5", lineHeight: 1.5 }}>
+            <div style={{ fontSize: 12, color: "#6B2F1B", lineHeight: 1.5 }}>
               Possibili cause: connessione assente, backend non raggiungibile o limite giornaliero. Controlla e riprova — questi documenti NON sono nel registro.
             </div>
           </div>
         </div>
       )}
       {erroriDoc > 0 && (
-        <div style={{ padding: "12px 18px", marginBottom: 18, background: "#f59e0b0e", border: "1px solid #f59e0b30", borderRadius: 10, fontSize: 12, color: "#ca8a04" }}>
+        <div style={{ padding: "12px 18px", marginBottom: 18, background: "#EFDFC5", border: "2px solid #C4872E", borderRadius: 2, fontSize: 12, color: "#6B4A16" }}>
           {erroriDoc} {erroriDoc === 1 ? "documento illeggibile" : "documenti illeggibili"} (qualità scarsa o formato non supportato): verifica manualmente.
         </div>
       )}
@@ -1154,22 +1154,23 @@ function SchermatScadenze({ elaborati, azienda, appaltoSelId, appaltatoreSelId, 
       <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: 24, gap: 16 }}>
         <div>
           <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8 }}>
-            <div style={{ width: 32, height: 32, background: "linear-gradient(135deg, #3b82f6, #06b6d4)", borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16, fontWeight: 800, color: "white" }}>A</div>
-            <span style={{ fontSize: 14, fontWeight: 700, color: "#f1f5f9" }}>Agile81</span>
+            <div style={{ width: 32, height: 32, background: "#33513B", borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16, fontWeight: 800, color: "white" }}>A</div>
+            <span style={{ fontSize: 14, fontWeight: 700, color: "#241D14" }}>Agile81</span>
           </div>
-          <div style={{ fontSize: 20, fontWeight: 800, color: "#f1f5f9", letterSpacing: "-0.4px" }}>Situazione documentale</div>
-          <div style={{ fontSize: 12, color: "#475569", marginTop: 2 }}>{azienda?.nome || "Agile81"}</div>
+          <div style={{ fontSize: 20, fontWeight: 800, color: "#241D14", letterSpacing: "-0.4px" }}>Situazione documentale</div>
+          <div style={{ fontSize: 12, color: "#5C5545", marginTop: 2 }}>{azienda?.nome || "Agile81"}</div>
         </div>
         <button
           onClick={handleExport}
           disabled={exportando || nonConformiInAttesa > 0}
           title={nonConformiInAttesa > 0 ? "Gestisci prima i documenti non conformi" : ""}
           style={{
-            padding: "11px 20px", borderRadius: 10, flexShrink: 0,
-            background: nonConformiInAttesa > 0 ? "#1e2535" : exportando ? "#1e2535" : "linear-gradient(135deg, #16a34a, #15803d)",
-            border: nonConformiInAttesa > 0 ? "1px solid #334155" : "none",
-            color: nonConformiInAttesa > 0 ? "#475569" : "white",
-            fontSize: 13, fontWeight: 700,
+            padding: "11px 20px", borderRadius: 2, flexShrink: 0,
+            background: nonConformiInAttesa > 0 ? "#DCD5C4" : exportando ? "#DCD5C4" : "#B85C3B",
+            border: nonConformiInAttesa > 0 ? "3px solid #A79D89" : "3px solid #1A140D",
+            boxShadow: nonConformiInAttesa > 0 ? "none" : "4px 4px 0 #1A140D",
+            color: nonConformiInAttesa > 0 ? "#A79D89" : "#FBF3ED",
+            fontSize: 13, fontWeight: 800, fontFamily: "'Big Shoulders',sans-serif", textTransform: "uppercase", letterSpacing: "0.02em",
             cursor: nonConformiInAttesa > 0 || exportando ? "not-allowed" : "pointer",
             display: "flex", alignItems: "center", gap: 8,
           }}>
@@ -1181,27 +1182,27 @@ function SchermatScadenze({ elaborati, azienda, appaltoSelId, appaltatoreSelId, 
       {/* Stats */}
       <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 12, marginBottom: totaleAnomalie > 0 ? 16 : 24 }}>
         {[
-          { label: "Lavoratori",          value: Object.keys(perLavoratore).length, color: "#60a5fa" },
-          { label: "In attesa decisione", value: nonConformiInAttesa, color: nonConformiInAttesa > 0 ? "#f97316" : "#334155" },
-          { label: "Validi",              value: elaborati.filter(d => d.risultato?.conforme !== false && statoScadenza(d.risultato?.data_scadenza) === "ok").length, color: "#10b981" },
-          { label: "Da rinnovare",        value: elaborati.filter(d => ["scaduto","critico","attenzione"].includes(statoScadenza(d.risultato?.data_scadenza))).length, color: "#f59e0b" },
+          { label: "Lavoratori",          value: Object.keys(perLavoratore).length, color: "#33513B" },
+          { label: "In attesa decisione", value: nonConformiInAttesa, color: nonConformiInAttesa > 0 ? "#B85C3B" : "#8A8271" },
+          { label: "Validi",              value: elaborati.filter(d => d.risultato?.conforme !== false && statoScadenza(d.risultato?.data_scadenza) === "ok").length, color: "#33513B" },
+          { label: "Da rinnovare",        value: elaborati.filter(d => ["scaduto","critico","attenzione"].includes(statoScadenza(d.risultato?.data_scadenza))).length, color: "#C4872E" },
         ].map((s, i) => (
-          <div key={i} style={{ background: "#161b27", border: `1px solid ${s.color}20`, borderRadius: 12, padding: "16px", textAlign: "center" }}>
-            <div style={{ fontSize: 26, fontWeight: 800, color: s.color }}>{s.value}</div>
-            <div style={{ fontSize: 11, color: "#475569", marginTop: 3 }}>{s.label}</div>
+          <div key={i} style={{ background: "#FBF8F1", border: "2px solid #1A140D", borderLeft: `6px solid ${s.color}`, boxShadow: "3px 3px 0 #1A140D", borderRadius: 2, padding: "14px 16px", textAlign: "center" }}>
+            <div style={{ fontSize: 28, fontWeight: 800, fontFamily: "'Big Shoulders',sans-serif", color: s.color, fontVariantNumeric: "tabular-nums" }}>{s.value}</div>
+            <div style={{ fontSize: 9.5, color: "#5C5545", marginTop: 4, fontFamily: "'JetBrains Mono',monospace", textTransform: "uppercase", letterSpacing: "0.04em" }}>{s.label}</div>
           </div>
         ))}
       </div>
 
       {/* Banner anomalie estrazione */}
       {totaleAnomalie > 0 && (
-        <div style={{ padding: "12px 18px", marginBottom: 20, background: "#f59e0b08", border: "1px solid #f59e0b25", borderRadius: 10, display: "flex", gap: 12, alignItems: "flex-start" }}>
+        <div style={{ padding: "12px 18px", marginBottom: 20, background: "#C4872E08", border: "1px solid #C4872E25", borderRadius: 10, display: "flex", gap: 12, alignItems: "flex-start" }}>
           <span style={{ fontSize: 18, flexShrink: 0 }}>🔍</span>
           <div>
-            <div style={{ fontSize: 13, fontWeight: 700, color: "#f59e0b", marginBottom: 4 }}>
+            <div style={{ fontSize: 13, fontWeight: 700, color: "#C4872E", marginBottom: 4 }}>
               {totaleAnomalie} {totaleAnomalie === 1 ? "documento richiede verifica" : "documenti richiedono verifica"}
             </div>
-            <div style={{ fontSize: 12, color: "#ca8a04", lineHeight: 1.5 }}>
+            <div style={{ fontSize: 12, color: "#6B4A16", lineHeight: 1.5 }}>
               I dati estratti dall'AI presentano anomalie (date impossibili, confidenza bassa, campi mancanti).
               I documenti segnalati con <strong>⚠ Verifica</strong> vanno controllati prima dell'export.
             </div>
@@ -1213,15 +1214,15 @@ function SchermatScadenze({ elaborati, azienda, appaltoSelId, appaltatoreSelId, 
       {gruppiSimili.length > 0 && (
         <div style={{ marginBottom: 20, display: "flex", flexDirection: "column", gap: 10 }}>
           {gruppiSimili.map((chiavi, i) => (
-            <div key={i} style={{ padding: "12px 16px", background: "#3b82f610", border: "1px solid #3b82f630", borderRadius: 10, display: "flex", alignItems: "center", gap: 14, flexWrap: "wrap" }}>
+            <div key={i} style={{ padding: "13px 16px", background: "#EFDFC5", border: "3px solid #1A140D", boxShadow: "4px 4px 0 #1A140D", borderRadius: 2, display: "flex", alignItems: "center", gap: 14, flexWrap: "wrap" }}>
               <span style={{ fontSize: 16, flexShrink: 0 }}>🔍</span>
               <div style={{ flex: 1, minWidth: 220 }}>
-                <div style={{ fontSize: 12, fontWeight: 700, color: "#60a5fa" }}>Possibile duplicato: stesso lavoratore letto in modo diverso?</div>
-                <div style={{ fontSize: 12, color: "#94a3b8", marginTop: 2 }}>{chiavi.map(c => perLavoratore[c]?.nomeDisplay).join("  ·  ")}</div>
+                <div style={{ fontSize: 12, fontWeight: 800, color: "#6B4A16" }}>Possibile duplicato: stesso lavoratore letto in modo diverso?</div>
+                <div style={{ fontSize: 12, color: "#5C5545", marginTop: 2 }}>{chiavi.map(c => perLavoratore[c]?.nomeDisplay).join("  ·  ")}</div>
               </div>
               <div style={{ display: "flex", gap: 8, flexShrink: 0 }}>
-                <button onClick={() => ignoraGruppoSuggerito(chiavi)} style={{ padding: "6px 12px", background: "transparent", border: "1px solid #334155", borderRadius: 7, color: "#64748b", fontSize: 12, cursor: "pointer" }}>Ignora</button>
-                <button onClick={() => fondiGruppoSuggerito(chiavi)} style={{ padding: "6px 12px", background: "#3b82f6", border: "none", borderRadius: 7, color: "white", fontSize: 12, fontWeight: 700, cursor: "pointer" }}>🔗 Unisci tutte</button>
+                <button onClick={() => ignoraGruppoSuggerito(chiavi)} style={{ padding: "6px 12px", background: "#FBF8F1", border: "2px solid #1A140D", borderRadius: 2, color: "#5C5545", fontSize: 11, fontWeight: 700, cursor: "pointer" }}>Ignora</button>
+                <button onClick={() => fondiGruppoSuggerito(chiavi)} style={{ padding: "6px 14px", background: "#C4872E", border: "2px solid #1A140D", boxShadow: "3px 3px 0 #1A140D", borderRadius: 2, color: "#FBF3ED", fontSize: 12, fontWeight: 800, fontFamily: "'Big Shoulders',sans-serif", textTransform: "uppercase", cursor: "pointer" }}>🔗 Unisci tutte</button>
               </div>
             </div>
           ))}
@@ -1232,45 +1233,45 @@ function SchermatScadenze({ elaborati, azienda, appaltoSelId, appaltatoreSelId, 
       {Object.keys(perLavoratore).length > 0 && (
         <div style={{ marginBottom: 24 }}>
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 14 }}>
-            <div style={{ fontSize: 11, color: "#475569", fontWeight: 700, letterSpacing: "0.5px" }}>
+            <div style={{ fontSize: 11, color: "#5C5545", fontWeight: 700, letterSpacing: "0.5px" }}>
               LAVORATORI — {Object.keys(perLavoratore).length}
             </div>
             {Object.keys(fusioni).length > 0 && (
-              <div style={{ fontSize: 11, color: "#64748b" }}>
+              <div style={{ fontSize: 11, color: "#5C5545" }}>
                 {Object.keys(fusioni).length} {Object.keys(fusioni).length === 1 ? "scheda unita" : "schede unite"}
                 {" · "}
-                <span onClick={annullaTutteLeFusioni} style={{ color: "#f87171", textDecoration: "underline", cursor: "pointer" }}>annulla tutte</span>
+                <span onClick={annullaTutteLeFusioni} style={{ color: "#B85C3B", textDecoration: "underline", cursor: "pointer" }}>annulla tutte</span>
               </div>
             )}
           </div>
           {Object.keys(perLavoratore).length > 1 && (
-            <div style={{ fontSize: 11, color: "#475569", marginBottom: 14, lineHeight: 1.5 }}>
+            <div style={{ fontSize: 11, color: "#5C5545", marginBottom: 14, lineHeight: 1.5 }}>
               Due schede per la stessa persona (es. un nome scritto in modo diverso per un refuso)? Usa "🔗 Unisci con…" su una delle due.
             </div>
           )}
           <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
             {Object.entries(perLavoratore).map(([chiaveLav, { nomeDisplay, docs }]) => {
               const stato = statoLavoratore(docs);
-              const colore = statoColore[stato] || "#64748b";
+              const colore = statoColore[stato] || "#5C5545";
               const label = statoLabel[stato] || stato;
 
               return (
-                <div key={chiaveLav} style={{ background: "#161b27", border: `1px solid ${["scaduto","critico","nonconforme"].includes(stato) ? colore + "40" : "#1e2535"}`, borderRadius: 12, overflow: "hidden" }}>
-                  <div style={{ padding: "14px 20px", display: "flex", alignItems: "center", gap: 14, background: `${colore}08` }}>
-                    <div style={{ width: 42, height: 42, borderRadius: "50%", flexShrink: 0, background: `${colore}20`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 15, fontWeight: 800, color: colore }}>
+                <div key={chiaveLav} style={{ background: "#FBF8F1", border: "3px solid #1A140D", boxShadow: "5px 5px 0 #1A140D", borderRadius: 2, overflow: "hidden" }}>
+                  <div style={{ padding: "14px 20px", display: "flex", alignItems: "center", gap: 14, background: "#F2EEE0", borderBottom: "3px solid #1A140D" }}>
+                    <div style={{ width: 42, height: 42, borderRadius: "50%", border: "2px solid #1A140D", flexShrink: 0, background: `${colore}25`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 15, fontWeight: 800, fontFamily: "'Big Shoulders',sans-serif", color: colore }}>
                       {nomeDisplay.split(" ").map(n => n[0]).join("").slice(0, 2).toUpperCase()}
                     </div>
                     <div style={{ flex: 1 }}>
-                      <div style={{ fontSize: 14, fontWeight: 700, color: "#f1f5f9" }}>{nomeDisplay}</div>
-                      <div style={{ fontSize: 11, color: "#475569", marginTop: 2 }}>{docs.length} documenti</div>
+                      <div style={{ fontSize: 15, fontWeight: 800, fontFamily: "'Big Shoulders',sans-serif", textTransform: "uppercase", letterSpacing: "0.01em", color: "#241D14" }}>{nomeDisplay}</div>
+                      <div style={{ fontSize: 11, color: "#5C5545", marginTop: 2, fontFamily: "'JetBrains Mono',monospace" }}>{docs.length} documenti</div>
                     </div>
-                    <span style={{ padding: "4px 10px", borderRadius: 20, background: colore + "20", color: colore, fontSize: 11, fontWeight: 700 }}>{label}</span>
+                    <span style={{ padding: "5px 11px", borderRadius: 2, border: "2px solid #1A140D", background: colore, color: "#FBF3ED", fontSize: 10, fontWeight: 800, fontFamily: "'JetBrains Mono',monospace", textTransform: "uppercase", letterSpacing: "0.03em" }}>{label}</span>
                     {Object.keys(perLavoratore).length > 1 && (
                       <select
                         value=""
                         onChange={e => { const dest = e.target.value; e.target.value = ""; if (dest) fondiLavoratore(chiaveLav, dest); }}
                         title="Unisci questa scheda in un'altra (es. stesso lavoratore con il nome scritto in modo diverso)"
-                        style={{ background: "#1e2535", border: "1px solid #334155", borderRadius: 6, color: "#94a3b8", fontSize: 10, padding: "5px 6px", cursor: "pointer", flexShrink: 0, maxWidth: 120 }}>
+                        style={{ background: "#FBF8F1", border: "2px solid #1A140D", borderRadius: 2, color: "#5C5545", fontSize: 10, fontFamily: "'JetBrains Mono',monospace", fontWeight: 700, padding: "5px 6px", cursor: "pointer", flexShrink: 0, maxWidth: 120 }}>
                         <option value="">🔗 Unisci con…</option>
                         {Object.entries(perLavoratore).filter(([k]) => k !== chiaveLav).map(([k, v]) => (
                           <option key={k} value={k}>{v.nomeDisplay}</option>
@@ -1279,7 +1280,7 @@ function SchermatScadenze({ elaborati, azienda, appaltoSelId, appaltatoreSelId, 
                     )}
                   </div>
 
-                  <div style={{ borderTop: "1px solid #1e2535" }}>
+                  <div>
                     {docs.map((doc, i) => {
                       const r = doc.risultato;
                       const chiave = `${chiaveLav}__${doc.nomeFile}`;
@@ -1290,23 +1291,23 @@ function SchermatScadenze({ elaborati, azienda, appaltoSelId, appaltatoreSelId, 
                       const cfgDoc = STATO_CFG[statoDoc];
                       const giorni = giorniAllaScadenza(r?.data_scadenza);
                       const bordoColore = nonConforme && decisione !== "approvato"
-                        ? "#f97316"
+                        ? "#B85C3B"
                         : anomalie.length > 0
-                          ? "#f59e0b"
+                          ? "#C4872E"
                           : cfgDoc.color;
 
                       return (
-                        <div key={i} style={{ padding: "12px 20px", borderBottom: i < docs.length - 1 ? "1px solid #1e253540" : "none", borderLeft: `3px solid ${bordoColore}` }}>
+                        <div key={i} style={{ padding: "12px 20px", borderTop: "2px solid #1A140D", borderLeft: `6px solid ${bordoColore}` }}>
                           {/* Riga principale: icona + info + scadenza + verifica */}
                           <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
                             <span style={{ fontSize: 18, flexShrink: 0 }}>{fileIcon(doc.nomeFile)}</span>
                             <div style={{ flex: 1, minWidth: 0 }}>
-                              <div style={{ fontSize: 12, fontWeight: 600, color: "#cbd5e1" }}>{r?.tipo_documento || doc.nomeFile}</div>
-                              <div style={{ fontSize: 11, color: "#475569", marginTop: 3, display: "flex", flexWrap: "wrap", gap: 8 }}>
-                                {r?.data_rilascio && <span>Rilascio: <strong style={{ color: "#64748b" }}>{r.data_rilascio}</strong></span>}
+                              <div style={{ fontSize: 12, fontWeight: 600, color: "#241D14" }}>{r?.tipo_documento || doc.nomeFile}</div>
+                              <div style={{ fontSize: 11, color: "#5C5545", marginTop: 3, display: "flex", flexWrap: "wrap", gap: 8 }}>
+                                {r?.data_rilascio && <span>Rilascio: <strong style={{ color: "#5C5545" }}>{r.data_rilascio}</strong></span>}
                                 {r?.ore_formazione && <span>🕐 {r.ore_formazione}h</span>}
                                 {r?.ente_erogatore && <span style={{ maxWidth: 200, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>📋 {r.ente_erogatore}</span>}
-                                {r?.normativa && <span style={{ color: "#a78bfa" }}>{r.normativa}</span>}
+                                {r?.normativa && <span style={{ color: "#B85C3B" }}>{r.normativa}</span>}
                               </div>
                             </div>
                             <div style={{ textAlign: "right", flexShrink: 0 }}>
@@ -1320,7 +1321,7 @@ function SchermatScadenze({ elaborati, azienda, appaltoSelId, appaltatoreSelId, 
                                   )}
                                 </>
                               ) : (
-                                <span style={{ fontSize: 11, color: "#334155" }}>Nessuna scadenza</span>
+                                <span style={{ fontSize: 11, color: "#8A8271" }}>Nessuna scadenza</span>
                               )}
                             </div>
                             {doc.file && (
@@ -1329,15 +1330,15 @@ function SchermatScadenze({ elaborati, azienda, appaltoSelId, appaltatoreSelId, 
                                 style={{
                                   padding: "6px 10px", borderRadius: 7, fontSize: 11,
                                   cursor: "pointer", display: "flex", alignItems: "center", gap: 4, flexShrink: 0,
-                                  background: anomalie.length > 0 ? "#f59e0b15" : "#1e2535",
-                                  border:     anomalie.length > 0 ? "1px solid #f59e0b50" : "1px solid #334155",
-                                  color:      anomalie.length > 0 ? "#f59e0b"              : "#94a3b8",
+                                  background: anomalie.length > 0 ? "#C4872E15" : "#FBF8F1",
+                                  border:     anomalie.length > 0 ? "1px solid #C4872E50" : "1px solid #8A8271",
+                                  color:      anomalie.length > 0 ? "#C4872E"              : "#5C5545",
                                   fontWeight: anomalie.length > 0 ? 700 : 400,
                                 }}
-                                onMouseOver={e => { e.currentTarget.style.background = "#2d3748"; e.currentTarget.style.color = "#f1f5f9"; }}
+                                onMouseOver={e => { e.currentTarget.style.background = "#E3DCC8"; e.currentTarget.style.color = "#241D14"; }}
                                 onMouseOut={e => {
-                                  e.currentTarget.style.background = anomalie.length > 0 ? "#f59e0b15" : "#1e2535";
-                                  e.currentTarget.style.color      = anomalie.length > 0 ? "#f59e0b"   : "#94a3b8";
+                                  e.currentTarget.style.background = anomalie.length > 0 ? "#C4872E15" : "#FBF8F1";
+                                  e.currentTarget.style.color      = anomalie.length > 0 ? "#C4872E"   : "#5C5545";
                                 }}
                               >
                                 {anomalie.length > 0 ? "⚠ Verifica" : "👁 Verifica"}
@@ -1346,35 +1347,35 @@ function SchermatScadenze({ elaborati, azienda, appaltoSelId, appaltatoreSelId, 
                           </div>
 
                           {/* Blocco non conformità — sotto a tutta larghezza */}
-                          {nonConforme && (                            <div style={{ marginTop: 10, padding: "10px 14px", background: "#f9731610", border: "1px solid #f9731630", borderRadius: 8 }}>
-                              <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 12 }}>
-                                <div style={{ fontSize: 11, color: "#fdba74", flex: 1 }}>
+                          {nonConforme && (                            <div style={{ marginTop: 10, padding: "12px 14px", background: "#F3E4DB", border: "2px solid #B85C3B", borderRadius: 2 }}>
+                              <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 12, flexWrap: "wrap" }}>
+                                <div style={{ fontSize: 11.5, color: "#6B2F1B", flex: 1, lineHeight: 1.5 }}>
                                   ⚠ <strong>Non conforme:</strong> {r.problema_conformita}
                                 </div>
                                 {!decisione && (
                                   <div style={{ display: "flex", gap: 8, flexShrink: 0 }}>
                                     <button
                                       onClick={() => setDecisione(chiaveLav, doc.nomeFile, "approvato")}
-                                      style={{ padding: "4px 12px", background: "#10b98120", border: "1px solid #10b98140", borderRadius: 6, color: "#10b981", fontSize: 11, fontWeight: 700, cursor: "pointer", whiteSpace: "nowrap" }}>
+                                      style={{ padding: "6px 13px", background: "#33513B", border: "2px solid #1A140D", boxShadow: "3px 3px 0 #1A140D", borderRadius: 2, color: "#F2EEE0", fontSize: 11, fontWeight: 800, fontFamily: "'Big Shoulders',sans-serif", textTransform: "uppercase", cursor: "pointer", whiteSpace: "nowrap" }}>
                                       ✓ Approva
                                     </button>
                                     <button
                                       onClick={() => setDecisione(chiaveLav, doc.nomeFile, "scartato")}
-                                      style={{ padding: "4px 12px", background: "#ef444420", border: "1px solid #ef444440", borderRadius: 6, color: "#ef4444", fontSize: 11, fontWeight: 700, cursor: "pointer", whiteSpace: "nowrap" }}>
+                                      style={{ padding: "6px 13px", background: "#B85C3B", border: "2px solid #1A140D", boxShadow: "3px 3px 0 #1A140D", borderRadius: 2, color: "#FBF3ED", fontSize: 11, fontWeight: 800, fontFamily: "'Big Shoulders',sans-serif", textTransform: "uppercase", cursor: "pointer", whiteSpace: "nowrap" }}>
                                       ✗ Scarta
                                     </button>
                                   </div>
                                 )}
                                 {decisione === "approvato" && (
-                                  <div style={{ display: "flex", alignItems: "center", gap: 8, flexShrink: 0 }}>
-                                    <span style={{ fontSize: 11, color: "#10b981", fontWeight: 700 }}>✓ Approvato</span>
-                                    <button onClick={() => setDecisione(chiaveLav, doc.nomeFile, null)} style={{ background: "none", border: "none", color: "#475569", fontSize: 10, cursor: "pointer" }}>annulla</button>
+                                  <div style={{ display: "flex", alignItems: "center", gap: 8, flexShrink: 0, fontFamily: "'JetBrains Mono',monospace" }}>
+                                    <span style={{ fontSize: 11, color: "#33513B", fontWeight: 700 }}>✓ Approvato</span>
+                                    <button onClick={() => setDecisione(chiaveLav, doc.nomeFile, null)} style={{ background: "none", border: "none", color: "#5C5545", fontSize: 10, cursor: "pointer", fontFamily: "'Work Sans',sans-serif", textDecoration: "underline" }}>annulla</button>
                                   </div>
                                 )}
                                 {decisione === "scartato" && (
-                                  <div style={{ display: "flex", alignItems: "center", gap: 8, flexShrink: 0 }}>
-                                    <span style={{ fontSize: 11, color: "#ef4444", fontWeight: 700 }}>✗ Scartato</span>
-                                    <button onClick={() => setDecisione(chiaveLav, doc.nomeFile, null)} style={{ background: "none", border: "none", color: "#475569", fontSize: 10, cursor: "pointer" }}>annulla</button>
+                                  <div style={{ display: "flex", alignItems: "center", gap: 8, flexShrink: 0, fontFamily: "'JetBrains Mono',monospace" }}>
+                                    <span style={{ fontSize: 11, color: "#B85C3B", fontWeight: 700 }}>✗ Scartato</span>
+                                    <button onClick={() => setDecisione(chiaveLav, doc.nomeFile, null)} style={{ background: "none", border: "none", color: "#5C5545", fontSize: 10, cursor: "pointer", fontFamily: "'Work Sans',sans-serif", textDecoration: "underline" }}>annulla</button>
                                   </div>
                                 )}
                               </div>
@@ -1383,12 +1384,12 @@ function SchermatScadenze({ elaborati, azienda, appaltoSelId, appaltatoreSelId, 
 
                           {/* Blocco anomalie estrazione — distinto dalla non-conformità normativa */}
                           {anomalie.length > 0 && (
-                            <div style={{ marginTop: nonConforme ? 6 : 10, padding: "9px 14px", background: "#f59e0b06", border: "1px solid #f59e0b20", borderRadius: 8 }}>
-                              <div style={{ fontSize: 11, fontWeight: 700, color: "#f59e0b", marginBottom: 5 }}>
+                            <div style={{ marginTop: nonConforme ? 6 : 10, padding: "9px 14px", background: "#C4872E06", border: "1px solid #C4872E20", borderRadius: 8 }}>
+                              <div style={{ fontSize: 11, fontWeight: 700, color: "#C4872E", marginBottom: 5 }}>
                                 🔍 Dati estratti da verificare{r?._usatoSonnet ? " (ri-analizzato con Sonnet)" : ""}
                               </div>
                               {anomalie.map((a, ai) => (
-                                <div key={ai} style={{ fontSize: 11, color: "#ca8a04", paddingLeft: 6, marginBottom: ai < anomalie.length - 1 ? 3 : 0 }}>
+                                <div key={ai} style={{ fontSize: 11, color: "#6B4A16", paddingLeft: 6, marginBottom: ai < anomalie.length - 1 ? 3 : 0 }}>
                                   · {a}
                                 </div>
                               ))}
@@ -1408,40 +1409,40 @@ function SchermatScadenze({ elaborati, azienda, appaltoSelId, appaltatoreSelId, 
       {/* Doc aziendali */}
       {docAziendali.length > 0 && (
         <div style={{ marginBottom: 24 }}>
-          <div style={{ fontSize: 11, color: "#475569", fontWeight: 700, letterSpacing: "0.5px", marginBottom: 14 }}>DOCUMENTI AZIENDALI / DA APPROVARE — {docAziendali.length}</div>
-          <div style={{ background: "#161b27", border: "1px solid #1e2535", borderRadius: 12, overflow: "hidden" }}>
+          <div style={{ fontSize: 11, color: "#5C5545", fontWeight: 700, letterSpacing: "0.5px", marginBottom: 14 }}>DOCUMENTI AZIENDALI / DA APPROVARE — {docAziendali.length}</div>
+          <div style={{ background: "#FBF8F1", border: "1px solid #1A140D", borderRadius: 12, overflow: "hidden" }}>
             {docAziendali.map((doc, i) => {
               const cfgDoc = STATO_CFG[statoScadenza(doc.risultato?.data_scadenza)];
               const chiaveDec = `${chiaveLavoratore(doc, fusioni)}__${doc.nomeFile}`;
               const decisione = decisioniConformita[chiaveDec];
               const nonConforme = doc.risultato?.conforme === false;
-              const bordo = nonConforme && decisione !== "approvato" ? "#f97316" : cfgDoc.color;
+              const bordo = nonConforme && decisione !== "approvato" ? "#B85C3B" : cfgDoc.color;
               return (
-                <div key={i} style={{ padding: "13px 20px", borderBottom: i < docAziendali.length - 1 ? "1px solid #1e253540" : "none", borderLeft: `3px solid ${bordo}` }}>
+                <div key={i} style={{ padding: "13px 20px", borderBottom: i < docAziendali.length - 1 ? "1px solid #1A140D40" : "none", borderLeft: `3px solid ${bordo}` }}>
                   <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
                     <span style={{ fontSize: 18 }}>{fileIcon(doc.nomeFile)}</span>
                     <div style={{ flex: 1 }}>
-                      <div style={{ fontSize: 13, fontWeight: 600, color: "#cbd5e1" }}>{doc.risultato?.tipo_documento || doc.nomeFile}</div>
-                      {doc.risultato?.data_scadenza && <div style={{ fontSize: 11, color: "#475569", marginTop: 2 }}>Scadenza: <strong style={{ color: cfgDoc.color }}>{doc.risultato.data_scadenza}</strong></div>}
+                      <div style={{ fontSize: 13, fontWeight: 600, color: "#241D14" }}>{doc.risultato?.tipo_documento || doc.nomeFile}</div>
+                      {doc.risultato?.data_scadenza && <div style={{ fontSize: 11, color: "#5C5545", marginTop: 2 }}>Scadenza: <strong style={{ color: cfgDoc.color }}>{doc.risultato.data_scadenza}</strong></div>}
                     </div>
                     {doc.file && (
-                      <button onClick={() => window.open(URL.createObjectURL(doc.file), "_blank")} style={{ padding: "6px 10px", background: "#1e2535", border: "1px solid #334155", borderRadius: 7, color: "#94a3b8", fontSize: 11, cursor: "pointer", flexShrink: 0 }}>
+                      <button onClick={() => window.open(URL.createObjectURL(doc.file), "_blank")} style={{ padding: "6px 10px", background: "#FBF8F1", border: "1px solid #8A8271", borderRadius: 7, color: "#5C5545", fontSize: 11, cursor: "pointer", flexShrink: 0 }}>
                         👁 Verifica
                       </button>
                     )}
                   </div>
                   {nonConforme && (
-                    <div style={{ marginTop: 10, padding: "10px 14px", background: "#f9731610", border: "1px solid #f9731630", borderRadius: 8 }}>
+                    <div style={{ marginTop: 10, padding: "10px 14px", background: "#B85C3B10", border: "1px solid #B85C3B30", borderRadius: 8 }}>
                       <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 12 }}>
-                        <div style={{ fontSize: 11, color: "#fdba74", flex: 1 }}>⚠ <strong>Non conforme:</strong> {doc.risultato?.problema_conformita}</div>
+                        <div style={{ fontSize: 11, color: "#B85C3B", flex: 1 }}>⚠ <strong>Non conforme:</strong> {doc.risultato?.problema_conformita}</div>
                         {!decisione && (
                           <div style={{ display: "flex", gap: 8, flexShrink: 0 }}>
-                            <button onClick={() => setDecisione(chiaveLavoratore(doc, fusioni), doc.nomeFile, "approvato")} style={{ padding: "4px 12px", background: "#10b98120", border: "1px solid #10b98140", borderRadius: 6, color: "#10b981", fontSize: 11, fontWeight: 700, cursor: "pointer", whiteSpace: "nowrap" }}>✓ Approva</button>
-                            <button onClick={() => setDecisione(chiaveLavoratore(doc, fusioni), doc.nomeFile, "scartato")} style={{ padding: "4px 12px", background: "#ef444420", border: "1px solid #ef444440", borderRadius: 6, color: "#ef4444", fontSize: 11, fontWeight: 700, cursor: "pointer", whiteSpace: "nowrap" }}>✗ Scarta</button>
+                            <button onClick={() => setDecisione(chiaveLavoratore(doc, fusioni), doc.nomeFile, "approvato")} style={{ padding: "4px 12px", background: "#33513B20", border: "1px solid #33513B40", borderRadius: 6, color: "#33513B", fontSize: 11, fontWeight: 700, cursor: "pointer", whiteSpace: "nowrap" }}>✓ Approva</button>
+                            <button onClick={() => setDecisione(chiaveLavoratore(doc, fusioni), doc.nomeFile, "scartato")} style={{ padding: "4px 12px", background: "#B85C3B20", border: "1px solid #B85C3B40", borderRadius: 6, color: "#B85C3B", fontSize: 11, fontWeight: 700, cursor: "pointer", whiteSpace: "nowrap" }}>✗ Scarta</button>
                           </div>
                         )}
-                        {decisione === "approvato" && (<div style={{ display: "flex", alignItems: "center", gap: 8, flexShrink: 0 }}><span style={{ fontSize: 11, color: "#10b981", fontWeight: 700 }}>✓ Approvato</span><button onClick={() => setDecisione(chiaveLavoratore(doc, fusioni), doc.nomeFile, null)} style={{ background: "none", border: "none", color: "#475569", fontSize: 10, cursor: "pointer" }}>annulla</button></div>)}
-                        {decisione === "scartato" && (<div style={{ display: "flex", alignItems: "center", gap: 8, flexShrink: 0 }}><span style={{ fontSize: 11, color: "#ef4444", fontWeight: 700 }}>✗ Scartato</span><button onClick={() => setDecisione(chiaveLavoratore(doc, fusioni), doc.nomeFile, null)} style={{ background: "none", border: "none", color: "#475569", fontSize: 10, cursor: "pointer" }}>annulla</button></div>)}
+                        {decisione === "approvato" && (<div style={{ display: "flex", alignItems: "center", gap: 8, flexShrink: 0 }}><span style={{ fontSize: 11, color: "#33513B", fontWeight: 700 }}>✓ Approvato</span><button onClick={() => setDecisione(chiaveLavoratore(doc, fusioni), doc.nomeFile, null)} style={{ background: "none", border: "none", color: "#5C5545", fontSize: 10, cursor: "pointer" }}>annulla</button></div>)}
+                        {decisione === "scartato" && (<div style={{ display: "flex", alignItems: "center", gap: 8, flexShrink: 0 }}><span style={{ fontSize: 11, color: "#B85C3B", fontWeight: 700 }}>✗ Scartato</span><button onClick={() => setDecisione(chiaveLavoratore(doc, fusioni), doc.nomeFile, null)} style={{ background: "none", border: "none", color: "#5C5545", fontSize: 10, cursor: "pointer" }}>annulla</button></div>)}
                       </div>
                     </div>
                   )}
@@ -1457,26 +1458,26 @@ function SchermatScadenze({ elaborati, azienda, appaltoSelId, appaltatoreSelId, 
         <div style={{ marginBottom: 10 }}>
           {salvato ? (
             salvato.errore ? (
-              <div style={{ padding: "12px 16px", background: "rgba(239,68,68,.08)", border: "1px solid rgba(239,68,68,.2)", borderRadius: 9, fontSize: 13, color: "#f87171", display: "flex", alignItems: "center", gap: 8 }}>
+              <div style={{ padding: "12px 16px", background: "#F3E4DB", border: "2px solid #B85C3B", borderRadius: 2, fontSize: 13, color: "#B85C3B", display: "flex", alignItems: "center", gap: 8 }}>
                 ✗ Salvataggio fallito: {salvato.errore}
                 <span onClick={() => onSalvaDB(elaborati, decisioniConformita)} style={{ textDecoration: "underline", cursor: "pointer" }}>Riprova</span>
               </div>
             ) : (
-              <div style={{ padding: "12px 16px", background: "rgba(16,185,129,.08)", border: "1px solid rgba(16,185,129,.2)", borderRadius: 9, fontSize: 13, color: "#34d399", display: "flex", alignItems: "center", gap: 8 }}>
+              <div style={{ padding: "12px 16px", background: "#E8EDE5", border: "2px solid #33513B", borderRadius: 2, fontSize: 13, color: "#33513B", display: "flex", alignItems: "center", gap: 8 }}>
                 ✓ Salvato nel database — {salvato.nuoviLavoratori} nuovi lavoratori, {salvato.nuoviAttestati} nuovi attestati
               </div>
             )
           ) : (
             <button
               onClick={() => onSalvaDB(elaborati, decisioniConformita)}
-              style={{ width: "100%", padding: "13px", background: "linear-gradient(135deg,#10b981,#06b6d4)", border: "none", borderRadius: 10, color: "white", fontSize: 13, fontWeight: 700, cursor: "pointer" }}>
+              style={{ width: "100%", padding: "13px", background: "#33513B", border: "3px solid #1A140D", boxShadow: "4px 4px 0 #1A140D", borderRadius: 2, color: "#F2EEE0", fontSize: 13, fontWeight: 800, fontFamily: "'Big Shoulders',sans-serif", textTransform: "uppercase", cursor: "pointer" }}>
               💾 Salva nel database
             </button>
           )}
         </div>
       )}
 
-      <button onClick={onRicarica} style={{ width: "100%", padding: "13px", background: "#161b27", border: "1px solid #1e2535", borderRadius: 10, color: "#64748b", fontSize: 13, cursor: "pointer" }}>
+      <button onClick={onRicarica} style={{ width: "100%", padding: "13px", background: "#FBF8F1", border: "3px solid #1A140D", boxShadow: "4px 4px 0 #1A140D", borderRadius: 2, color: "#241D14", fontSize: 13, fontWeight: 800, fontFamily: "'Big Shoulders',sans-serif", textTransform: "uppercase", letterSpacing: "0.02em", cursor: "pointer" }}>
         ← Carica altri documenti
       </button>
     </div>
@@ -1801,29 +1802,29 @@ function PortaleUploadMassivoInner({ azienda }) {
 
   if (step === "elaborazione") {
     return (
-      <div style={{ fontFamily: "'DM Sans','Segoe UI',sans-serif", background: "#0f1117", minHeight: "100vh", padding: "40px 24px", color: "#e2e8f0", maxWidth: 640, margin: "0 auto" }}>
+      <div style={{ fontFamily: "'Work Sans','Segoe UI',sans-serif", background: "#EFE9DD", minHeight: "100vh", padding: "40px 24px", color: "#241D14", maxWidth: 640, margin: "0 auto" }}>
         <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
         <div style={{ textAlign: "center", marginBottom: 40 }}>
-          <div style={{ width: 64, height: 64, margin: "0 auto 20px", borderRadius: "50%", border: "3px solid #1e2535", borderTop: "3px solid #3b82f6", animation: "spin 0.9s linear infinite" }} />
-          <div style={{ fontSize: 22, fontWeight: 800, color: "#f1f5f9" }}>Analisi in corso</div>
-          <div style={{ fontSize: 14, color: "#475569", marginTop: 8 }}>L'AI legge, classifica e verifica la conformità normativa</div>
+          <div style={{ width: 64, height: 64, margin: "0 auto 20px", borderRadius: "50%", border: "4px solid #1A140D", borderTop: "4px solid #B85C3B", animation: "spin 0.9s linear infinite" }} />
+          <div style={{ fontSize: 24, fontWeight: 800, fontFamily: "'Big Shoulders',sans-serif", textTransform: "uppercase", letterSpacing: "0.01em", color: "#241D14" }}>Analisi in corso</div>
+          <div style={{ fontSize: 14, color: "#5C5545", marginTop: 8 }}>L'AI legge, classifica e verifica la conformità normativa</div>
         </div>
-        <div style={{ background: "#161b27", border: "1px solid #1e2535", borderRadius: 12, padding: "20px 24px", marginBottom: 24 }}>
+        <div style={{ background: "#FBF8F1", border: "3px solid #1A140D", boxShadow: "5px 5px 0 #1A140D", borderRadius: 2, padding: "20px 24px", marginBottom: 24 }}>
           <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 10 }}>
-            <span style={{ fontSize: 13, color: "#94a3b8", fontWeight: 600 }}>{progress.fatto} di {progress.totale} documenti</span>
-            <span style={{ fontSize: 13, color: "#3b82f6", fontWeight: 800 }}>{pct}%</span>
+            <span style={{ fontSize: 12, color: "#5C5545", fontWeight: 700, fontFamily: "'JetBrains Mono',monospace", textTransform: "uppercase", letterSpacing: "0.03em" }}>{progress.fatto} di {progress.totale} documenti</span>
+            <span style={{ fontSize: 13, color: "#33513B", fontWeight: 800, fontFamily: "'JetBrains Mono',monospace" }}>{pct}%</span>
           </div>
-          <div style={{ height: 8, background: "#1e2535", borderRadius: 4, overflow: "hidden" }}>
-            <div style={{ height: "100%", width: `${pct}%`, background: "linear-gradient(90deg, #3b82f6, #06b6d4)", borderRadius: 4, transition: "width 0.3s ease" }} />
+          <div style={{ height: 14, background: "#FBF8F1", border: "2px solid #1A140D", borderRadius: 2, overflow: "hidden" }}>
+            <div style={{ height: "100%", width: `${pct}%`, background: "repeating-linear-gradient(135deg, #33513B, #33513B 8px, #2A4432 8px, #2A4432 16px)", transition: "width 0.3s ease" }} />
           </div>
         </div>
-        <div style={{ background: "#161b27", border: "1px solid #1e2535", borderRadius: 12, overflow: "hidden", maxHeight: 360, overflowY: "auto" }}>
+        <div style={{ background: "#FBF8F1", border: "3px solid #1A140D", boxShadow: "5px 5px 0 #1A140D", borderRadius: 2, overflow: "hidden", maxHeight: 360, overflowY: "auto" }}>
           {elaborati.map((doc, i) => (
-            <div key={i} style={{ padding: "11px 20px", borderBottom: i < elaborati.length - 1 ? "1px solid #1e253540" : "none", display: "flex", alignItems: "center", gap: 12 }}>
+            <div key={i} style={{ padding: "11px 20px", borderBottom: i < elaborati.length - 1 ? "1px solid #1A140D40" : "none", display: "flex", alignItems: "center", gap: 12 }}>
               <span style={{ fontSize: 16 }}>{fileIcon(doc.nomeFile)}</span>
               <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ fontSize: 12, color: "#94a3b8", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{doc.nomeFile}</div>
-                {doc.risultato?.nome_lavoratore && <div style={{ fontSize: 11, color: "#10b981", marginTop: 2 }}>→ {doc.risultato.nome_lavoratore} · {doc.risultato.tipo_documento}</div>}
+                <div style={{ fontSize: 12, color: "#5C5545", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{doc.nomeFile}</div>
+                {doc.risultato?.nome_lavoratore && <div style={{ fontSize: 11, color: "#33513B", marginTop: 2 }}>→ {doc.risultato.nome_lavoratore} · {doc.risultato.tipo_documento}</div>}
               </div>
               <StatoBadge stato={doc.stato} />
             </div>
@@ -1834,21 +1835,21 @@ function PortaleUploadMassivoInner({ azienda }) {
   }
 
   return (
-    <div style={{ fontFamily: "'DM Sans','Segoe UI',sans-serif", background: "#0f1117", minHeight: "100vh", padding: "40px 24px", color: "#e2e8f0", maxWidth: 640, margin: "0 auto" }}>
+    <div style={{ fontFamily: "'Work Sans','Segoe UI',sans-serif", background: "#EFE9DD", minHeight: "100vh", padding: "40px 24px", color: "#241D14", maxWidth: 640, margin: "0 auto" }}>
       <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
       <div style={{ marginBottom: 32 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 20 }}>
-          <div style={{ width: 32, height: 32, background: "linear-gradient(135deg, #3b82f6, #06b6d4)", borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16, fontWeight: 800, color: "white" }}>A</div>
-          <span style={{ fontSize: 14, fontWeight: 700, color: "#f1f5f9" }}>Agile81</span>
+          <div style={{ width: 32, height: 32, background: "#33513B", borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16, fontWeight: 800, color: "white" }}>A</div>
+          <span style={{ fontSize: 14, fontWeight: 700, color: "#241D14" }}>Agile81</span>
         </div>
-        <div style={{ background: "#161b27", border: "1px solid #1e2535", borderRadius: 12, padding: "20px 24px", marginBottom: 24 }}>
-          <div style={{ fontSize: 11, color: "#3b82f6", fontWeight: 700, letterSpacing: "0.8px", marginBottom: 8 }}>CARICA DOCUMENTI</div>
-          <div style={{ fontSize: 16, fontWeight: 800, color: "#f1f5f9" }}>{azienda?.nome || "Nessuna azienda selezionata"}</div>
-          <div style={{ fontSize: 12, color: "#475569", marginTop: 4 }}>{azienda?.settore || ""}</div>
+        <div style={{ background: "#FBF8F1", border: "1px solid #1A140D", borderRadius: 12, padding: "20px 24px", marginBottom: 24 }}>
+          <div style={{ fontSize: 11, color: "#33513B", fontWeight: 700, letterSpacing: "0.8px", marginBottom: 8 }}>CARICA DOCUMENTI</div>
+          <div style={{ fontSize: 16, fontWeight: 800, color: "#241D14" }}>{azienda?.nome || "Nessuna azienda selezionata"}</div>
+          <div style={{ fontSize: 12, color: "#5C5545", marginTop: 4 }}>{azienda?.settore || ""}</div>
         </div>
-        <div style={{ fontSize: 22, fontWeight: 800, color: "#f1f5f9", letterSpacing: "-0.5px", marginBottom: 8 }}>Carica tutti i documenti</div>
-        <div style={{ fontSize: 14, color: "#64748b", lineHeight: 1.6 }}>
-          Seleziona attestati, idoneità e documenti aziendali. <strong style={{ color: "#60a5fa" }}>L'AI li classifica e verifica la conformità normativa</strong>.
+        <div style={{ fontSize: 22, fontWeight: 800, color: "#241D14", letterSpacing: "-0.5px", marginBottom: 8 }}>Carica tutti i documenti</div>
+        <div style={{ fontSize: 14, color: "#5C5545", lineHeight: 1.6 }}>
+          Seleziona attestati, idoneità e documenti aziendali. <strong style={{ color: "#33513B" }}>L'AI li classifica e verifica la conformità normativa</strong>.
         </div>
       </div>
 
@@ -1890,11 +1891,11 @@ function PortaleUploadMassivoInner({ azienda }) {
       <div
         ref={dropZoneRef}
         style={{
-          border: `2px dashed ${dragOver ? "#3b82f6" : files.length > 0 ? "#10b981" : "#1e2535"}`,
+          border: `2px dashed ${dragOver ? "#33513B" : files.length > 0 ? "#33513B" : "#1A140D"}`,
           borderRadius: 16,
           padding: files.length > 0 ? "20px 20px" : "48px 24px",
           textAlign: "center",
-          background: dragOver ? "#3b82f610" : files.length > 0 ? "#10b98106" : "#161b27",
+          background: dragOver ? "#33513B10" : files.length > 0 ? "#33513B06" : "#FBF8F1",
           transition: "all 0.2s",
           marginBottom: 12,
           position: "relative",
@@ -1902,9 +1903,9 @@ function PortaleUploadMassivoInner({ azienda }) {
       >
         {/* Overlay "Caricamento cartella" */}
         {caricandoCartella && (
-          <div style={{ position: "absolute", inset: 0, borderRadius: 14, background: "#0f111790", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 12, zIndex: 10 }}>
-            <div style={{ width: 36, height: 36, borderRadius: "50%", border: "3px solid #1e2535", borderTop: "3px solid #3b82f6", animation: "spin 0.8s linear infinite" }} />
-            <div style={{ fontSize: 13, color: "#60a5fa", fontWeight: 700 }}>Lettura cartella in corso…</div>
+          <div style={{ position: "absolute", inset: 0, borderRadius: 14, background: "#EFE9DD90", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 12, zIndex: 10 }}>
+            <div style={{ width: 36, height: 36, borderRadius: "50%", border: "3px solid #1A140D", borderTop: "3px solid #33513B", animation: "spin 0.8s linear infinite" }} />
+            <div style={{ fontSize: 13, color: "#33513B", fontWeight: 700 }}>Lettura cartella in corso…</div>
           </div>
         )}
 
@@ -1914,16 +1915,16 @@ function PortaleUploadMassivoInner({ azienda }) {
             <div style={{ fontSize: 44, marginBottom: 14, opacity: dragOver ? 0.9 : 0.35 }}>
               {dragOver ? "📂" : "📁"}
             </div>
-            <div style={{ fontSize: 15, fontWeight: 700, color: "#94a3b8", marginBottom: 6 }}>
+            <div style={{ fontSize: 15, fontWeight: 700, color: "#5C5545", marginBottom: 6 }}>
               {dragOver ? "Lascia qui i file o le cartelle" : "Trascina file o cartelle qui"}
             </div>
-            <div style={{ fontSize: 12, color: "#475569", marginBottom: 20 }}>
+            <div style={{ fontSize: 12, color: "#5C5545", marginBottom: 20 }}>
               PDF, JPG, PNG · Trascina anche più cartelle insieme (una per lavoratore)
             </div>
             <div style={{ display: "flex", gap: 10, justifyContent: "center" }}>
               <button
                 onClick={openFolderPicker}
-                style={{ padding: "9px 18px", background: "#1e3a5f", border: "1px solid #3b82f640", borderRadius: 8, color: "#60a5fa", fontSize: 12, fontWeight: 600, cursor: "pointer", display: "flex", alignItems: "center", gap: 6 }}
+                style={{ padding: "10px 20px", background: "#B85C3B", border: "3px solid #1A140D", boxShadow: "4px 4px 0 #1A140D", borderRadius: 2, color: "#FBF3ED", fontSize: 12, fontWeight: 800, fontFamily: "'Big Shoulders',sans-serif", textTransform: "uppercase", letterSpacing: "0.02em", cursor: "pointer", display: "flex", alignItems: "center", gap: 6 }}
               >
                 📁 Scegli cartella
               </button>
@@ -1934,60 +1935,60 @@ function PortaleUploadMassivoInner({ azienda }) {
           <>
             {/* Banner cartella rilevata */}
             {infoCartella && (
-              <div style={{ marginBottom: 12, padding: "9px 14px", background: "#1e3a5f", border: "1px solid #3b82f640", borderRadius: 9, display: "flex", alignItems: "center", gap: 10, textAlign: "left" }}>
+              <div style={{ marginBottom: 12, padding: "9px 14px", background: "#E8EDE5", border: "2px solid #33513B", borderRadius: 2, display: "flex", alignItems: "center", gap: 10, textAlign: "left" }}>
                 <span style={{ fontSize: 16, flexShrink: 0 }}>📁</span>
                 <div style={{ flex: 1 }}>
-                  <div style={{ fontSize: 12, fontWeight: 700, color: "#60a5fa" }}>{infoCartella.nome}</div>
-                  <div style={{ fontSize: 11, color: "#475569", marginTop: 1 }}>
+                  <div style={{ fontSize: 12, fontWeight: 700, color: "#33513B" }}>{infoCartella.nome}</div>
+                  <div style={{ fontSize: 11, color: "#5C5545", marginTop: 1 }}>
                     {infoCartella.trovati} file PDF/immagini trovati
-                    {infoCartella.cartelle > 1 && <span style={{ color: "#60a5fa" }}> · {infoCartella.cartelle} lavoratori riconosciuti dalle cartelle</span>}
-                    {infoCartella.skippati > 0 && <span style={{ color: "#f59e0b" }}> · {infoCartella.skippati} ignorati (tipo non supportato)</span>}
+                    {infoCartella.cartelle > 1 && <span style={{ color: "#33513B" }}> · {infoCartella.cartelle} lavoratori riconosciuti dalle cartelle</span>}
+                    {infoCartella.skippati > 0 && <span style={{ color: "#C4872E" }}> · {infoCartella.skippati} ignorati (tipo non supportato)</span>}
                   </div>
                 </div>
-                <button onClick={() => setInfoCartella(null)} style={{ background: "none", border: "none", color: "#475569", fontSize: 16, cursor: "pointer", lineHeight: 1 }}>×</button>
+                <button onClick={() => setInfoCartella(null)} style={{ background: "none", border: "none", color: "#5C5545", fontSize: 16, cursor: "pointer", lineHeight: 1 }}>×</button>
               </div>
             )}
 
             {/* Banner duplicati */}
             {duplicatiNomi.size > 0 && (
-              <div style={{ marginBottom: 12, padding: "9px 14px", background: "#f59e0b0e", border: "1px solid #f59e0b30", borderRadius: 9, display: "flex", alignItems: "center", gap: 10, textAlign: "left" }}>
+              <div style={{ marginBottom: 12, padding: "9px 14px", background: "#C4872E0e", border: "1px solid #C4872E30", borderRadius: 9, display: "flex", alignItems: "center", gap: 10, textAlign: "left" }}>
                 <span style={{ fontSize: 15, flexShrink: 0 }}>🔁</span>
-                <div style={{ flex: 1, fontSize: 12, color: "#fbbf24" }}>
+                <div style={{ flex: 1, fontSize: 12, color: "#C4872E" }}>
                   <strong>{duplicatiNomi.size} file già presenti</strong>, non aggiunti di nuovo
                 </div>
-                <button onClick={() => setDuplicatiNomi(new Set())} style={{ background: "none", border: "none", color: "#475569", fontSize: 16, cursor: "pointer", lineHeight: 1 }}>×</button>
+                <button onClick={() => setDuplicatiNomi(new Set())} style={{ background: "none", border: "none", color: "#5C5545", fontSize: 16, cursor: "pointer", lineHeight: 1 }}>×</button>
               </div>
             )}
 
             {/* Header conteggio */}
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }}>
-              <div style={{ fontSize: 14, fontWeight: 800, color: "#10b981" }}>✓ {files.length} file pronti</div>
+              <div style={{ fontSize: 14, fontWeight: 800, color: "#33513B" }}>✓ {files.length} file pronti</div>
               <button
                 onClick={openFolderPicker}
-                style={{ padding: "5px 12px", background: "none", border: "1px solid #1e2535", borderRadius: 7, color: "#475569", fontSize: 11, cursor: "pointer" }}
+                style={{ padding: "5px 12px", background: "none", border: "1px solid #1A140D", borderRadius: 7, color: "#5C5545", fontSize: 11, cursor: "pointer" }}
               >
                 + Aggiungi
               </button>
             </div>
 
             {/* Lista file */}
-            <div style={{ maxHeight: 220, overflowY: "auto", background: "#0f1117", borderRadius: 10, padding: "4px 0", textAlign: "left" }}>
+            <div style={{ maxHeight: 220, overflowY: "auto", background: "#EFE9DD", borderRadius: 10, padding: "4px 0", textAlign: "left" }}>
               {Array.from(files).map((f, i) => {
                 const isDupl = duplicatiNomi.has(f.name);
                 return (
-                  <div key={i} style={{ display: "flex", alignItems: "center", gap: 8, padding: "5px 12px", borderBottom: i < files.length - 1 ? "1px solid #1e253530" : "none", background: isDupl ? "#f59e0b06" : "transparent" }}>
+                  <div key={i} style={{ display: "flex", alignItems: "center", gap: 8, padding: "5px 12px", borderBottom: i < files.length - 1 ? "1px solid #1A140D30" : "none", background: isDupl ? "#C4872E06" : "transparent" }}>
                     <span style={{ fontSize: 12, flexShrink: 0 }}>{fileIcon(f.name)}</span>
-                    <span style={{ fontSize: 11, color: isDupl ? "#92400e" : "#64748b", flex: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{f.name}</span>
+                    <span style={{ fontSize: 11, color: isDupl ? "#6B2F1B" : "#5C5545", flex: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{f.name}</span>
                     {isDupl && (
-                      <span style={{ fontSize: 10, color: "#f59e0b", fontWeight: 700, flexShrink: 0, padding: "1px 6px", background: "#f59e0b15", borderRadius: 10 }}>già aggiunto</span>
+                      <span style={{ fontSize: 10, color: "#C4872E", fontWeight: 700, flexShrink: 0, padding: "1px 6px", background: "#C4872E15", borderRadius: 10 }}>già aggiunto</span>
                     )}
-                    <span style={{ fontSize: 10, color: "#334155", flexShrink: 0 }}>{(f.size / 1024).toFixed(0)} KB</span>
+                    <span style={{ fontSize: 10, color: "#8A8271", flexShrink: 0 }}>{(f.size / 1024).toFixed(0)} KB</span>
                     <button
                       onClick={(ev) => { ev.stopPropagation(); removeFile(i); }}
                       title="Rimuovi"
-                      style={{ background: "none", border: "none", color: "#334155", fontSize: 14, cursor: "pointer", padding: "0 2px", lineHeight: 1, flexShrink: 0 }}
-                      onMouseOver={e => { e.currentTarget.style.color = "#ef4444"; }}
-                      onMouseOut={e => { e.currentTarget.style.color = "#334155"; }}
+                      style={{ background: "none", border: "none", color: "#8A8271", fontSize: 14, cursor: "pointer", padding: "0 2px", lineHeight: 1, flexShrink: 0 }}
+                      onMouseOver={e => { e.currentTarget.style.color = "#B85C3B"; }}
+                      onMouseOut={e => { e.currentTarget.style.color = "#8A8271"; }}
                     >×</button>
                   </div>
                 );
@@ -2002,23 +2003,31 @@ function PortaleUploadMassivoInner({ azienda }) {
         <div style={{ display: "flex", gap: 8, marginBottom: 16 }}>
           <button
             onClick={openFolderPicker}
-            style={{ flex: 1, padding: "9px", background: "#161b27", border: "1px solid #1e2535", borderRadius: 9, color: "#475569", fontSize: 12, cursor: "pointer" }}
+            style={{ flex: 1, padding: "9px", background: "#FBF8F1", border: "1px solid #1A140D", borderRadius: 9, color: "#5C5545", fontSize: 12, cursor: "pointer" }}
           >
             📁 Aggiungi cartella
           </button>
           <button
             onClick={() => { setFiles([]); setDuplicatiNomi(new Set()); setInfoCartella(null); }}
-            style={{ padding: "9px 16px", background: "#161b27", border: "1px solid #ef444430", borderRadius: 9, color: "#ef444480", fontSize: 12, cursor: "pointer" }}
+            style={{ padding: "9px 16px", background: "#FBF8F1", border: "1px solid #B85C3B30", borderRadius: 9, color: "#B85C3B80", fontSize: 12, cursor: "pointer" }}
           >
             Svuota
           </button>
         </div>
       )}
 
-      <button onClick={startElaboration} disabled={files.length === 0} style={{ width: "100%", padding: "15px", background: files.length > 0 ? "linear-gradient(135deg, #3b82f6, #06b6d4)" : "#1e2535", border: "none", borderRadius: 12, color: files.length > 0 ? "white" : "#334155", fontSize: 15, fontWeight: 800, cursor: files.length > 0 ? "pointer" : "not-allowed" }}>
+      <button onClick={startElaboration} disabled={files.length === 0} style={{
+        width: "100%", padding: "16px",
+        background: files.length > 0 ? "#B85C3B" : "#DCD5C4",
+        border: files.length > 0 ? "3px solid #1A140D" : "3px solid #A79D89",
+        boxShadow: files.length > 0 ? "5px 5px 0 #1A140D" : "none",
+        borderRadius: 2, color: files.length > 0 ? "#FBF3ED" : "#A79D89",
+        fontSize: 16, fontWeight: 900, fontFamily: "'Big Shoulders',sans-serif", textTransform: "uppercase", letterSpacing: "0.02em",
+        cursor: files.length > 0 ? "pointer" : "not-allowed",
+      }}>
         {files.length > 0 ? `⚡ Analizza ${files.length} documenti con AI →` : "Seleziona i file per continuare"}
       </button>
-      <div style={{ textAlign: "center", marginTop: 12, fontSize: 11, color: "#334155" }}>Dati cifrati · Conforme GDPR · Nessuna registrazione richiesta</div>
+      <div style={{ textAlign: "center", marginTop: 12, fontSize: 11, color: "#8A8271" }}>Dati cifrati · Conforme GDPR · Nessuna registrazione richiesta</div>
     </div>
   );
 }
