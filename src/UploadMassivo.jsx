@@ -1154,7 +1154,7 @@ function SchermatScadenze({ elaborati, azienda, appaltoSelId, appaltatoreSelId, 
       <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: 24, gap: 16 }}>
         <div>
           <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8 }}>
-            <div style={{ width: 32, height: 32, background: "#33513B", borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16, fontWeight: 800, color: "white" }}>A</div>
+            <div style={{ width: 32, height: 32, background: "#33513B", borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16, fontWeight: 800, color: "white" }}>R</div>
             <span style={{ fontSize: 14, fontWeight: 700, color: "#241D14" }}>RSPPino</span>
           </div>
           <div style={{ fontSize: 20, fontWeight: 800, color: "#241D14", letterSpacing: "-0.4px" }}>Situazione documentale</div>
@@ -1839,7 +1839,7 @@ function PortaleUploadMassivoInner({ azienda }) {
       <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
       <div style={{ marginBottom: 32 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 20 }}>
-          <div style={{ width: 32, height: 32, background: "#33513B", borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16, fontWeight: 800, color: "white" }}>A</div>
+          <div style={{ width: 32, height: 32, background: "#33513B", borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16, fontWeight: 800, color: "white" }}>R</div>
           <span style={{ fontSize: 14, fontWeight: 700, color: "#241D14" }}>RSPPino</span>
         </div>
         <div style={{ background: "#FBF8F1", border: "1px solid #1A140D", borderRadius: 12, padding: "20px 24px", marginBottom: 24 }}>

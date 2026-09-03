@@ -180,7 +180,7 @@ function SchermataBenvenuto({ onAccetta }) {
       <div style={{ maxWidth: 560, width: "100%" }}>
         {/* Logo */}
         <div style={{ textAlign: "center", marginBottom: 40 }}>
-          <div style={{ width: 56, height: 56, margin: "0 auto 16px", background: "#33513B", border: "3px solid #1A140D", boxShadow: "4px 4px 0 #1A140D", borderRadius: 3, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 28, fontWeight: 900, fontFamily: "'Big Shoulders',sans-serif", color: "#F2EEE0" }}>A</div>
+          <div style={{ width: 56, height: 56, margin: "0 auto 16px", background: "#33513B", border: "3px solid #1A140D", boxShadow: "4px 4px 0 #1A140D", borderRadius: 3, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 28, fontWeight: 900, fontFamily: "'Big Shoulders',sans-serif", color: "#F2EEE0" }}>R</div>
           <div style={{ fontSize: 28, fontWeight: 900, fontFamily: "'Big Shoulders',sans-serif", textTransform: "uppercase", letterSpacing: "-0.01em", color: "#241D14" }}>Benvenuto in <span style={{ color: "#B85C3B" }}>RSPPino</span></div>
           <div style={{ fontSize: 14, color: "#5C5545", marginTop: 8, lineHeight: 1.6 }}>Il gestionale HSE per professionisti della sicurezza sul lavoro</div>
         </div>
