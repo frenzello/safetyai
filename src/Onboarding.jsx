@@ -37,9 +37,9 @@ function ModaleDocumento({ tipo, onChiudi }) {
       titolo: "Informativa Privacy",
       colore: "#1E5D39",
       icona: "🔒",
-      intro: "Questo documento spiega come RSPPino tratta i dati personali che carichi, in conformità al GDPR.",
+      intro: "Questo documento spiega come rspPINO tratta i dati personali che carichi, in conformità al GDPR.",
       punti: [
-        { titolo: "Chi è il Titolare", testo: "Sei tu — il professionista che usa RSPPino. RSPPino è il Responsabile che elabora i dati per conto tuo." },
+        { titolo: "Chi è il Titolare", testo: "Sei tu — il professionista che usa rspPINO. rspPINO è il Responsabile che elabora i dati per conto tuo." },
         { titolo: "Quali dati trattiamo", testo: "Nomi e codici fiscali dei lavoratori, attestati di formazione, idoneità sanitarie, dati aziendali. Le idoneità sanitarie sono dati sensibili ex art. 9 GDPR." },
         { titolo: "Come li trattiamo", testo: "I file originali non vengono mai archiviati. Vengono analizzati in memoria dall'AI e immediatamente scartati. I dati estratti rimangono solo sul tuo dispositivo." },
         { titolo: "Chi li vede", testo: "Solo Anthropic (il motore AI) li elabora momentaneamente, senza conservarli e senza usarli per addestrare modelli. Nessun altro." },
@@ -50,10 +50,10 @@ function ModaleDocumento({ tipo, onChiudi }) {
       titolo: "Data Processing Agreement",
       colore: "#812C2C",
       icona: "📄",
-      intro: "Il DPA è il contratto obbligatorio tra te (Titolare) e RSPPino (Responsabile) richiesto dall'art. 28 GDPR quando affidi dati personali a uno strumento esterno.",
+      intro: "Il DPA è il contratto obbligatorio tra te (Titolare) e rspPINO (Responsabile) richiesto dall'art. 28 GDPR quando affidi dati personali a uno strumento esterno.",
       punti: [
-        { titolo: "Perché esiste", testo: "Il GDPR obbliga a formalizzare per iscritto chi può fare cosa con i dati. Senza questo contratto non potresti legittimamente usare RSPPino per trattare dati di terzi." },
-        { titolo: "Cosa garantisce RSPPino", testo: "Nessun uso dei dati per finalità proprie, nessuna cessione a terzi, notifica entro 72h in caso di violazione, supporto per le richieste degli interessati." },
+        { titolo: "Perché esiste", testo: "Il GDPR obbliga a formalizzare per iscritto chi può fare cosa con i dati. Senza questo contratto non potresti legittimamente usare rspPINO per trattare dati di terzi." },
+        { titolo: "Cosa garantisce rspPINO", testo: "Nessun uso dei dati per finalità proprie, nessuna cessione a terzi, notifica entro 72h in caso di violazione, supporto per le richieste degli interessati." },
         { titolo: "I sub-responsabili", testo: "Anthropic è nominato sub-responsabile. Riceve i dati solo per l'analisi AI e non li conserva né li usa per addestrare modelli." },
         { titolo: "Trasferimento USA", testo: "Anthropic ha sede negli USA. Il trasferimento avviene con le garanzie richieste dal Capo V GDPR." },
         { titolo: "Cosa fare", testo: "Accettando questo DPA formalizzi il rapporto contrattuale. Per uso professionale continuativo è consigliabile una revisione legale." },
@@ -115,7 +115,7 @@ function ModaleDocumento({ tipo, onChiudi }) {
                 👁 Apri nel browser
               </button>
               <button
-                onClick={() => scaricaPDF(isPrivacy ? PDF_PRIVACY_B64 : PDF_DPA_B64, isPrivacy ? "RSPPino_Informativa_Privacy.pdf" : "RSPPino_DPA.pdf")}
+                onClick={() => scaricaPDF(isPrivacy ? PDF_PRIVACY_B64 : PDF_DPA_B64, isPrivacy ? "rspPINO_Informativa_Privacy.pdf" : "rspPINO_DPA.pdf")}
                 style={{ flex: 1, padding: "9px 14px", background: `${doc.colore}20`, border: `1px solid ${doc.colore}40`, borderRadius: 8, color: doc.colore, fontSize: 12, fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>
                 ↓ Scarica PDF
               </button>
@@ -127,7 +127,7 @@ function ModaleDocumento({ tipo, onChiudi }) {
         <div style={{ padding: "14px 24px", borderTop: "1px solid #1A140D" }}>
           <button
             onClick={onChiudi}
-            style={{ width: "100%", padding: "11px", background: "#1E5D39", border: "3px solid #1A140D", boxShadow: "4px 4px 0 #1A140D", borderRadius: 2, color: "#F2EEE0", fontSize: 13, fontWeight: 800, fontFamily: "'Big Shoulders',sans-serif", textTransform: "uppercase", cursor: "pointer" }}>
+            style={{ width: "100%", padding: "11px", background: "#1E5D39", border: "3px solid #1A140D", boxShadow: "4px 4px 0 #1A140D", borderRadius: 2, color: "#F2EEE0", fontSize: 13, fontWeight: 700, fontFamily: "'Zilla Slab',serif", textTransform: "uppercase", cursor: "pointer" }}>
             Ho letto, chiudi
           </button>
         </div>
@@ -156,7 +156,7 @@ function SchermataBenvenuto({ onAccetta }) {
     {
       check: checkDPA, setCheck: setCheckDPA,
       titolo: "Data Processing Agreement",
-      testo: "Accetto il DPA ai sensi dell'art. 28 GDPR, che regola il rapporto tra me (Titolare) e RSPPino (Responsabile).",
+      testo: "Accetto il DPA ai sensi dell'art. 28 GDPR, che regola il rapporto tra me (Titolare) e rspPINO (Responsabile).",
       icona: "📄",
       linkLabel: "Leggi il DPA completo →",
       tipoModale: "dpa",
@@ -164,7 +164,7 @@ function SchermataBenvenuto({ onAccetta }) {
     {
       check: checkResp, setCheck: setCheckResp,
       titolo: "Responsabilità professionale",
-      testo: "Comprendo che RSPPino è uno strumento di supporto. Le decisioni finali e la responsabilità rimangono in capo a me.",
+      testo: "Comprendo che rspPINO è uno strumento di supporto. Le decisioni finali e la responsabilità rimangono in capo a me.",
       icona: "⚖️",
       linkLabel: null,
       tipoModale: null,
@@ -180,8 +180,16 @@ function SchermataBenvenuto({ onAccetta }) {
       <div style={{ maxWidth: 560, width: "100%" }}>
         {/* Logo */}
         <div style={{ textAlign: "center", marginBottom: 40 }}>
-          <div style={{ width: 56, height: 56, margin: "0 auto 16px", background: "#1E5D39", border: "3px solid #1A140D", boxShadow: "4px 4px 0 #1A140D", borderRadius: 3, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 28, fontWeight: 900, fontFamily: "'Big Shoulders',sans-serif", color: "#F2EEE0" }}>R</div>
-          <div style={{ fontSize: 28, fontWeight: 900, fontFamily: "'Big Shoulders',sans-serif", textTransform: "uppercase", letterSpacing: "-0.01em", color: "#241D14" }}>Benvenuto in <span style={{ color: "#812C2C" }}>RSPPino</span></div>
+          <div style={{ width: 56, height: 56, margin: "0 auto 16px", background: "#1E5D39", border: "3px solid #1A140D", boxShadow: "4px 4px 0 #1A140D", borderRadius: 3, display: "flex", alignItems: "center", justifyContent: "center" }}>
+            <svg viewBox="0 0 140 190" width="30" height="auto"><path d="M70 8 C 90 20, 82 32, 96 38 C 112 44, 98 56, 114 64 C 130 72, 112 84, 128 94 C 140 102, 118 114, 130 124 C 138 132, 122 142, 104 144 L 100 178 L 40 178 L 36 144 C 18 142, 2 132, 10 124 C 22 114, 0 102, 12 94 C 28 84, 10 72, 26 64 C 42 56, 28 44, 44 38 C 58 32, 50 20, 70 8 Z" fill="#F2EEE0" /></svg>
+          </div>
+          <div style={{ fontSize: 28, fontWeight: 700, fontFamily: "'Zilla Slab',serif", letterSpacing: "-0.01em", color: "#241D14" }}>
+            Benvenuto in{" "}
+            <span style={{ position: "relative", display: "inline-block" }}>
+              <span aria-hidden="true" style={{ position: "absolute", top: 2, left: 2, zIndex: 0, color: "#1A140D" }}>rsp<span style={{ textTransform: "uppercase" }}>pino</span></span>
+              <span style={{ position: "relative", zIndex: 1 }}>rsp<span style={{ color: "#812C2C", textTransform: "uppercase" }}>pino</span></span>
+            </span>
+          </div>
           <div style={{ fontSize: 14, color: "#5C5545", marginTop: 8, lineHeight: 1.6 }}>Il gestionale HSE per professionisti della sicurezza sul lavoro</div>
         </div>
 
@@ -244,11 +252,11 @@ function SchermataBenvenuto({ onAccetta }) {
             boxShadow: tuttoAccettato ? "5px 5px 0 #1A140D" : "none",
             borderRadius: 3,
             color: tuttoAccettato ? "#FBF3ED" : "#A79D89",
-            fontSize: 15, fontWeight: 900, fontFamily: "'Big Shoulders',sans-serif", textTransform: "uppercase", letterSpacing: "0.02em",
+            fontSize: 15, fontWeight: 700, fontFamily: "'Zilla Slab',serif", textTransform: "uppercase", letterSpacing: "0.02em",
             cursor: tuttoAccettato ? "pointer" : "not-allowed",
             transition: "all 0.2s",
           }}>
-          {tuttoAccettato ? "Inizia a usare RSPPino →" : "Leggi e accetta tutti e tre i punti per continuare"}
+          {tuttoAccettato ? "Inizia a usare rspPINO →" : "Leggi e accetta tutti e tre i punti per continuare"}
         </button>
       </div>
     </div>

@@ -1,7 +1,7 @@
-# RSPPino — Lista attività
+# rspPINO — Lista attività
 
 Ultimo aggiornamento: 19 maggio 2026
-Rinominato da "SafetyAI" ad "Agile81" il 28/08/2026, poi da "Agile81" a "RSPPino" il 02/09/2026 — vedi la nota rebrand in `CLAUDE.md`. Alcune voci qui sotto sono superate: vedi `RSPPino_PIANO_90_GIORNI.md` per lo stato verificato al 25/08/2026.
+Rinominato da "SafetyAI" ad "Agile81" il 28/08/2026, poi da "Agile81" a "rspPINO" il 02/09/2026 — vedi la nota rebrand in `CLAUDE.md`. Alcune voci qui sotto sono superate: vedi `rspPINO_PIANO_90_GIORNI.md` per lo stato verificato al 25/08/2026.
 
 ---
 
@@ -74,7 +74,7 @@ Rinominato da "SafetyAI" ad "Agile81" il 28/08/2026, poi da "Agile81" a "RSPPino
 - [ ] SEO base (meta description, og tags, sitemap)
 
 ### Promozione
-- [ ] Creare profilo LinkedIn RSPPino
+- [ ] Creare profilo LinkedIn rspPINO
 - [ ] Preparare post di lancio per LinkedIn
 - [ ] Contattare rete professionale HSE esistente per beta test
 - [ ] Raccogliere feedback strutturato dai 2 tester attuali

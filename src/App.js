@@ -319,7 +319,7 @@ function ProfiloAzienda({ azienda }) {
 
 // ─── APP FREEMIUM (MVP) ───────────────────────────────────────────────────────
 // Nessun login, nessun database: carica PDF -> analisi AI -> Excel. E' il canale
-// di acquisizione (vedi RSPPino_PIANO_90_GIORNI.md). Non tocca Supabase.
+// di acquisizione (vedi rspPINO_PIANO_90_GIORNI.md). Non tocca Supabase.
 function AppMVP() {
   const [privacyOk, setPrivacyOk] = useState(privacyAccettata());
 
@@ -333,18 +333,30 @@ function AppMVP() {
       <div style={{ height: 10, background: "repeating-linear-gradient(45deg, #812C2C, #812C2C 10px, #1A140D 10px, #1A140D 20px)" }} />
 
       <div style={{ position: "relative", background: "#1E5D39", color: "#F2EEE0", padding: "18px 28px", borderBottom: "4px solid #1A140D", overflow: "hidden" }}>
-        <div aria-hidden="true" style={{ position: "absolute", right: -18, top: -30, fontFamily: "'Big Shoulders',sans-serif", fontWeight: 900, fontSize: 130, lineHeight: 1, color: "transparent", WebkitTextStroke: "2px rgba(242,238,224,0.14)", userSelect: "none", pointerEvents: "none" }}>81</div>
+        <svg aria-hidden="true" viewBox="0 0 140 190" style={{ position: "absolute", right: -10, top: -20, width: 150, height: "auto", opacity: 0.12, pointerEvents: "none" }}>
+          <path d="M70 8 C 90 20, 82 32, 96 38 C 112 44, 98 56, 114 64 C 130 72, 112 84, 128 94 C 140 102, 118 114, 130 124 C 138 132, 122 142, 104 144 L 100 178 L 40 178 L 36 144 C 18 142, 2 132, 10 124 C 22 114, 0 102, 12 94 C 28 84, 10 72, 26 64 C 42 56, 28 44, 44 38 C 58 32, 50 20, 70 8 Z" fill="#F2EEE0" />
+        </svg>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", position: "relative", maxWidth: 1200, margin: "0 auto" }}>
           <div>
-            <h1 style={{ fontFamily: "'Big Shoulders',sans-serif", fontWeight: 900, fontSize: 34, lineHeight: 0.85, letterSpacing: "-0.01em", textTransform: "uppercase", margin: 0 }}>
-              RSPP<span style={{ color: "#812C2C", WebkitTextStroke: "1px #1A140D" }}>ino</span>
-            </h1>
+            <div style={{ fontFamily: "'Zilla Slab',serif", fontWeight: 700, fontSize: 34, lineHeight: 0.9, position: "relative", display: "inline-block" }}>
+              <span aria-hidden="true" style={{ position: "absolute", top: 3, left: 3, zIndex: 0, color: "#1A140D" }}>
+                rsp<span style={{ textTransform: "uppercase" }}>pino</span>
+              </span>
+              <span style={{ position: "relative", zIndex: 1 }}>
+                <span style={{ color: "#F2EEE0" }}>rsp</span>
+                <span style={{ color: "#812C2C", textTransform: "uppercase" }}>pino</span>
+              </span>
+            </div>
             <div style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: 10, letterSpacing: "0.16em", textTransform: "uppercase", opacity: 0.8, marginTop: 6 }}>Analisi attestati · D.Lgs 81/08</div>
           </div>
-          <div style={{ transform: "rotate(-6deg)", background: "#FBF3ED", color: "#812C2C", border: "3px solid #812C2C", borderRadius: 3, padding: "6px 13px", fontFamily: "'Big Shoulders',sans-serif", fontWeight: 800, fontSize: 12, textTransform: "uppercase", letterSpacing: "0.04em", boxShadow: "4px 4px 0 #1A140D" }}>
+          <div style={{ transform: "rotate(-6deg)", background: "#FBF3ED", color: "#812C2C", border: "3px solid #812C2C", borderRadius: 3, padding: "6px 13px", fontFamily: "'Zilla Slab',serif", fontWeight: 700, fontSize: 12, textTransform: "uppercase", letterSpacing: "0.04em", boxShadow: "4px 4px 0 #1A140D" }}>
             Beta · no login
           </div>
         </div>
+        <svg aria-hidden="true" viewBox="0 0 1000 70" preserveAspectRatio="none"
+             style={{ position: "absolute", bottom: 0, left: 0, right: 0, width: "100%", height: 44, opacity: 0.5, pointerEvents: "none" }}>
+          <polygon points="0,70 0,45 120,10 230,50 340,20 430,55 520,15 620,48 720,25 820,52 900,30 1000,50 1000,70" fill="#F2EEE0" />
+        </svg>
       </div>
 
       <div style={{ padding: 28, maxWidth: 1200, margin: "0 auto" }}>
@@ -429,8 +441,10 @@ function AppCompleta() {
         <div style={{ borderBottom: "1px solid #1A140D", padding: "16px 32px", display: "flex", alignItems: "center", gap: 16, background: "#FBF8F1", position: "sticky", top: 0, zIndex: 10 }}>
           <button onClick={() => setShowNuovaAzienda(false)} style={{ background: "none", border: "none", color: "#1E5D39", fontSize: 13, cursor: "pointer", fontFamily: "inherit" }}>← Torna</button>
           <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-            <div style={{ width: 28, height: 28, background: "#1E5D39", borderRadius: 7, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 14, fontWeight: 800, color: "white" }}>R</div>
-            <span style={{ fontSize: 14, fontWeight: 700, color: "#241D14" }}>RSPPino</span>
+            <div style={{ width: 28, height: 28, background: "#1E5D39", borderRadius: 7, display: "flex", alignItems: "center", justifyContent: "center" }}>
+              <svg viewBox="0 0 140 190" width="15" height="auto"><path d="M70 8 C 90 20, 82 32, 96 38 C 112 44, 98 56, 114 64 C 130 72, 112 84, 128 94 C 140 102, 118 114, 130 124 C 138 132, 122 142, 104 144 L 100 178 L 40 178 L 36 144 C 18 142, 2 132, 10 124 C 22 114, 0 102, 12 94 C 28 84, 10 72, 26 64 C 42 56, 28 44, 44 38 C 58 32, 50 20, 70 8 Z" fill="white" /></svg>
+            </div>
+            <span style={{ fontSize: 14, fontWeight: 700, color: "#241D14" }}>rspPINO</span>
           </div>
         </div>
         <div style={{ padding: "40px 24px" }}>
@@ -488,9 +502,11 @@ function AppCompleta() {
         {/* Logo */}
         <div style={{ padding: "16px 20px", borderBottom: "1px solid #1A140D" }}>
           <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-            <div style={{ width: 32, height: 32, background: "#1E5D39", borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16, fontWeight: 800, color: "white" }}>R</div>
+            <div style={{ width: 32, height: 32, background: "#1E5D39", borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center" }}>
+              <svg viewBox="0 0 140 190" width="17" height="auto"><path d="M70 8 C 90 20, 82 32, 96 38 C 112 44, 98 56, 114 64 C 130 72, 112 84, 128 94 C 140 102, 118 114, 130 124 C 138 132, 122 142, 104 144 L 100 178 L 40 178 L 36 144 C 18 142, 2 132, 10 124 C 22 114, 0 102, 12 94 C 28 84, 10 72, 26 64 C 42 56, 28 44, 44 38 C 58 32, 50 20, 70 8 Z" fill="white" /></svg>
+            </div>
             <div>
-              <div style={{ fontSize: 15, fontWeight: 800, color: "#241D14", letterSpacing: "-0.3px" }}>RSPPino</div>
+              <div style={{ fontSize: 15, fontWeight: 800, color: "#241D14", letterSpacing: "-0.3px" }}>rspPINO</div>
               <div style={{ fontSize: 9, color: "#5C5545", letterSpacing: "1px" }}>GESTIONALE HSE</div>
             </div>
           </div>
@@ -662,6 +678,6 @@ function AppCompleta() {
 // In MVP_MODE (freemium, nessun login) monta AppMVP: nessuna chiamata a Supabase.
 // A MVP_MODE = false si torna alla versione pro multi-azienda (richiede login,
 // da rimontare dietro AuthSupabase in index.js quando si riattiva).
-export default function RSPPinoApp() {
+export default function rspPINOApp() {
   return MVP_MODE ? <AppMVP /> : <AppCompleta />;
 }

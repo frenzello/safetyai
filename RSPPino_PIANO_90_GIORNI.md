@@ -1,16 +1,16 @@
-# RSPPino — Piano di rilancio 90 giorni (agosto → novembre 2026)
+# rspPINO — Piano di rilancio 90 giorni (agosto → novembre 2026)
 
-> Questo file va messo nella cartella del progetto accanto a `RSPPino_TODO.md`.
-> Contesto per Claude Code: leggere questo file insieme a `RSPPino_TODO.md` prima di ogni sessione di lavoro.
-> Rinominato da "SafetyAI" ad "RSPPino" il 28/08/2026 — vedi la nota rebrand in `CLAUDE.md`.
+> Questo file va messo nella cartella del progetto accanto a `rspPINO_TODO.md`.
+> Contesto per Claude Code: leggere questo file insieme a `rspPINO_TODO.md` prima di ogni sessione di lavoro.
+> Rinominato da "SafetyAI" ad "rspPINO" il 28/08/2026 — vedi la nota rebrand in `CLAUDE.md`.
 
 ## Decisione e posizionamento (dall'analisi di mercato del 25/08/2026)
 
 Decisione: si procede, come **micro-SaaS di nicchia**, non come startup generalista.
 
 - Target: **RSPP esterni multi-azienda** (30–80 piccole aziende clienti ciascuno). NON competere frontalmente su verifica fornitori/cantiere: lì c'è già Levels / "Operatore Sicurezza" (AI, 65+ tipologie documentali, 2.000+ cantieri) con 1–2 anni di vantaggio.
-- Differenziazione: **distribuzione, non tecnologia**. Tutti i concorrenti (Levels, Blumatica, Sicurweb, Namirial, TeamSystem, Sikuro, Twind) vendono via "richiedi una demo". RSPPino si prova in 5 minuti senza registrazione: upload attestati → analisi AI → Excel. Il freemium È il canale di acquisizione.
-- Prezzi di mercato osservati: 50–300 €/mese (Twind da 79 €/mese per RSPP esterni; Sikuro ~500 €/anno). Fascia target per RSPPino: 30–80 €/mese.
+- Differenziazione: **distribuzione, non tecnologia**. Tutti i concorrenti (Levels, Blumatica, Sicurweb, Namirial, TeamSystem, Sikuro, Twind) vendono via "richiedi una demo". rspPINO si prova in 5 minuti senza registrazione: upload attestati → analisi AI → Excel. Il freemium È il canale di acquisizione.
+- Prezzi di mercato osservati: 50–300 €/mese (Twind da 79 €/mese per RSPP esterni; Sikuro ~500 €/anno). Fascia target per rspPINO: 30–80 €/mese.
 - Soglia decisionale: **10 clienti paganti entro 90 giorni dal lancio pubblico**. Se non raggiunta, il progetto torna strumento interno per la consulenza e non si investe oltre.
 - L'analisi AI dei documenti non è un fossato competitivo (chiunque può integrare un'API LLM; la piattaforma gratuita "Check" del sistema bilaterale la offre già gratis a Napoli). Non venderla come "AI": vendere il risultato — "scadenzario sempre aggiornato senza lavoro manuale".
 

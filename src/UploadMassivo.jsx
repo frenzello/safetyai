@@ -347,10 +347,10 @@ function sanitizeRisultato(r) {
 // ─── ERROR BOUNDARY ───────────────────────────────────────────────────────────
 // Evita la "pagina bianca": qualsiasi errore di rendering viene catturato e
 // mostrato, lasciando all'utente la possibilità di ricaricare.
-class ErrorBoundaryRSPPino extends Component {
+class ErrorBoundaryrspPINO extends Component {
   constructor(props) { super(props); this.state = { error: null }; }
   static getDerivedStateFromError(error) { return { error }; }
-  componentDidCatch(error, info) { console.error("[RSPPino] Crash UI:", error, info); }
+  componentDidCatch(error, info) { console.error("[rspPINO] Crash UI:", error, info); }
   render() {
     if (this.state.error) {
       return (
@@ -361,7 +361,7 @@ class ErrorBoundaryRSPPino extends Component {
               L'analisi ha incontrato un dato imprevisto. Ricarica la pagina e riprova; se persiste, copia il messaggio qui sotto.
             </div>
             <pre style={{ fontSize: 11, color: "#812C2C", background: "#EFE9DD", padding: "12px", borderRadius: 8, overflow: "auto", whiteSpace: "pre-wrap" }}>{String((this.state.error && this.state.error.message) || this.state.error)}</pre>
-            <button onClick={() => window.location.reload()} style={{ marginTop: 14, padding: "11px 20px", borderRadius: 3, border: "3px solid #1A140D", boxShadow: "4px 4px 0 #1A140D", background: "#812C2C", color: "#FBF3ED", fontSize: 13, fontWeight: 800, fontFamily: "'Big Shoulders',sans-serif", textTransform: "uppercase", cursor: "pointer" }}>Ricarica</button>
+            <button onClick={() => window.location.reload()} style={{ marginTop: 14, padding: "11px 20px", borderRadius: 3, border: "3px solid #1A140D", boxShadow: "4px 4px 0 #1A140D", background: "#812C2C", color: "#FBF3ED", fontSize: 13, fontWeight: 700, fontFamily: "'Zilla Slab',serif", textTransform: "uppercase", cursor: "pointer" }}>Ricarica</button>
           </div>
         </div>
       );
@@ -501,7 +501,7 @@ async function extractDocumentData(file) {
   );
 
   if (necessitaRetry) {
-    console.log(`[RSPPino] Escalation Sonnet: ${file.name}`);
+    console.log(`[rspPINO] Escalation Sonnet: ${file.name}`);
     try {
       const sonnetRis = await callClaudeAPI(contentParts, "claude-sonnet-4-6", 2000);
       // Usa Sonnet se non ha errori e la confidenza media è maggiore o uguale
@@ -510,7 +510,7 @@ async function extractDocumentData(file) {
         risultati.forEach(r => { r._usatoSonnet = true; });
       }
     } catch (e) {
-      console.warn("[RSPPino] Retry Sonnet fallito, uso risultati Haiku:", e.message);
+      console.warn("[rspPINO] Retry Sonnet fallito, uso risultati Haiku:", e.message);
     }
   }
 
@@ -816,7 +816,7 @@ async function esportaExcel(elaborati, decisioniConformita, azienda, fusioni) {
   const nomeAzienda = azienda?.nome || "Azienda";
 
   const titleRow = [`REGISTRO ATTESTATI SICUREZZA — ${nomeAzienda}`, ...Array(tipiOriginali.length).fill("")];
-  const infoRow  = [`Generato: ${oggi} | RSPPino`, ...Array(tipiOriginali.length).fill("")];
+  const infoRow  = [`Generato: ${oggi} | rspPINO`, ...Array(tipiOriginali.length).fill("")];
   const emptyRow = Array(tipiOriginali.length + 1).fill("");
   const headerRow = ["LAVORATORE", ...tipiOriginali.map(t => t.toUpperCase())];
 
@@ -969,7 +969,7 @@ async function esportaExcel(elaborati, decisioniConformita, azienda, fusioni) {
   XLSX.utils.book_append_sheet(wb, ws2, "Dettaglio");
 
   const dataOggi = new Date().toLocaleDateString("it-IT").replace(/\//g, "-");
-  XLSX.writeFile(wb, `RSPPino_Attestati_${dataOggi}.xlsx`);
+  XLSX.writeFile(wb, `rspPINO_Attestati_${dataOggi}.xlsx`);
 }
 
 // ─── HELPERS UI ───────────────────────────────────────────────────────────────
@@ -1154,11 +1154,13 @@ function SchermatScadenze({ elaborati, azienda, appaltoSelId, appaltatoreSelId, 
       <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: 24, gap: 16 }}>
         <div>
           <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8 }}>
-            <div style={{ width: 32, height: 32, background: "#1E5D39", borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16, fontWeight: 800, color: "white" }}>R</div>
-            <span style={{ fontSize: 14, fontWeight: 700, color: "#241D14" }}>RSPPino</span>
+            <div style={{ width: 32, height: 32, background: "#1E5D39", borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center" }}>
+              <svg viewBox="0 0 140 190" width="17" height="auto"><path d="M70 8 C 90 20, 82 32, 96 38 C 112 44, 98 56, 114 64 C 130 72, 112 84, 128 94 C 140 102, 118 114, 130 124 C 138 132, 122 142, 104 144 L 100 178 L 40 178 L 36 144 C 18 142, 2 132, 10 124 C 22 114, 0 102, 12 94 C 28 84, 10 72, 26 64 C 42 56, 28 44, 44 38 C 58 32, 50 20, 70 8 Z" fill="white" /></svg>
+            </div>
+            <span style={{ fontSize: 14, fontWeight: 700, color: "#241D14" }}>rspPINO</span>
           </div>
           <div style={{ fontSize: 20, fontWeight: 800, color: "#241D14", letterSpacing: "-0.4px" }}>Situazione documentale</div>
-          <div style={{ fontSize: 12, color: "#5C5545", marginTop: 2 }}>{azienda?.nome || "RSPPino"}</div>
+          <div style={{ fontSize: 12, color: "#5C5545", marginTop: 2 }}>{azienda?.nome || "rspPINO"}</div>
         </div>
         <button
           onClick={handleExport}
@@ -1170,7 +1172,7 @@ function SchermatScadenze({ elaborati, azienda, appaltoSelId, appaltatoreSelId, 
             border: nonConformiInAttesa > 0 ? "3px solid #A79D89" : "3px solid #1A140D",
             boxShadow: nonConformiInAttesa > 0 ? "none" : "4px 4px 0 #1A140D",
             color: nonConformiInAttesa > 0 ? "#A79D89" : "#FBF3ED",
-            fontSize: 13, fontWeight: 800, fontFamily: "'Big Shoulders',sans-serif", textTransform: "uppercase", letterSpacing: "0.02em",
+            fontSize: 13, fontWeight: 700, fontFamily: "'Zilla Slab',serif", textTransform: "uppercase", letterSpacing: "0.02em",
             cursor: nonConformiInAttesa > 0 || exportando ? "not-allowed" : "pointer",
             display: "flex", alignItems: "center", gap: 8,
           }}>
@@ -1188,7 +1190,7 @@ function SchermatScadenze({ elaborati, azienda, appaltoSelId, appaltatoreSelId, 
           { label: "Da rinnovare",        value: elaborati.filter(d => ["scaduto","critico","attenzione"].includes(statoScadenza(d.risultato?.data_scadenza))).length, color: "#C4872E" },
         ].map((s, i) => (
           <div key={i} style={{ background: "#FBF8F1", border: "2px solid #1A140D", borderLeft: `6px solid ${s.color}`, boxShadow: "3px 3px 0 #1A140D", borderRadius: 2, padding: "14px 16px", textAlign: "center" }}>
-            <div style={{ fontSize: 28, fontWeight: 800, fontFamily: "'Big Shoulders',sans-serif", color: s.color, fontVariantNumeric: "tabular-nums" }}>{s.value}</div>
+            <div style={{ fontSize: 28, fontWeight: 700, fontFamily: "'Zilla Slab',serif", color: s.color, fontVariantNumeric: "tabular-nums" }}>{s.value}</div>
             <div style={{ fontSize: 9.5, color: "#5C5545", marginTop: 4, fontFamily: "'JetBrains Mono',monospace", textTransform: "uppercase", letterSpacing: "0.04em" }}>{s.label}</div>
           </div>
         ))}
@@ -1222,7 +1224,7 @@ function SchermatScadenze({ elaborati, azienda, appaltoSelId, appaltatoreSelId, 
               </div>
               <div style={{ display: "flex", gap: 8, flexShrink: 0 }}>
                 <button onClick={() => ignoraGruppoSuggerito(chiavi)} style={{ padding: "6px 12px", background: "#FBF8F1", border: "2px solid #1A140D", borderRadius: 2, color: "#5C5545", fontSize: 11, fontWeight: 700, cursor: "pointer" }}>Ignora</button>
-                <button onClick={() => fondiGruppoSuggerito(chiavi)} style={{ padding: "6px 14px", background: "#C4872E", border: "2px solid #1A140D", boxShadow: "3px 3px 0 #1A140D", borderRadius: 2, color: "#FBF3ED", fontSize: 12, fontWeight: 800, fontFamily: "'Big Shoulders',sans-serif", textTransform: "uppercase", cursor: "pointer" }}>🔗 Unisci tutte</button>
+                <button onClick={() => fondiGruppoSuggerito(chiavi)} style={{ padding: "6px 14px", background: "#C4872E", border: "2px solid #1A140D", boxShadow: "3px 3px 0 #1A140D", borderRadius: 2, color: "#FBF3ED", fontSize: 12, fontWeight: 700, fontFamily: "'Zilla Slab',serif", textTransform: "uppercase", cursor: "pointer" }}>🔗 Unisci tutte</button>
               </div>
             </div>
           ))}
@@ -1258,11 +1260,11 @@ function SchermatScadenze({ elaborati, azienda, appaltoSelId, appaltatoreSelId, 
               return (
                 <div key={chiaveLav} style={{ background: "#FBF8F1", border: "3px solid #1A140D", boxShadow: "5px 5px 0 #1A140D", borderRadius: 2, overflow: "hidden" }}>
                   <div style={{ padding: "14px 20px", display: "flex", alignItems: "center", gap: 14, background: "#F2EEE0", borderBottom: "3px solid #1A140D" }}>
-                    <div style={{ width: 42, height: 42, borderRadius: "50%", border: "2px solid #1A140D", flexShrink: 0, background: `${colore}25`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 15, fontWeight: 800, fontFamily: "'Big Shoulders',sans-serif", color: colore }}>
+                    <div style={{ width: 42, height: 42, borderRadius: "50%", border: "2px solid #1A140D", flexShrink: 0, background: `${colore}25`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 15, fontWeight: 700, fontFamily: "'Zilla Slab',serif", color: colore }}>
                       {nomeDisplay.split(" ").map(n => n[0]).join("").slice(0, 2).toUpperCase()}
                     </div>
                     <div style={{ flex: 1 }}>
-                      <div style={{ fontSize: 15, fontWeight: 800, fontFamily: "'Big Shoulders',sans-serif", textTransform: "uppercase", letterSpacing: "0.01em", color: "#241D14" }}>{nomeDisplay}</div>
+                      <div style={{ fontSize: 15, fontWeight: 700, fontFamily: "'Zilla Slab',serif", textTransform: "uppercase", letterSpacing: "0.01em", color: "#241D14" }}>{nomeDisplay}</div>
                       <div style={{ fontSize: 11, color: "#5C5545", marginTop: 2, fontFamily: "'JetBrains Mono',monospace" }}>{docs.length} documenti</div>
                     </div>
                     <span style={{ padding: "5px 11px", borderRadius: 2, border: "2px solid #1A140D", background: colore, color: "#FBF3ED", fontSize: 10, fontWeight: 800, fontFamily: "'JetBrains Mono',monospace", textTransform: "uppercase", letterSpacing: "0.03em" }}>{label}</span>
@@ -1356,12 +1358,12 @@ function SchermatScadenze({ elaborati, azienda, appaltoSelId, appaltatoreSelId, 
                                   <div style={{ display: "flex", gap: 8, flexShrink: 0 }}>
                                     <button
                                       onClick={() => setDecisione(chiaveLav, doc.nomeFile, "approvato")}
-                                      style={{ padding: "6px 13px", background: "#1E5D39", border: "2px solid #1A140D", boxShadow: "3px 3px 0 #1A140D", borderRadius: 2, color: "#F2EEE0", fontSize: 11, fontWeight: 800, fontFamily: "'Big Shoulders',sans-serif", textTransform: "uppercase", cursor: "pointer", whiteSpace: "nowrap" }}>
+                                      style={{ padding: "6px 13px", background: "#1E5D39", border: "2px solid #1A140D", boxShadow: "3px 3px 0 #1A140D", borderRadius: 2, color: "#F2EEE0", fontSize: 11, fontWeight: 700, fontFamily: "'Zilla Slab',serif", textTransform: "uppercase", cursor: "pointer", whiteSpace: "nowrap" }}>
                                       ✓ Approva
                                     </button>
                                     <button
                                       onClick={() => setDecisione(chiaveLav, doc.nomeFile, "scartato")}
-                                      style={{ padding: "6px 13px", background: "#812C2C", border: "2px solid #1A140D", boxShadow: "3px 3px 0 #1A140D", borderRadius: 2, color: "#FBF3ED", fontSize: 11, fontWeight: 800, fontFamily: "'Big Shoulders',sans-serif", textTransform: "uppercase", cursor: "pointer", whiteSpace: "nowrap" }}>
+                                      style={{ padding: "6px 13px", background: "#812C2C", border: "2px solid #1A140D", boxShadow: "3px 3px 0 #1A140D", borderRadius: 2, color: "#FBF3ED", fontSize: 11, fontWeight: 700, fontFamily: "'Zilla Slab',serif", textTransform: "uppercase", cursor: "pointer", whiteSpace: "nowrap" }}>
                                       ✗ Scarta
                                     </button>
                                   </div>
@@ -1470,14 +1472,14 @@ function SchermatScadenze({ elaborati, azienda, appaltoSelId, appaltatoreSelId, 
           ) : (
             <button
               onClick={() => onSalvaDB(elaborati, decisioniConformita)}
-              style={{ width: "100%", padding: "13px", background: "#1E5D39", border: "3px solid #1A140D", boxShadow: "4px 4px 0 #1A140D", borderRadius: 2, color: "#F2EEE0", fontSize: 13, fontWeight: 800, fontFamily: "'Big Shoulders',sans-serif", textTransform: "uppercase", cursor: "pointer" }}>
+              style={{ width: "100%", padding: "13px", background: "#1E5D39", border: "3px solid #1A140D", boxShadow: "4px 4px 0 #1A140D", borderRadius: 2, color: "#F2EEE0", fontSize: 13, fontWeight: 700, fontFamily: "'Zilla Slab',serif", textTransform: "uppercase", cursor: "pointer" }}>
               💾 Salva nel database
             </button>
           )}
         </div>
       )}
 
-      <button onClick={onRicarica} style={{ width: "100%", padding: "13px", background: "#FBF8F1", border: "3px solid #1A140D", boxShadow: "4px 4px 0 #1A140D", borderRadius: 2, color: "#241D14", fontSize: 13, fontWeight: 800, fontFamily: "'Big Shoulders',sans-serif", textTransform: "uppercase", letterSpacing: "0.02em", cursor: "pointer" }}>
+      <button onClick={onRicarica} style={{ width: "100%", padding: "13px", background: "#FBF8F1", border: "3px solid #1A140D", boxShadow: "4px 4px 0 #1A140D", borderRadius: 2, color: "#241D14", fontSize: 13, fontWeight: 700, fontFamily: "'Zilla Slab',serif", textTransform: "uppercase", letterSpacing: "0.02em", cursor: "pointer" }}>
         ← Carica altri documenti
       </button>
     </div>
@@ -1615,7 +1617,7 @@ function PortaleUploadMassivoInner({ azienda }) {
       }
     } catch (err) {
       setCaricandoCartella(false);
-      if (err.name !== "AbortError") console.error("[RSPPino] picker error:", err);
+      if (err.name !== "AbortError") console.error("[rspPINO] picker error:", err);
     }
   }, [handleFiles]);
 
@@ -1643,13 +1645,13 @@ function PortaleUploadMassivoInner({ azienda }) {
           const f = await new Promise((res, rej) => entry.file(res, rej));
           return isFileAccepted(f) ? { acc: [f], skip: 0 } : { acc: [], skip: 1 };
         } catch (err) {
-          console.warn("[RSPPino] Voce non letta:", entry && entry.name, err);
+          console.warn("[rspPINO] Voce non letta:", entry && entry.name, err);
           return { acc: [], skip: 0 };
         }
       }));
       for (const r of risultati) { tuttiFile.push(...r.acc); skippati += r.skip; }
     } catch (err) {
-      console.warn("[RSPPino] Errore lettura drop:", err);
+      console.warn("[rspPINO] Errore lettura drop:", err);
     } finally {
       setCaricandoCartella(false);
     }
@@ -1806,7 +1808,7 @@ function PortaleUploadMassivoInner({ azienda }) {
         <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
         <div style={{ textAlign: "center", marginBottom: 40 }}>
           <div style={{ width: 64, height: 64, margin: "0 auto 20px", borderRadius: "50%", border: "4px solid #1A140D", borderTop: "4px solid #812C2C", animation: "spin 0.9s linear infinite" }} />
-          <div style={{ fontSize: 24, fontWeight: 800, fontFamily: "'Big Shoulders',sans-serif", textTransform: "uppercase", letterSpacing: "0.01em", color: "#241D14" }}>Analisi in corso</div>
+          <div style={{ fontSize: 24, fontWeight: 700, fontFamily: "'Zilla Slab',serif", textTransform: "uppercase", letterSpacing: "0.01em", color: "#241D14" }}>Analisi in corso</div>
           <div style={{ fontSize: 14, color: "#5C5545", marginTop: 8 }}>L'AI legge, classifica e verifica la conformità normativa</div>
         </div>
         <div style={{ background: "#FBF8F1", border: "3px solid #1A140D", boxShadow: "5px 5px 0 #1A140D", borderRadius: 2, padding: "20px 24px", marginBottom: 24 }}>
@@ -1839,14 +1841,18 @@ function PortaleUploadMassivoInner({ azienda }) {
       <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
       <div style={{ marginBottom: 32 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 20 }}>
-          <div style={{ width: 32, height: 32, background: "#1E5D39", borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16, fontWeight: 800, color: "white" }}>R</div>
-          <span style={{ fontSize: 14, fontWeight: 700, color: "#241D14" }}>RSPPino</span>
+          <div style={{ width: 32, height: 32, background: "#1E5D39", borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center" }}>
+            <svg viewBox="0 0 140 190" width="17" height="auto"><path d="M70 8 C 90 20, 82 32, 96 38 C 112 44, 98 56, 114 64 C 130 72, 112 84, 128 94 C 140 102, 118 114, 130 124 C 138 132, 122 142, 104 144 L 100 178 L 40 178 L 36 144 C 18 142, 2 132, 10 124 C 22 114, 0 102, 12 94 C 28 84, 10 72, 26 64 C 42 56, 28 44, 44 38 C 58 32, 50 20, 70 8 Z" fill="white" /></svg>
+          </div>
+          <span style={{ fontSize: 14, fontWeight: 700, color: "#241D14" }}>rspPINO</span>
         </div>
-        <div style={{ background: "#FBF8F1", border: "1px solid #1A140D", borderRadius: 12, padding: "20px 24px", marginBottom: 24 }}>
-          <div style={{ fontSize: 11, color: "#1E5D39", fontWeight: 700, letterSpacing: "0.8px", marginBottom: 8 }}>CARICA DOCUMENTI</div>
-          <div style={{ fontSize: 16, fontWeight: 800, color: "#241D14" }}>{azienda?.nome || "Nessuna azienda selezionata"}</div>
-          <div style={{ fontSize: 12, color: "#5C5545", marginTop: 4 }}>{azienda?.settore || ""}</div>
-        </div>
+        {azienda && (
+          <div style={{ background: "#FBF8F1", border: "1px solid #1A140D", borderRadius: 12, padding: "20px 24px", marginBottom: 24 }}>
+            <div style={{ fontSize: 11, color: "#1E5D39", fontWeight: 700, letterSpacing: "0.8px", marginBottom: 8 }}>CARICA DOCUMENTI</div>
+            <div style={{ fontSize: 16, fontWeight: 800, color: "#241D14" }}>{azienda.nome}</div>
+            <div style={{ fontSize: 12, color: "#5C5545", marginTop: 4 }}>{azienda.settore || ""}</div>
+          </div>
+        )}
         <div style={{ fontSize: 22, fontWeight: 800, color: "#241D14", letterSpacing: "-0.5px", marginBottom: 8 }}>Carica tutti i documenti</div>
         <div style={{ fontSize: 14, color: "#5C5545", lineHeight: 1.6 }}>
           Seleziona attestati, idoneità e documenti aziendali. <strong style={{ color: "#1E5D39" }}>L'AI li classifica e verifica la conformità normativa</strong>.
@@ -1924,7 +1930,7 @@ function PortaleUploadMassivoInner({ azienda }) {
             <div style={{ display: "flex", gap: 10, justifyContent: "center" }}>
               <button
                 onClick={openFolderPicker}
-                style={{ padding: "10px 20px", background: "#812C2C", border: "3px solid #1A140D", boxShadow: "4px 4px 0 #1A140D", borderRadius: 2, color: "#FBF3ED", fontSize: 12, fontWeight: 800, fontFamily: "'Big Shoulders',sans-serif", textTransform: "uppercase", letterSpacing: "0.02em", cursor: "pointer", display: "flex", alignItems: "center", gap: 6 }}
+                style={{ padding: "10px 20px", background: "#812C2C", border: "3px solid #1A140D", boxShadow: "4px 4px 0 #1A140D", borderRadius: 2, color: "#FBF3ED", fontSize: 12, fontWeight: 700, fontFamily: "'Zilla Slab',serif", textTransform: "uppercase", letterSpacing: "0.02em", cursor: "pointer", display: "flex", alignItems: "center", gap: 6 }}
               >
                 📁 Scegli cartella
               </button>
@@ -1935,7 +1941,10 @@ function PortaleUploadMassivoInner({ azienda }) {
           <>
             {/* Banner cartella rilevata */}
             {infoCartella && (
-              <div style={{ marginBottom: 12, padding: "9px 14px", background: "#E8EDE5", border: "2px solid #1E5D39", borderRadius: 2, display: "flex", alignItems: "center", gap: 10, textAlign: "left" }}>
+              <div style={{ marginBottom: 12, padding: "9px 14px", background: "#E8EDE5", border: "2px solid #1E5D39", borderRadius: 2, display: "flex", alignItems: "center", gap: 10, textAlign: "left", position: "relative", overflow: "hidden" }}>
+                <svg aria-hidden="true" viewBox="0 0 140 190" style={{ position: "absolute", right: -4, bottom: -10, width: 44, height: "auto", opacity: 0.1, pointerEvents: "none" }}>
+                  <path d="M70 8 C 90 20, 82 32, 96 38 C 112 44, 98 56, 114 64 C 130 72, 112 84, 128 94 C 140 102, 118 114, 130 124 C 138 132, 122 142, 104 144 L 100 178 L 40 178 L 36 144 C 18 142, 2 132, 10 124 C 22 114, 0 102, 12 94 C 28 84, 10 72, 26 64 C 42 56, 28 44, 44 38 C 58 32, 50 20, 70 8 Z" fill="#1E5D39" />
+                </svg>
                 <span style={{ fontSize: 16, flexShrink: 0 }}>📁</span>
                 <div style={{ flex: 1 }}>
                   <div style={{ fontSize: 12, fontWeight: 700, color: "#1E5D39" }}>{infoCartella.nome}</div>
@@ -1945,7 +1954,7 @@ function PortaleUploadMassivoInner({ azienda }) {
                     {infoCartella.skippati > 0 && <span style={{ color: "#C4872E" }}> · {infoCartella.skippati} ignorati (tipo non supportato)</span>}
                   </div>
                 </div>
-                <button onClick={() => setInfoCartella(null)} style={{ background: "none", border: "none", color: "#5C5545", fontSize: 16, cursor: "pointer", lineHeight: 1 }}>×</button>
+                <button onClick={() => setInfoCartella(null)} style={{ background: "none", border: "none", color: "#5C5545", fontSize: 16, cursor: "pointer", lineHeight: 1, position: "relative", zIndex: 1 }}>×</button>
               </div>
             )}
 
@@ -2022,7 +2031,7 @@ function PortaleUploadMassivoInner({ azienda }) {
         border: files.length > 0 ? "3px solid #1A140D" : "3px solid #A79D89",
         boxShadow: files.length > 0 ? "5px 5px 0 #1A140D" : "none",
         borderRadius: 2, color: files.length > 0 ? "#FBF3ED" : "#A79D89",
-        fontSize: 16, fontWeight: 900, fontFamily: "'Big Shoulders',sans-serif", textTransform: "uppercase", letterSpacing: "0.02em",
+        fontSize: 16, fontWeight: 700, fontFamily: "'Zilla Slab',serif", textTransform: "uppercase", letterSpacing: "0.02em",
         cursor: files.length > 0 ? "pointer" : "not-allowed",
       }}>
         {files.length > 0 ? `⚡ Analizza ${files.length} documenti con AI →` : "Seleziona i file per continuare"}
@@ -2035,8 +2044,8 @@ function PortaleUploadMassivoInner({ azienda }) {
 // Export con error boundary: l'app non diventa mai una pagina bianca.
 export default function PortaleUploadMassivo(props) {
   return (
-    <ErrorBoundaryRSPPino>
+    <ErrorBoundaryrspPINO>
       <PortaleUploadMassivoInner {...props} />
-    </ErrorBoundaryRSPPino>
+    </ErrorBoundaryrspPINO>
   );
 }
