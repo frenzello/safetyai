@@ -24,15 +24,15 @@ const MVP_MODE = true;
 
 // ─── HELPERS UI ───────────────────────────────────────────────────────────────
 const STATO_CFG = {
-  ok:         { color: "#33513B", bg: "#33513B15", label: "Valido" },
+  ok:         { color: "#1E5D39", bg: "#1E5D3915", label: "Valido" },
   attenzione: { color: "#C4872E", bg: "#C4872E15", label: "In scadenza" },
-  critico:    { color: "#B85C3B", bg: "#B85C3B15", label: "Critico" },
-  scaduto:    { color: "#B85C3B", bg: "#B85C3B25", label: "SCADUTO" },
+  critico:    { color: "#812C2C", bg: "#812C2C15", label: "Critico" },
+  scaduto:    { color: "#812C2C", bg: "#812C2C25", label: "SCADUTO" },
   nessuna:    { color: "#5C5545", bg: "#5C554515", label: "—" },
 };
 
 const STATO_DUVRI = {
-  firmato:    { color: "#33513B", bg: "#33513B15", label: "Firmato" },
+  firmato:    { color: "#1E5D39", bg: "#1E5D3915", label: "Firmato" },
   da_firmare: { color: "#C4872E", bg: "#C4872E15", label: "Da firmare" },
   archiviato: { color: "#5C5545", bg: "#5C554515", label: "Archiviato" },
 };
@@ -52,7 +52,7 @@ function DashboardVuota({ onAggiungiAzienda }) {
         onClick={onAggiungiAzienda}
         style={{
           padding: "13px 28px",
-          background: "#33513B",
+          background: "#1E5D39",
           border: "none", borderRadius: 12,
           color: "white", fontSize: 14, fontWeight: 800,
           cursor: "pointer", fontFamily: "inherit",
@@ -98,24 +98,24 @@ function Dashboard({ azienda, onNavigate }) {
     <div>
       {/* Alert bloccati */}
       {stat.bloccati > 0 && (
-        <div style={{ padding: "14px 20px", marginBottom: 24, background: "#B85C3B12", border: "1px solid #B85C3B30", borderRadius: 12, display: "flex", gap: 12, alignItems: "center" }}>
+        <div style={{ padding: "14px 20px", marginBottom: 24, background: "#812C2C12", border: "1px solid #812C2C30", borderRadius: 12, display: "flex", gap: 12, alignItems: "center" }}>
           <span style={{ fontSize: 22 }}>🚨</span>
           <div style={{ flex: 1 }}>
-            <div style={{ fontSize: 13, fontWeight: 700, color: "#B85C3B" }}>{stat.bloccati} lavoratori con accesso bloccato per documenti scaduti</div>
+            <div style={{ fontSize: 13, fontWeight: 700, color: "#812C2C" }}>{stat.bloccati} lavoratori con accesso bloccato per documenti scaduti</div>
           </div>
-          <button onClick={() => onNavigate("scadenze")} style={{ padding: "7px 14px", background: "#B85C3B20", border: "1px solid #B85C3B40", borderRadius: 7, color: "#B85C3B", fontSize: 12, fontWeight: 700, cursor: "pointer" }}>Gestisci →</button>
+          <button onClick={() => onNavigate("scadenze")} style={{ padding: "7px 14px", background: "#812C2C20", border: "1px solid #812C2C40", borderRadius: 7, color: "#812C2C", fontSize: 12, fontWeight: 700, cursor: "pointer" }}>Gestisci →</button>
         </div>
       )}
 
       {/* KPI */}
       <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 14, marginBottom: 24 }}>
         {[
-          { label: "Appalti attivi", value: stat.appaltiAttivi, color: "#33513B", mod: "duvri" },
-          { label: "Lavoratori registrati", value: stat.totLavoratori, color: "#33513B", mod: "scadenze" },
-          { label: "Attestati totali", value: stat.totAttestati, color: "#B85C3B", mod: "upload" },
-          { label: "Scaduti", value: stat.scaduti, color: stat.scaduti > 0 ? "#B85C3B" : "#8A8271", mod: "scadenze" },
+          { label: "Appalti attivi", value: stat.appaltiAttivi, color: "#1E5D39", mod: "duvri" },
+          { label: "Lavoratori registrati", value: stat.totLavoratori, color: "#1E5D39", mod: "scadenze" },
+          { label: "Attestati totali", value: stat.totAttestati, color: "#812C2C", mod: "upload" },
+          { label: "Scaduti", value: stat.scaduti, color: stat.scaduti > 0 ? "#812C2C" : "#8A8271", mod: "scadenze" },
           { label: "In scadenza (60gg)", value: stat.inScadenza, color: stat.inScadenza > 0 ? "#C4872E" : "#8A8271", mod: "scadenze" },
-          { label: "Accessi bloccati", value: stat.bloccati, color: stat.bloccati > 0 ? "#B85C3B" : "#8A8271", mod: "scadenze" },
+          { label: "Accessi bloccati", value: stat.bloccati, color: stat.bloccati > 0 ? "#812C2C" : "#8A8271", mod: "scadenze" },
         ].map((s, i) => (
           <div key={i} onClick={() => onNavigate(s.mod)} style={{ background: "#FBF8F1", border: `1px solid ${s.color}20`, borderRadius: 12, padding: "18px 20px", cursor: "pointer", position: "relative", overflow: "hidden" }}
             onMouseEnter={e => e.currentTarget.style.borderColor = s.color + "50"}
@@ -132,7 +132,7 @@ function Dashboard({ azienda, onNavigate }) {
         <div style={{ background: "#FBF8F1", border: "1px solid #1A140D", borderRadius: 12, overflow: "hidden" }}>
           <div style={{ padding: "14px 20px", borderBottom: "1px solid #1A140D", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
             <span style={{ fontSize: 13, fontWeight: 700, color: "#241D14" }}>Scadenze da gestire</span>
-            <span onClick={() => onNavigate("scadenze")} style={{ fontSize: 11, color: "#33513B", cursor: "pointer" }}>Vedi tutte →</span>
+            <span onClick={() => onNavigate("scadenze")} style={{ fontSize: 11, color: "#1E5D39", cursor: "pointer" }}>Vedi tutte →</span>
           </div>
           {scadenzeImminenti.slice(0, 8).map((s, i) => {
             const cfg = STATO_CFG[s.stato];
@@ -151,9 +151,9 @@ function Dashboard({ azienda, onNavigate }) {
           })}
         </div>
       ) : (
-        <div style={{ background: "#FBF8F1", border: "1px solid #33513B30", borderRadius: 12, padding: "32px", textAlign: "center" }}>
+        <div style={{ background: "#FBF8F1", border: "1px solid #1E5D3930", borderRadius: 12, padding: "32px", textAlign: "center" }}>
           <div style={{ fontSize: 32, marginBottom: 12 }}>✓</div>
-          <div style={{ fontSize: 15, fontWeight: 700, color: "#33513B" }}>Tutto in ordine</div>
+          <div style={{ fontSize: 15, fontWeight: 700, color: "#1E5D39" }}>Tutto in ordine</div>
           <div style={{ fontSize: 13, color: "#5C5545", marginTop: 4 }}>Nessuna scadenza imminente</div>
         </div>
       )}
@@ -189,8 +189,8 @@ function SelettoreAziende({ aziende, aziendaAttiva, onSeleziona, onNuova, onChiu
                 onClick={() => { onSeleziona(az); onChiudi(); }}
                 style={{
                   padding: "14px 20px", cursor: "pointer",
-                  background: attiva ? "#33513B22" : "transparent",
-                  borderLeft: `3px solid ${attiva ? "#33513B" : "transparent"}`,
+                  background: attiva ? "#1E5D3922" : "transparent",
+                  borderLeft: `3px solid ${attiva ? "#1E5D39" : "transparent"}`,
                   display: "flex", alignItems: "center", gap: 12,
                 }}
                 onMouseEnter={e => { if (!attiva) e.currentTarget.style.background = "#1A140D40"; }}
@@ -198,10 +198,10 @@ function SelettoreAziende({ aziende, aziendaAttiva, onSeleziona, onNuova, onChiu
               >
                 <div style={{
                   width: 36, height: 36, borderRadius: 9, flexShrink: 0,
-                  background: attiva ? "#33513B20" : "#1A140D",
+                  background: attiva ? "#1E5D3920" : "#1A140D",
                   display: "flex", alignItems: "center", justifyContent: "center",
                   fontSize: 13, fontWeight: 800,
-                  color: attiva ? "#33513B" : "#5C5545",
+                  color: attiva ? "#1E5D39" : "#5C5545",
                 }}>
                   {az.nome.slice(0, 2).toUpperCase()}
                 </div>
@@ -209,10 +209,10 @@ function SelettoreAziende({ aziende, aziendaAttiva, onSeleziona, onNuova, onChiu
                   <div style={{ fontSize: 13, fontWeight: 700, color: attiva ? "#241D14" : "#5C5545", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{az.nome}</div>
                   <div style={{ fontSize: 11, color: "#8A8271", marginTop: 1 }}>
                     {stat.totLavoratori} lavoratori · {stat.appaltiAttivi} appalti attivi
-                    {stat.scaduti > 0 && <span style={{ color: "#B85C3B", marginLeft: 6 }}>⚠ {stat.scaduti} scaduti</span>}
+                    {stat.scaduti > 0 && <span style={{ color: "#812C2C", marginLeft: 6 }}>⚠ {stat.scaduti} scaduti</span>}
                   </div>
                 </div>
-                {attiva && <span style={{ fontSize: 12, color: "#33513B", fontWeight: 700 }}>●</span>}
+                {attiva && <span style={{ fontSize: 12, color: "#1E5D39", fontWeight: 700 }}>●</span>}
               </div>
             );
           })}
@@ -223,7 +223,7 @@ function SelettoreAziende({ aziende, aziendaAttiva, onSeleziona, onNuova, onChiu
             onClick={() => { onNuova(); onChiudi(); }}
             style={{
               width: "100%", padding: "11px",
-              background: "#33513B",
+              background: "#1E5D39",
               border: "none", borderRadius: 9,
               color: "white", fontSize: 13, fontWeight: 700,
               cursor: "pointer", fontFamily: "inherit",
@@ -239,9 +239,9 @@ function SelettoreAziende({ aziende, aziendaAttiva, onSeleziona, onNuova, onChiu
 // ─── SCHERMATA PROFILO AZIENDA ────────────────────────────────────────────────
 function ProfiloAzienda({ azienda }) {
   const LIVELLO_CFG = {
-    basso:  { color: "#33513B", bg: "#33513B15" },
+    basso:  { color: "#1E5D39", bg: "#1E5D3915" },
     medio:  { color: "#C4872E", bg: "#C4872E15" },
-    alto:   { color: "#B85C3B", bg: "#B85C3B15" },
+    alto:   { color: "#812C2C", bg: "#812C2C15" },
   };
 
   return (
@@ -251,7 +251,7 @@ function ProfiloAzienda({ azienda }) {
 
       {/* Dati aziendali */}
       <div style={{ background: "#FBF8F1", border: "1px solid #1A140D", borderRadius: 12, overflow: "hidden", marginBottom: 16 }}>
-        <div style={{ padding: "14px 20px", borderBottom: "1px solid #1A140D", fontSize: 11, fontWeight: 700, color: "#33513B", letterSpacing: "0.5px" }}>DATI AZIENDALI</div>
+        <div style={{ padding: "14px 20px", borderBottom: "1px solid #1A140D", fontSize: 11, fontWeight: 700, color: "#1E5D39", letterSpacing: "0.5px" }}>DATI AZIENDALI</div>
         <div style={{ padding: "16px 20px", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
           {[
             ["Ragione sociale", azienda.nome],
@@ -271,7 +271,7 @@ function ProfiloAzienda({ azienda }) {
 
       {/* Figure */}
       <div style={{ background: "#FBF8F1", border: "1px solid #1A140D", borderRadius: 12, overflow: "hidden", marginBottom: 16 }}>
-        <div style={{ padding: "14px 20px", borderBottom: "1px solid #1A140D", fontSize: 11, fontWeight: 700, color: "#B85C3B", letterSpacing: "0.5px" }}>FIGURE DELLA SICUREZZA</div>
+        <div style={{ padding: "14px 20px", borderBottom: "1px solid #1A140D", fontSize: 11, fontWeight: 700, color: "#812C2C", letterSpacing: "0.5px" }}>FIGURE DELLA SICUREZZA</div>
         <div style={{ padding: "16px 20px", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
           {[
             ["Datore di lavoro", azienda.figure?.datoreLavoro],
@@ -330,18 +330,18 @@ function AppMVP() {
   return (
     <div style={{ fontFamily: "'Work Sans','Segoe UI',sans-serif", background: "#EFE9DD", minHeight: "100vh", color: "#241D14" }}>
       {/* Nastro di segnaletica */}
-      <div style={{ height: 10, background: "repeating-linear-gradient(45deg, #B85C3B, #B85C3B 10px, #1A140D 10px, #1A140D 20px)" }} />
+      <div style={{ height: 10, background: "repeating-linear-gradient(45deg, #812C2C, #812C2C 10px, #1A140D 10px, #1A140D 20px)" }} />
 
-      <div style={{ position: "relative", background: "#33513B", color: "#F2EEE0", padding: "18px 28px", borderBottom: "4px solid #1A140D", overflow: "hidden" }}>
+      <div style={{ position: "relative", background: "#1E5D39", color: "#F2EEE0", padding: "18px 28px", borderBottom: "4px solid #1A140D", overflow: "hidden" }}>
         <div aria-hidden="true" style={{ position: "absolute", right: -18, top: -30, fontFamily: "'Big Shoulders',sans-serif", fontWeight: 900, fontSize: 130, lineHeight: 1, color: "transparent", WebkitTextStroke: "2px rgba(242,238,224,0.14)", userSelect: "none", pointerEvents: "none" }}>81</div>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", position: "relative", maxWidth: 1200, margin: "0 auto" }}>
           <div>
             <h1 style={{ fontFamily: "'Big Shoulders',sans-serif", fontWeight: 900, fontSize: 34, lineHeight: 0.85, letterSpacing: "-0.01em", textTransform: "uppercase", margin: 0 }}>
-              RSPP<span style={{ color: "#B85C3B", WebkitTextStroke: "1px #1A140D" }}>ino</span>
+              RSPP<span style={{ color: "#812C2C", WebkitTextStroke: "1px #1A140D" }}>ino</span>
             </h1>
             <div style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: 10, letterSpacing: "0.16em", textTransform: "uppercase", opacity: 0.8, marginTop: 6 }}>Analisi attestati · D.Lgs 81/08</div>
           </div>
-          <div style={{ transform: "rotate(-6deg)", background: "#FBF3ED", color: "#B85C3B", border: "3px solid #B85C3B", borderRadius: 3, padding: "6px 13px", fontFamily: "'Big Shoulders',sans-serif", fontWeight: 800, fontSize: 12, textTransform: "uppercase", letterSpacing: "0.04em", boxShadow: "4px 4px 0 #1A140D" }}>
+          <div style={{ transform: "rotate(-6deg)", background: "#FBF3ED", color: "#812C2C", border: "3px solid #812C2C", borderRadius: 3, padding: "6px 13px", fontFamily: "'Big Shoulders',sans-serif", fontWeight: 800, fontSize: 12, textTransform: "uppercase", letterSpacing: "0.04em", boxShadow: "4px 4px 0 #1A140D" }}>
             Beta · no login
           </div>
         </div>
@@ -427,9 +427,9 @@ function AppCompleta() {
     return (
       <div style={{ fontFamily: "'Work Sans','Segoe UI',sans-serif", background: "#EFE9DD", minHeight: "100vh", color: "#241D14" }}>
         <div style={{ borderBottom: "1px solid #1A140D", padding: "16px 32px", display: "flex", alignItems: "center", gap: 16, background: "#FBF8F1", position: "sticky", top: 0, zIndex: 10 }}>
-          <button onClick={() => setShowNuovaAzienda(false)} style={{ background: "none", border: "none", color: "#33513B", fontSize: 13, cursor: "pointer", fontFamily: "inherit" }}>← Torna</button>
+          <button onClick={() => setShowNuovaAzienda(false)} style={{ background: "none", border: "none", color: "#1E5D39", fontSize: 13, cursor: "pointer", fontFamily: "inherit" }}>← Torna</button>
           <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-            <div style={{ width: 28, height: 28, background: "#33513B", borderRadius: 7, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 14, fontWeight: 800, color: "white" }}>R</div>
+            <div style={{ width: 28, height: 28, background: "#1E5D39", borderRadius: 7, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 14, fontWeight: 800, color: "white" }}>R</div>
             <span style={{ fontSize: 14, fontWeight: 700, color: "#241D14" }}>RSPPino</span>
           </div>
         </div>
@@ -488,7 +488,7 @@ function AppCompleta() {
         {/* Logo */}
         <div style={{ padding: "16px 20px", borderBottom: "1px solid #1A140D" }}>
           <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-            <div style={{ width: 32, height: 32, background: "#33513B", borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16, fontWeight: 800, color: "white" }}>R</div>
+            <div style={{ width: 32, height: 32, background: "#1E5D39", borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16, fontWeight: 800, color: "white" }}>R</div>
             <div>
               <div style={{ fontSize: 15, fontWeight: 800, color: "#241D14", letterSpacing: "-0.3px" }}>RSPPino</div>
               <div style={{ fontSize: 9, color: "#5C5545", letterSpacing: "1px" }}>GESTIONALE HSE</div>
@@ -509,7 +509,7 @@ function AppCompleta() {
         >
           {aziendaAttiva ? (
             <>
-              <div style={{ width: 28, height: 28, borderRadius: 7, background: "#33513B20", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontWeight: 800, color: "#33513B", flexShrink: 0 }}>
+              <div style={{ width: 28, height: 28, borderRadius: 7, background: "#1E5D3920", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontWeight: 800, color: "#1E5D39", flexShrink: 0 }}>
                 {aziendaAttiva.nome.slice(0, 2).toUpperCase()}
               </div>
               <div style={{ flex: 1, minWidth: 0 }}>
@@ -528,9 +528,9 @@ function AppCompleta() {
 
         {/* Alert urgenti */}
         {stat && stat.scaduti > 0 && (
-          <div onClick={() => setModulo("scadenze")} style={{ margin: "10px 12px 0", padding: "8px 12px", background: "#B85C3B12", border: "1px solid #B85C3B25", borderRadius: 8, cursor: "pointer", display: "flex", alignItems: "center", gap: 8 }}>
+          <div onClick={() => setModulo("scadenze")} style={{ margin: "10px 12px 0", padding: "8px 12px", background: "#812C2C12", border: "1px solid #812C2C25", borderRadius: 8, cursor: "pointer", display: "flex", alignItems: "center", gap: 8 }}>
             <span style={{ fontSize: 14 }}>🚨</span>
-            <span style={{ fontSize: 11, color: "#B85C3B", fontWeight: 700 }}>{stat.scaduti} doc. scaduti</span>
+            <span style={{ fontSize: 11, color: "#812C2C", fontWeight: 700 }}>{stat.scaduti} doc. scaduti</span>
           </div>
         )}
 
@@ -546,9 +546,9 @@ function AppCompleta() {
                 onClick={() => { if (!disabilitato) setModulo(item.id); }}
                 style={{
                   width: "100%", display: "flex", alignItems: "center", gap: 10,
-                  padding: "9px 20px", background: attivo ? "#33513B22" : "transparent",
-                  border: "none", borderLeft: `2px solid ${attivo ? "#33513B" : "transparent"}`,
-                  color: disabilitato ? "#1A140D" : attivo ? "#33513B" : "#5C5545",
+                  padding: "9px 20px", background: attivo ? "#1E5D3922" : "transparent",
+                  border: "none", borderLeft: `2px solid ${attivo ? "#1E5D39" : "transparent"}`,
+                  color: disabilitato ? "#1A140D" : attivo ? "#1E5D39" : "#5C5545",
                   fontSize: 13, fontWeight: attivo ? 700 : 400,
                   cursor: disabilitato ? "not-allowed" : "pointer", textAlign: "left",
                   fontFamily: "inherit",
@@ -565,7 +565,7 @@ function AppCompleta() {
           {NAV_FOOTER.map(item => {
             const attivo = modulo === item.id;
             return (
-              <button key={item.id} onClick={() => setModulo(item.id)} style={{ width: "100%", display: "flex", alignItems: "center", gap: 10, padding: "10px 20px", background: attivo ? "#33513B22" : "transparent", border: "none", borderLeft: `2px solid ${attivo ? "#33513B" : "transparent"}`, color: attivo ? "#33513B" : "#8A8271", fontSize: 12, fontWeight: attivo ? 700 : 400, cursor: "pointer", textAlign: "left", fontFamily: "inherit" }}>
+              <button key={item.id} onClick={() => setModulo(item.id)} style={{ width: "100%", display: "flex", alignItems: "center", gap: 10, padding: "10px 20px", background: attivo ? "#1E5D3922" : "transparent", border: "none", borderLeft: `2px solid ${attivo ? "#1E5D39" : "transparent"}`, color: attivo ? "#1E5D39" : "#8A8271", fontSize: 12, fontWeight: attivo ? 700 : 400, cursor: "pointer", textAlign: "left", fontFamily: "inherit" }}>
                 <span style={{ fontSize: 13 }}>{item.icon}</span>
                 <span>{item.label}</span>
               </button>
@@ -575,7 +575,7 @@ function AppCompleta() {
 
         {/* User */}
         <div style={{ padding: "14px 20px", borderTop: "1px solid #1A140D", display: "flex", alignItems: "center", gap: 10 }}>
-          <div style={{ width: 28, height: 28, borderRadius: "50%", background: "#B85C3B", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontWeight: 800, color: "white" }}>RS</div>
+          <div style={{ width: 28, height: 28, borderRadius: "50%", background: "#812C2C", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontWeight: 800, color: "white" }}>RS</div>
           <div style={{ flex: 1, minWidth: 0 }}>
             <div style={{ fontSize: 12, color: "#241D14", fontWeight: 600 }}>RSPP Esterno</div>
             <div style={{ fontSize: 10, color: "#5C5545" }}>{aziende.length} aziende gestite</div>
@@ -600,25 +600,25 @@ function AppCompleta() {
           <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
             {/* Banner beta — visibile solo in MVP_MODE */}
             {MVP_MODE && (
-              <div style={{ padding: "5px 12px", background: "#33513B10", border: "1px solid #33513B30", borderRadius: 7, fontSize: 11, color: "#33513B", fontWeight: 600, letterSpacing: "0.3px" }}>
+              <div style={{ padding: "5px 12px", background: "#1E5D3910", border: "1px solid #1E5D3930", borderRadius: 7, fontSize: 11, color: "#1E5D39", fontWeight: 600, letterSpacing: "0.3px" }}>
                 BETA — Analisi conformita' attestati
               </div>
             )}
             {stat && stat.scaduti > 0 && (
-              <div style={{ padding: "6px 12px", background: "#B85C3B15", border: "1px solid #B85C3B30", borderRadius: 7, fontSize: 12, color: "#B85C3B", fontWeight: 600 }}>
+              <div style={{ padding: "6px 12px", background: "#812C2C15", border: "1px solid #812C2C30", borderRadius: 7, fontSize: 12, color: "#812C2C", fontWeight: 600 }}>
                 🚨 {stat.scaduti} scaduti
               </div>
             )}
             {/* Bottone DUVRI nascosto in MVP_MODE */}
             {!MVP_MODE && aziendaAttiva && (
-              <button onClick={() => setModulo("duvri")} style={{ padding: "8px 16px", background: "#33513B", border: "none", borderRadius: 8, color: "white", fontSize: 13, fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>+ Nuovo DUVRI</button>
+              <button onClick={() => setModulo("duvri")} style={{ padding: "8px 16px", background: "#1E5D39", border: "none", borderRadius: 8, color: "white", fontSize: 13, fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>+ Nuovo DUVRI</button>
             )}
           </div>
         </div>
 
         {/* Banner errore caricamento dati */}
         {erroreDati && (
-          <div style={{ margin: "12px 28px 0", padding: "10px 16px", background: "#B85C3B12", border: "1px solid #B85C3B30", borderRadius: 8, fontSize: 12, color: "#B85C3B" }}>
+          <div style={{ margin: "12px 28px 0", padding: "10px 16px", background: "#812C2C12", border: "1px solid #812C2C30", borderRadius: 8, fontSize: 12, color: "#812C2C" }}>
             Errore dati: {erroreDati}
             <span onClick={() => ricaricaDB()} style={{ textDecoration: "underline", cursor: "pointer", marginLeft: 8 }}>Riprova</span>
           </div>

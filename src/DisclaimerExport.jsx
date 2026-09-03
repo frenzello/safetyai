@@ -72,8 +72,8 @@ export function DisclaimerExport({ onConferma, onAnnulla }) {
 
           <div style={{
             padding: "10px 14px", marginBottom: 20,
-            background: "#E8EDE5", border: "2px solid #33513B",
-            borderRadius: 2, fontSize: 11, color: "#33513B", lineHeight: 1.6,
+            background: "#E8EDE5", border: "2px solid #1E5D39",
+            borderRadius: 2, fontSize: 11, color: "#1E5D39", lineHeight: 1.6,
           }}>
             Cliccando "Ho capito, esporta" dichiari di aver compreso questi limiti
             e di assumerti la responsabilità professionale del documento generato.
@@ -94,7 +94,7 @@ export function DisclaimerExport({ onConferma, onAnnulla }) {
               onClick={onConferma}
               style={{
                 flex: 2, padding: "11px",
-                background: "#33513B",
+                background: "#1E5D39",
                 border: "2px solid #1A140D", boxShadow: "3px 3px 0 #1A140D",
                 borderRadius: 2,
                 color: "#F2EEE0", fontSize: 13, fontWeight: 800, fontFamily: "'Big Shoulders',sans-serif", textTransform: "uppercase",

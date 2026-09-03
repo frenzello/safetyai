@@ -250,10 +250,10 @@ function statoScadenza(dataStr) {
 }
 
 const STATO_CFG = {
-  ok:        { color: "#33513B", bg: "#33513B12", label: "Valido" },
+  ok:        { color: "#1E5D39", bg: "#1E5D3912", label: "Valido" },
   attenzione:{ color: "#C4872E", bg: "#C4872E12", label: "In scadenza" },
-  critico:   { color: "#B85C3B", bg: "#B85C3B12", label: "Scadenza imminente" },
-  scaduto:   { color: "#B85C3B", bg: "#B85C3B20", label: "SCADUTO" },
+  critico:   { color: "#812C2C", bg: "#812C2C12", label: "Scadenza imminente" },
+  scaduto:   { color: "#812C2C", bg: "#812C2C20", label: "SCADUTO" },
   nessuna:   { color: "#5C5545", bg: "#5C554512", label: "Nessuna scadenza" },
 };
 
@@ -355,13 +355,13 @@ class ErrorBoundaryRSPPino extends Component {
     if (this.state.error) {
       return (
         <div style={{ fontFamily: "'Work Sans','Segoe UI',sans-serif", background: "#EFE9DD", minHeight: "100vh", padding: "40px 24px", color: "#241D14", maxWidth: 640, margin: "0 auto" }}>
-          <div style={{ background: "#FBF8F1", border: "1px solid #B85C3B40", borderRadius: 12, padding: "24px" }}>
-            <div style={{ fontSize: 18, fontWeight: 800, color: "#B85C3B", marginBottom: 10 }}>Si e verificato un errore</div>
+          <div style={{ background: "#FBF8F1", border: "1px solid #812C2C40", borderRadius: 12, padding: "24px" }}>
+            <div style={{ fontSize: 18, fontWeight: 800, color: "#812C2C", marginBottom: 10 }}>Si e verificato un errore</div>
             <div style={{ fontSize: 13, color: "#241D14", lineHeight: 1.6, marginBottom: 14 }}>
               L'analisi ha incontrato un dato imprevisto. Ricarica la pagina e riprova; se persiste, copia il messaggio qui sotto.
             </div>
-            <pre style={{ fontSize: 11, color: "#B85C3B", background: "#EFE9DD", padding: "12px", borderRadius: 8, overflow: "auto", whiteSpace: "pre-wrap" }}>{String((this.state.error && this.state.error.message) || this.state.error)}</pre>
-            <button onClick={() => window.location.reload()} style={{ marginTop: 14, padding: "11px 20px", borderRadius: 3, border: "3px solid #1A140D", boxShadow: "4px 4px 0 #1A140D", background: "#B85C3B", color: "#FBF3ED", fontSize: 13, fontWeight: 800, fontFamily: "'Big Shoulders',sans-serif", textTransform: "uppercase", cursor: "pointer" }}>Ricarica</button>
+            <pre style={{ fontSize: 11, color: "#812C2C", background: "#EFE9DD", padding: "12px", borderRadius: 8, overflow: "auto", whiteSpace: "pre-wrap" }}>{String((this.state.error && this.state.error.message) || this.state.error)}</pre>
+            <button onClick={() => window.location.reload()} style={{ marginTop: 14, padding: "11px 20px", borderRadius: 3, border: "3px solid #1A140D", boxShadow: "4px 4px 0 #1A140D", background: "#812C2C", color: "#FBF3ED", fontSize: 13, fontWeight: 800, fontFamily: "'Big Shoulders',sans-serif", textTransform: "uppercase", cursor: "pointer" }}>Ricarica</button>
           </div>
         </div>
       );
@@ -983,9 +983,9 @@ function fileIcon(name) {
 
 function StatoBadge({ stato }) {
   const cfg = {
-    elaborazione: { bg: "#33513B15", color: "#33513B", label: "Elaborazione..." },
-    ok:           { bg: "#33513B15", color: "#33513B", label: "Classificato" },
-    errore:       { bg: "#B85C3B15", color: "#B85C3B", label: "Errore lettura" },
+    elaborazione: { bg: "#1E5D3915", color: "#1E5D39", label: "Elaborazione..." },
+    ok:           { bg: "#1E5D3915", color: "#1E5D39", label: "Classificato" },
+    errore:       { bg: "#812C2C15", color: "#812C2C", label: "Errore lettura" },
     attesa:       { bg: "#1A140D",   color: "#5C5545", label: "In coda" },
   }[stato] || { bg: "#1A140D", color: "#5C5545", label: stato };
 
@@ -1115,7 +1115,7 @@ function SchermatScadenze({ elaborati, azienda, appaltoSelId, appaltatoreSelId, 
   const totaleAnomalie = elaborati.filter(d => d.risultato?._anomalie?.length > 0).length;
   const erroriRete = elaborati.filter(d => d.risultato?._rete).length;
   const erroriDoc = elaborati.filter(d => d.risultato?.errore && !d.risultato?._rete).length;
-  const statoColore = { ok: "#33513B", attenzione: "#C4872E", critico: "#B85C3B", scaduto: "#B85C3B", nonconforme: "#B85C3B", nessuna: "#5C5545" };
+  const statoColore = { ok: "#1E5D39", attenzione: "#C4872E", critico: "#812C2C", scaduto: "#812C2C", nonconforme: "#812C2C", nessuna: "#5C5545" };
   const statoLabel = { ok: "Valido", attenzione: "In scadenza", critico: "Scadenza imminente", scaduto: "SCADUTO", nonconforme: "Non conforme", nessuna: "—" };
 
   return (
@@ -1124,10 +1124,10 @@ function SchermatScadenze({ elaborati, azienda, appaltoSelId, appaltatoreSelId, 
 
       {/* Banner errori: rende visibili i fallimenti invece di una schermata vuota */}
       {erroriRete > 0 && (
-        <div style={{ padding: "14px 18px", marginBottom: 18, background: "#F3E4DB", border: "3px solid #B85C3B", borderRadius: 2, display: "flex", gap: 12, alignItems: "flex-start" }}>
+        <div style={{ padding: "14px 18px", marginBottom: 18, background: "#F3E4DB", border: "3px solid #812C2C", borderRadius: 2, display: "flex", gap: 12, alignItems: "flex-start" }}>
           <span style={{ fontSize: 18, flexShrink: 0 }}>⚠</span>
           <div>
-            <div style={{ fontSize: 13, fontWeight: 800, color: "#B85C3B", marginBottom: 4 }}>
+            <div style={{ fontSize: 13, fontWeight: 800, color: "#812C2C", marginBottom: 4 }}>
               {erroriRete} {erroriRete === 1 ? "documento non analizzato" : "documenti non analizzati"}: il server non ha risposto
             </div>
             <div style={{ fontSize: 12, color: "#6B2F1B", lineHeight: 1.5 }}>
@@ -1154,7 +1154,7 @@ function SchermatScadenze({ elaborati, azienda, appaltoSelId, appaltatoreSelId, 
       <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: 24, gap: 16 }}>
         <div>
           <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8 }}>
-            <div style={{ width: 32, height: 32, background: "#33513B", borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16, fontWeight: 800, color: "white" }}>R</div>
+            <div style={{ width: 32, height: 32, background: "#1E5D39", borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16, fontWeight: 800, color: "white" }}>R</div>
             <span style={{ fontSize: 14, fontWeight: 700, color: "#241D14" }}>RSPPino</span>
           </div>
           <div style={{ fontSize: 20, fontWeight: 800, color: "#241D14", letterSpacing: "-0.4px" }}>Situazione documentale</div>
@@ -1166,7 +1166,7 @@ function SchermatScadenze({ elaborati, azienda, appaltoSelId, appaltatoreSelId, 
           title={nonConformiInAttesa > 0 ? "Gestisci prima i documenti non conformi" : ""}
           style={{
             padding: "11px 20px", borderRadius: 2, flexShrink: 0,
-            background: nonConformiInAttesa > 0 ? "#DCD5C4" : exportando ? "#DCD5C4" : "#B85C3B",
+            background: nonConformiInAttesa > 0 ? "#DCD5C4" : exportando ? "#DCD5C4" : "#812C2C",
             border: nonConformiInAttesa > 0 ? "3px solid #A79D89" : "3px solid #1A140D",
             boxShadow: nonConformiInAttesa > 0 ? "none" : "4px 4px 0 #1A140D",
             color: nonConformiInAttesa > 0 ? "#A79D89" : "#FBF3ED",
@@ -1182,9 +1182,9 @@ function SchermatScadenze({ elaborati, azienda, appaltoSelId, appaltatoreSelId, 
       {/* Stats */}
       <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 12, marginBottom: totaleAnomalie > 0 ? 16 : 24 }}>
         {[
-          { label: "Lavoratori",          value: Object.keys(perLavoratore).length, color: "#33513B" },
-          { label: "In attesa decisione", value: nonConformiInAttesa, color: nonConformiInAttesa > 0 ? "#B85C3B" : "#8A8271" },
-          { label: "Validi",              value: elaborati.filter(d => d.risultato?.conforme !== false && statoScadenza(d.risultato?.data_scadenza) === "ok").length, color: "#33513B" },
+          { label: "Lavoratori",          value: Object.keys(perLavoratore).length, color: "#1E5D39" },
+          { label: "In attesa decisione", value: nonConformiInAttesa, color: nonConformiInAttesa > 0 ? "#812C2C" : "#8A8271" },
+          { label: "Validi",              value: elaborati.filter(d => d.risultato?.conforme !== false && statoScadenza(d.risultato?.data_scadenza) === "ok").length, color: "#1E5D39" },
           { label: "Da rinnovare",        value: elaborati.filter(d => ["scaduto","critico","attenzione"].includes(statoScadenza(d.risultato?.data_scadenza))).length, color: "#C4872E" },
         ].map((s, i) => (
           <div key={i} style={{ background: "#FBF8F1", border: "2px solid #1A140D", borderLeft: `6px solid ${s.color}`, boxShadow: "3px 3px 0 #1A140D", borderRadius: 2, padding: "14px 16px", textAlign: "center" }}>
@@ -1240,7 +1240,7 @@ function SchermatScadenze({ elaborati, azienda, appaltoSelId, appaltatoreSelId, 
               <div style={{ fontSize: 11, color: "#5C5545" }}>
                 {Object.keys(fusioni).length} {Object.keys(fusioni).length === 1 ? "scheda unita" : "schede unite"}
                 {" · "}
-                <span onClick={annullaTutteLeFusioni} style={{ color: "#B85C3B", textDecoration: "underline", cursor: "pointer" }}>annulla tutte</span>
+                <span onClick={annullaTutteLeFusioni} style={{ color: "#812C2C", textDecoration: "underline", cursor: "pointer" }}>annulla tutte</span>
               </div>
             )}
           </div>
@@ -1291,7 +1291,7 @@ function SchermatScadenze({ elaborati, azienda, appaltoSelId, appaltatoreSelId, 
                       const cfgDoc = STATO_CFG[statoDoc];
                       const giorni = giorniAllaScadenza(r?.data_scadenza);
                       const bordoColore = nonConforme && decisione !== "approvato"
-                        ? "#B85C3B"
+                        ? "#812C2C"
                         : anomalie.length > 0
                           ? "#C4872E"
                           : cfgDoc.color;
@@ -1307,7 +1307,7 @@ function SchermatScadenze({ elaborati, azienda, appaltoSelId, appaltatoreSelId, 
                                 {r?.data_rilascio && <span>Rilascio: <strong style={{ color: "#5C5545" }}>{r.data_rilascio}</strong></span>}
                                 {r?.ore_formazione && <span>🕐 {r.ore_formazione}h</span>}
                                 {r?.ente_erogatore && <span style={{ maxWidth: 200, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>📋 {r.ente_erogatore}</span>}
-                                {r?.normativa && <span style={{ color: "#B85C3B" }}>{r.normativa}</span>}
+                                {r?.normativa && <span style={{ color: "#812C2C" }}>{r.normativa}</span>}
                               </div>
                             </div>
                             <div style={{ textAlign: "right", flexShrink: 0 }}>
@@ -1347,7 +1347,7 @@ function SchermatScadenze({ elaborati, azienda, appaltoSelId, appaltatoreSelId, 
                           </div>
 
                           {/* Blocco non conformità — sotto a tutta larghezza */}
-                          {nonConforme && (                            <div style={{ marginTop: 10, padding: "12px 14px", background: "#F3E4DB", border: "2px solid #B85C3B", borderRadius: 2 }}>
+                          {nonConforme && (                            <div style={{ marginTop: 10, padding: "12px 14px", background: "#F3E4DB", border: "2px solid #812C2C", borderRadius: 2 }}>
                               <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 12, flexWrap: "wrap" }}>
                                 <div style={{ fontSize: 11.5, color: "#6B2F1B", flex: 1, lineHeight: 1.5 }}>
                                   ⚠ <strong>Non conforme:</strong> {r.problema_conformita}
@@ -1356,25 +1356,25 @@ function SchermatScadenze({ elaborati, azienda, appaltoSelId, appaltatoreSelId, 
                                   <div style={{ display: "flex", gap: 8, flexShrink: 0 }}>
                                     <button
                                       onClick={() => setDecisione(chiaveLav, doc.nomeFile, "approvato")}
-                                      style={{ padding: "6px 13px", background: "#33513B", border: "2px solid #1A140D", boxShadow: "3px 3px 0 #1A140D", borderRadius: 2, color: "#F2EEE0", fontSize: 11, fontWeight: 800, fontFamily: "'Big Shoulders',sans-serif", textTransform: "uppercase", cursor: "pointer", whiteSpace: "nowrap" }}>
+                                      style={{ padding: "6px 13px", background: "#1E5D39", border: "2px solid #1A140D", boxShadow: "3px 3px 0 #1A140D", borderRadius: 2, color: "#F2EEE0", fontSize: 11, fontWeight: 800, fontFamily: "'Big Shoulders',sans-serif", textTransform: "uppercase", cursor: "pointer", whiteSpace: "nowrap" }}>
                                       ✓ Approva
                                     </button>
                                     <button
                                       onClick={() => setDecisione(chiaveLav, doc.nomeFile, "scartato")}
-                                      style={{ padding: "6px 13px", background: "#B85C3B", border: "2px solid #1A140D", boxShadow: "3px 3px 0 #1A140D", borderRadius: 2, color: "#FBF3ED", fontSize: 11, fontWeight: 800, fontFamily: "'Big Shoulders',sans-serif", textTransform: "uppercase", cursor: "pointer", whiteSpace: "nowrap" }}>
+                                      style={{ padding: "6px 13px", background: "#812C2C", border: "2px solid #1A140D", boxShadow: "3px 3px 0 #1A140D", borderRadius: 2, color: "#FBF3ED", fontSize: 11, fontWeight: 800, fontFamily: "'Big Shoulders',sans-serif", textTransform: "uppercase", cursor: "pointer", whiteSpace: "nowrap" }}>
                                       ✗ Scarta
                                     </button>
                                   </div>
                                 )}
                                 {decisione === "approvato" && (
                                   <div style={{ display: "flex", alignItems: "center", gap: 8, flexShrink: 0, fontFamily: "'JetBrains Mono',monospace" }}>
-                                    <span style={{ fontSize: 11, color: "#33513B", fontWeight: 700 }}>✓ Approvato</span>
+                                    <span style={{ fontSize: 11, color: "#1E5D39", fontWeight: 700 }}>✓ Approvato</span>
                                     <button onClick={() => setDecisione(chiaveLav, doc.nomeFile, null)} style={{ background: "none", border: "none", color: "#5C5545", fontSize: 10, cursor: "pointer", fontFamily: "'Work Sans',sans-serif", textDecoration: "underline" }}>annulla</button>
                                   </div>
                                 )}
                                 {decisione === "scartato" && (
                                   <div style={{ display: "flex", alignItems: "center", gap: 8, flexShrink: 0, fontFamily: "'JetBrains Mono',monospace" }}>
-                                    <span style={{ fontSize: 11, color: "#B85C3B", fontWeight: 700 }}>✗ Scartato</span>
+                                    <span style={{ fontSize: 11, color: "#812C2C", fontWeight: 700 }}>✗ Scartato</span>
                                     <button onClick={() => setDecisione(chiaveLav, doc.nomeFile, null)} style={{ background: "none", border: "none", color: "#5C5545", fontSize: 10, cursor: "pointer", fontFamily: "'Work Sans',sans-serif", textDecoration: "underline" }}>annulla</button>
                                   </div>
                                 )}
@@ -1416,7 +1416,7 @@ function SchermatScadenze({ elaborati, azienda, appaltoSelId, appaltatoreSelId, 
               const chiaveDec = `${chiaveLavoratore(doc, fusioni)}__${doc.nomeFile}`;
               const decisione = decisioniConformita[chiaveDec];
               const nonConforme = doc.risultato?.conforme === false;
-              const bordo = nonConforme && decisione !== "approvato" ? "#B85C3B" : cfgDoc.color;
+              const bordo = nonConforme && decisione !== "approvato" ? "#812C2C" : cfgDoc.color;
               return (
                 <div key={i} style={{ padding: "13px 20px", borderBottom: i < docAziendali.length - 1 ? "1px solid #1A140D40" : "none", borderLeft: `3px solid ${bordo}` }}>
                   <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
@@ -1432,17 +1432,17 @@ function SchermatScadenze({ elaborati, azienda, appaltoSelId, appaltatoreSelId, 
                     )}
                   </div>
                   {nonConforme && (
-                    <div style={{ marginTop: 10, padding: "10px 14px", background: "#B85C3B10", border: "1px solid #B85C3B30", borderRadius: 8 }}>
+                    <div style={{ marginTop: 10, padding: "10px 14px", background: "#812C2C10", border: "1px solid #812C2C30", borderRadius: 8 }}>
                       <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 12 }}>
-                        <div style={{ fontSize: 11, color: "#B85C3B", flex: 1 }}>⚠ <strong>Non conforme:</strong> {doc.risultato?.problema_conformita}</div>
+                        <div style={{ fontSize: 11, color: "#812C2C", flex: 1 }}>⚠ <strong>Non conforme:</strong> {doc.risultato?.problema_conformita}</div>
                         {!decisione && (
                           <div style={{ display: "flex", gap: 8, flexShrink: 0 }}>
-                            <button onClick={() => setDecisione(chiaveLavoratore(doc, fusioni), doc.nomeFile, "approvato")} style={{ padding: "4px 12px", background: "#33513B20", border: "1px solid #33513B40", borderRadius: 6, color: "#33513B", fontSize: 11, fontWeight: 700, cursor: "pointer", whiteSpace: "nowrap" }}>✓ Approva</button>
-                            <button onClick={() => setDecisione(chiaveLavoratore(doc, fusioni), doc.nomeFile, "scartato")} style={{ padding: "4px 12px", background: "#B85C3B20", border: "1px solid #B85C3B40", borderRadius: 6, color: "#B85C3B", fontSize: 11, fontWeight: 700, cursor: "pointer", whiteSpace: "nowrap" }}>✗ Scarta</button>
+                            <button onClick={() => setDecisione(chiaveLavoratore(doc, fusioni), doc.nomeFile, "approvato")} style={{ padding: "4px 12px", background: "#1E5D3920", border: "1px solid #1E5D3940", borderRadius: 6, color: "#1E5D39", fontSize: 11, fontWeight: 700, cursor: "pointer", whiteSpace: "nowrap" }}>✓ Approva</button>
+                            <button onClick={() => setDecisione(chiaveLavoratore(doc, fusioni), doc.nomeFile, "scartato")} style={{ padding: "4px 12px", background: "#812C2C20", border: "1px solid #812C2C40", borderRadius: 6, color: "#812C2C", fontSize: 11, fontWeight: 700, cursor: "pointer", whiteSpace: "nowrap" }}>✗ Scarta</button>
                           </div>
                         )}
-                        {decisione === "approvato" && (<div style={{ display: "flex", alignItems: "center", gap: 8, flexShrink: 0 }}><span style={{ fontSize: 11, color: "#33513B", fontWeight: 700 }}>✓ Approvato</span><button onClick={() => setDecisione(chiaveLavoratore(doc, fusioni), doc.nomeFile, null)} style={{ background: "none", border: "none", color: "#5C5545", fontSize: 10, cursor: "pointer" }}>annulla</button></div>)}
-                        {decisione === "scartato" && (<div style={{ display: "flex", alignItems: "center", gap: 8, flexShrink: 0 }}><span style={{ fontSize: 11, color: "#B85C3B", fontWeight: 700 }}>✗ Scartato</span><button onClick={() => setDecisione(chiaveLavoratore(doc, fusioni), doc.nomeFile, null)} style={{ background: "none", border: "none", color: "#5C5545", fontSize: 10, cursor: "pointer" }}>annulla</button></div>)}
+                        {decisione === "approvato" && (<div style={{ display: "flex", alignItems: "center", gap: 8, flexShrink: 0 }}><span style={{ fontSize: 11, color: "#1E5D39", fontWeight: 700 }}>✓ Approvato</span><button onClick={() => setDecisione(chiaveLavoratore(doc, fusioni), doc.nomeFile, null)} style={{ background: "none", border: "none", color: "#5C5545", fontSize: 10, cursor: "pointer" }}>annulla</button></div>)}
+                        {decisione === "scartato" && (<div style={{ display: "flex", alignItems: "center", gap: 8, flexShrink: 0 }}><span style={{ fontSize: 11, color: "#812C2C", fontWeight: 700 }}>✗ Scartato</span><button onClick={() => setDecisione(chiaveLavoratore(doc, fusioni), doc.nomeFile, null)} style={{ background: "none", border: "none", color: "#5C5545", fontSize: 10, cursor: "pointer" }}>annulla</button></div>)}
                       </div>
                     </div>
                   )}
@@ -1458,19 +1458,19 @@ function SchermatScadenze({ elaborati, azienda, appaltoSelId, appaltatoreSelId, 
         <div style={{ marginBottom: 10 }}>
           {salvato ? (
             salvato.errore ? (
-              <div style={{ padding: "12px 16px", background: "#F3E4DB", border: "2px solid #B85C3B", borderRadius: 2, fontSize: 13, color: "#B85C3B", display: "flex", alignItems: "center", gap: 8 }}>
+              <div style={{ padding: "12px 16px", background: "#F3E4DB", border: "2px solid #812C2C", borderRadius: 2, fontSize: 13, color: "#812C2C", display: "flex", alignItems: "center", gap: 8 }}>
                 ✗ Salvataggio fallito: {salvato.errore}
                 <span onClick={() => onSalvaDB(elaborati, decisioniConformita)} style={{ textDecoration: "underline", cursor: "pointer" }}>Riprova</span>
               </div>
             ) : (
-              <div style={{ padding: "12px 16px", background: "#E8EDE5", border: "2px solid #33513B", borderRadius: 2, fontSize: 13, color: "#33513B", display: "flex", alignItems: "center", gap: 8 }}>
+              <div style={{ padding: "12px 16px", background: "#E8EDE5", border: "2px solid #1E5D39", borderRadius: 2, fontSize: 13, color: "#1E5D39", display: "flex", alignItems: "center", gap: 8 }}>
                 ✓ Salvato nel database — {salvato.nuoviLavoratori} nuovi lavoratori, {salvato.nuoviAttestati} nuovi attestati
               </div>
             )
           ) : (
             <button
               onClick={() => onSalvaDB(elaborati, decisioniConformita)}
-              style={{ width: "100%", padding: "13px", background: "#33513B", border: "3px solid #1A140D", boxShadow: "4px 4px 0 #1A140D", borderRadius: 2, color: "#F2EEE0", fontSize: 13, fontWeight: 800, fontFamily: "'Big Shoulders',sans-serif", textTransform: "uppercase", cursor: "pointer" }}>
+              style={{ width: "100%", padding: "13px", background: "#1E5D39", border: "3px solid #1A140D", boxShadow: "4px 4px 0 #1A140D", borderRadius: 2, color: "#F2EEE0", fontSize: 13, fontWeight: 800, fontFamily: "'Big Shoulders',sans-serif", textTransform: "uppercase", cursor: "pointer" }}>
               💾 Salva nel database
             </button>
           )}
@@ -1805,17 +1805,17 @@ function PortaleUploadMassivoInner({ azienda }) {
       <div style={{ fontFamily: "'Work Sans','Segoe UI',sans-serif", background: "#EFE9DD", minHeight: "100vh", padding: "40px 24px", color: "#241D14", maxWidth: 640, margin: "0 auto" }}>
         <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
         <div style={{ textAlign: "center", marginBottom: 40 }}>
-          <div style={{ width: 64, height: 64, margin: "0 auto 20px", borderRadius: "50%", border: "4px solid #1A140D", borderTop: "4px solid #B85C3B", animation: "spin 0.9s linear infinite" }} />
+          <div style={{ width: 64, height: 64, margin: "0 auto 20px", borderRadius: "50%", border: "4px solid #1A140D", borderTop: "4px solid #812C2C", animation: "spin 0.9s linear infinite" }} />
           <div style={{ fontSize: 24, fontWeight: 800, fontFamily: "'Big Shoulders',sans-serif", textTransform: "uppercase", letterSpacing: "0.01em", color: "#241D14" }}>Analisi in corso</div>
           <div style={{ fontSize: 14, color: "#5C5545", marginTop: 8 }}>L'AI legge, classifica e verifica la conformità normativa</div>
         </div>
         <div style={{ background: "#FBF8F1", border: "3px solid #1A140D", boxShadow: "5px 5px 0 #1A140D", borderRadius: 2, padding: "20px 24px", marginBottom: 24 }}>
           <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 10 }}>
             <span style={{ fontSize: 12, color: "#5C5545", fontWeight: 700, fontFamily: "'JetBrains Mono',monospace", textTransform: "uppercase", letterSpacing: "0.03em" }}>{progress.fatto} di {progress.totale} documenti</span>
-            <span style={{ fontSize: 13, color: "#33513B", fontWeight: 800, fontFamily: "'JetBrains Mono',monospace" }}>{pct}%</span>
+            <span style={{ fontSize: 13, color: "#1E5D39", fontWeight: 800, fontFamily: "'JetBrains Mono',monospace" }}>{pct}%</span>
           </div>
           <div style={{ height: 14, background: "#FBF8F1", border: "2px solid #1A140D", borderRadius: 2, overflow: "hidden" }}>
-            <div style={{ height: "100%", width: `${pct}%`, background: "repeating-linear-gradient(135deg, #33513B, #33513B 8px, #2A4432 8px, #2A4432 16px)", transition: "width 0.3s ease" }} />
+            <div style={{ height: "100%", width: `${pct}%`, background: "repeating-linear-gradient(135deg, #1E5D39, #1E5D39 8px, #2A4432 8px, #2A4432 16px)", transition: "width 0.3s ease" }} />
           </div>
         </div>
         <div style={{ background: "#FBF8F1", border: "3px solid #1A140D", boxShadow: "5px 5px 0 #1A140D", borderRadius: 2, overflow: "hidden", maxHeight: 360, overflowY: "auto" }}>
@@ -1824,7 +1824,7 @@ function PortaleUploadMassivoInner({ azienda }) {
               <span style={{ fontSize: 16 }}>{fileIcon(doc.nomeFile)}</span>
               <div style={{ flex: 1, minWidth: 0 }}>
                 <div style={{ fontSize: 12, color: "#5C5545", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{doc.nomeFile}</div>
-                {doc.risultato?.nome_lavoratore && <div style={{ fontSize: 11, color: "#33513B", marginTop: 2 }}>→ {doc.risultato.nome_lavoratore} · {doc.risultato.tipo_documento}</div>}
+                {doc.risultato?.nome_lavoratore && <div style={{ fontSize: 11, color: "#1E5D39", marginTop: 2 }}>→ {doc.risultato.nome_lavoratore} · {doc.risultato.tipo_documento}</div>}
               </div>
               <StatoBadge stato={doc.stato} />
             </div>
@@ -1839,17 +1839,17 @@ function PortaleUploadMassivoInner({ azienda }) {
       <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
       <div style={{ marginBottom: 32 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 20 }}>
-          <div style={{ width: 32, height: 32, background: "#33513B", borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16, fontWeight: 800, color: "white" }}>R</div>
+          <div style={{ width: 32, height: 32, background: "#1E5D39", borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16, fontWeight: 800, color: "white" }}>R</div>
           <span style={{ fontSize: 14, fontWeight: 700, color: "#241D14" }}>RSPPino</span>
         </div>
         <div style={{ background: "#FBF8F1", border: "1px solid #1A140D", borderRadius: 12, padding: "20px 24px", marginBottom: 24 }}>
-          <div style={{ fontSize: 11, color: "#33513B", fontWeight: 700, letterSpacing: "0.8px", marginBottom: 8 }}>CARICA DOCUMENTI</div>
+          <div style={{ fontSize: 11, color: "#1E5D39", fontWeight: 700, letterSpacing: "0.8px", marginBottom: 8 }}>CARICA DOCUMENTI</div>
           <div style={{ fontSize: 16, fontWeight: 800, color: "#241D14" }}>{azienda?.nome || "Nessuna azienda selezionata"}</div>
           <div style={{ fontSize: 12, color: "#5C5545", marginTop: 4 }}>{azienda?.settore || ""}</div>
         </div>
         <div style={{ fontSize: 22, fontWeight: 800, color: "#241D14", letterSpacing: "-0.5px", marginBottom: 8 }}>Carica tutti i documenti</div>
         <div style={{ fontSize: 14, color: "#5C5545", lineHeight: 1.6 }}>
-          Seleziona attestati, idoneità e documenti aziendali. <strong style={{ color: "#33513B" }}>L'AI li classifica e verifica la conformità normativa</strong>.
+          Seleziona attestati, idoneità e documenti aziendali. <strong style={{ color: "#1E5D39" }}>L'AI li classifica e verifica la conformità normativa</strong>.
         </div>
       </div>
 
@@ -1891,11 +1891,11 @@ function PortaleUploadMassivoInner({ azienda }) {
       <div
         ref={dropZoneRef}
         style={{
-          border: `2px dashed ${dragOver ? "#33513B" : files.length > 0 ? "#33513B" : "#1A140D"}`,
+          border: `2px dashed ${dragOver ? "#1E5D39" : files.length > 0 ? "#1E5D39" : "#1A140D"}`,
           borderRadius: 16,
           padding: files.length > 0 ? "20px 20px" : "48px 24px",
           textAlign: "center",
-          background: dragOver ? "#33513B10" : files.length > 0 ? "#33513B06" : "#FBF8F1",
+          background: dragOver ? "#1E5D3910" : files.length > 0 ? "#1E5D3906" : "#FBF8F1",
           transition: "all 0.2s",
           marginBottom: 12,
           position: "relative",
@@ -1904,8 +1904,8 @@ function PortaleUploadMassivoInner({ azienda }) {
         {/* Overlay "Caricamento cartella" */}
         {caricandoCartella && (
           <div style={{ position: "absolute", inset: 0, borderRadius: 14, background: "#EFE9DD90", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 12, zIndex: 10 }}>
-            <div style={{ width: 36, height: 36, borderRadius: "50%", border: "3px solid #1A140D", borderTop: "3px solid #33513B", animation: "spin 0.8s linear infinite" }} />
-            <div style={{ fontSize: 13, color: "#33513B", fontWeight: 700 }}>Lettura cartella in corso…</div>
+            <div style={{ width: 36, height: 36, borderRadius: "50%", border: "3px solid #1A140D", borderTop: "3px solid #1E5D39", animation: "spin 0.8s linear infinite" }} />
+            <div style={{ fontSize: 13, color: "#1E5D39", fontWeight: 700 }}>Lettura cartella in corso…</div>
           </div>
         )}
 
@@ -1924,7 +1924,7 @@ function PortaleUploadMassivoInner({ azienda }) {
             <div style={{ display: "flex", gap: 10, justifyContent: "center" }}>
               <button
                 onClick={openFolderPicker}
-                style={{ padding: "10px 20px", background: "#B85C3B", border: "3px solid #1A140D", boxShadow: "4px 4px 0 #1A140D", borderRadius: 2, color: "#FBF3ED", fontSize: 12, fontWeight: 800, fontFamily: "'Big Shoulders',sans-serif", textTransform: "uppercase", letterSpacing: "0.02em", cursor: "pointer", display: "flex", alignItems: "center", gap: 6 }}
+                style={{ padding: "10px 20px", background: "#812C2C", border: "3px solid #1A140D", boxShadow: "4px 4px 0 #1A140D", borderRadius: 2, color: "#FBF3ED", fontSize: 12, fontWeight: 800, fontFamily: "'Big Shoulders',sans-serif", textTransform: "uppercase", letterSpacing: "0.02em", cursor: "pointer", display: "flex", alignItems: "center", gap: 6 }}
               >
                 📁 Scegli cartella
               </button>
@@ -1935,13 +1935,13 @@ function PortaleUploadMassivoInner({ azienda }) {
           <>
             {/* Banner cartella rilevata */}
             {infoCartella && (
-              <div style={{ marginBottom: 12, padding: "9px 14px", background: "#E8EDE5", border: "2px solid #33513B", borderRadius: 2, display: "flex", alignItems: "center", gap: 10, textAlign: "left" }}>
+              <div style={{ marginBottom: 12, padding: "9px 14px", background: "#E8EDE5", border: "2px solid #1E5D39", borderRadius: 2, display: "flex", alignItems: "center", gap: 10, textAlign: "left" }}>
                 <span style={{ fontSize: 16, flexShrink: 0 }}>📁</span>
                 <div style={{ flex: 1 }}>
-                  <div style={{ fontSize: 12, fontWeight: 700, color: "#33513B" }}>{infoCartella.nome}</div>
+                  <div style={{ fontSize: 12, fontWeight: 700, color: "#1E5D39" }}>{infoCartella.nome}</div>
                   <div style={{ fontSize: 11, color: "#5C5545", marginTop: 1 }}>
                     {infoCartella.trovati} file PDF/immagini trovati
-                    {infoCartella.cartelle > 1 && <span style={{ color: "#33513B" }}> · {infoCartella.cartelle} lavoratori riconosciuti dalle cartelle</span>}
+                    {infoCartella.cartelle > 1 && <span style={{ color: "#1E5D39" }}> · {infoCartella.cartelle} lavoratori riconosciuti dalle cartelle</span>}
                     {infoCartella.skippati > 0 && <span style={{ color: "#C4872E" }}> · {infoCartella.skippati} ignorati (tipo non supportato)</span>}
                   </div>
                 </div>
@@ -1962,7 +1962,7 @@ function PortaleUploadMassivoInner({ azienda }) {
 
             {/* Header conteggio */}
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }}>
-              <div style={{ fontSize: 14, fontWeight: 800, color: "#33513B" }}>✓ {files.length} file pronti</div>
+              <div style={{ fontSize: 14, fontWeight: 800, color: "#1E5D39" }}>✓ {files.length} file pronti</div>
               <button
                 onClick={openFolderPicker}
                 style={{ padding: "5px 12px", background: "none", border: "1px solid #1A140D", borderRadius: 7, color: "#5C5545", fontSize: 11, cursor: "pointer" }}
@@ -1987,7 +1987,7 @@ function PortaleUploadMassivoInner({ azienda }) {
                       onClick={(ev) => { ev.stopPropagation(); removeFile(i); }}
                       title="Rimuovi"
                       style={{ background: "none", border: "none", color: "#8A8271", fontSize: 14, cursor: "pointer", padding: "0 2px", lineHeight: 1, flexShrink: 0 }}
-                      onMouseOver={e => { e.currentTarget.style.color = "#B85C3B"; }}
+                      onMouseOver={e => { e.currentTarget.style.color = "#812C2C"; }}
                       onMouseOut={e => { e.currentTarget.style.color = "#8A8271"; }}
                     >×</button>
                   </div>
@@ -2009,7 +2009,7 @@ function PortaleUploadMassivoInner({ azienda }) {
           </button>
           <button
             onClick={() => { setFiles([]); setDuplicatiNomi(new Set()); setInfoCartella(null); }}
-            style={{ padding: "9px 16px", background: "#FBF8F1", border: "1px solid #B85C3B30", borderRadius: 9, color: "#B85C3B80", fontSize: 12, cursor: "pointer" }}
+            style={{ padding: "9px 16px", background: "#FBF8F1", border: "1px solid #812C2C30", borderRadius: 9, color: "#812C2C80", fontSize: 12, cursor: "pointer" }}
           >
             Svuota
           </button>
@@ -2018,7 +2018,7 @@ function PortaleUploadMassivoInner({ azienda }) {
 
       <button onClick={startElaboration} disabled={files.length === 0} style={{
         width: "100%", padding: "16px",
-        background: files.length > 0 ? "#B85C3B" : "#DCD5C4",
+        background: files.length > 0 ? "#812C2C" : "#DCD5C4",
         border: files.length > 0 ? "3px solid #1A140D" : "3px solid #A79D89",
         boxShadow: files.length > 0 ? "5px 5px 0 #1A140D" : "none",
         borderRadius: 2, color: files.length > 0 ? "#FBF3ED" : "#A79D89",

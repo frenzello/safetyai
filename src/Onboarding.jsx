@@ -35,7 +35,7 @@ function ModaleDocumento({ tipo, onChiudi }) {
   const RIASSUNTI = {
     privacy: {
       titolo: "Informativa Privacy",
-      colore: "#33513B",
+      colore: "#1E5D39",
       icona: "🔒",
       intro: "Questo documento spiega come RSPPino tratta i dati personali che carichi, in conformità al GDPR.",
       punti: [
@@ -48,7 +48,7 @@ function ModaleDocumento({ tipo, onChiudi }) {
     },
     dpa: {
       titolo: "Data Processing Agreement",
-      colore: "#B85C3B",
+      colore: "#812C2C",
       icona: "📄",
       intro: "Il DPA è il contratto obbligatorio tra te (Titolare) e RSPPino (Responsabile) richiesto dall'art. 28 GDPR quando affidi dati personali a uno strumento esterno.",
       punti: [
@@ -127,7 +127,7 @@ function ModaleDocumento({ tipo, onChiudi }) {
         <div style={{ padding: "14px 24px", borderTop: "1px solid #1A140D" }}>
           <button
             onClick={onChiudi}
-            style={{ width: "100%", padding: "11px", background: "#33513B", border: "3px solid #1A140D", boxShadow: "4px 4px 0 #1A140D", borderRadius: 2, color: "#F2EEE0", fontSize: 13, fontWeight: 800, fontFamily: "'Big Shoulders',sans-serif", textTransform: "uppercase", cursor: "pointer" }}>
+            style={{ width: "100%", padding: "11px", background: "#1E5D39", border: "3px solid #1A140D", boxShadow: "4px 4px 0 #1A140D", borderRadius: 2, color: "#F2EEE0", fontSize: 13, fontWeight: 800, fontFamily: "'Big Shoulders',sans-serif", textTransform: "uppercase", cursor: "pointer" }}>
             Ho letto, chiudi
           </button>
         </div>
@@ -180,8 +180,8 @@ function SchermataBenvenuto({ onAccetta }) {
       <div style={{ maxWidth: 560, width: "100%" }}>
         {/* Logo */}
         <div style={{ textAlign: "center", marginBottom: 40 }}>
-          <div style={{ width: 56, height: 56, margin: "0 auto 16px", background: "#33513B", border: "3px solid #1A140D", boxShadow: "4px 4px 0 #1A140D", borderRadius: 3, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 28, fontWeight: 900, fontFamily: "'Big Shoulders',sans-serif", color: "#F2EEE0" }}>R</div>
-          <div style={{ fontSize: 28, fontWeight: 900, fontFamily: "'Big Shoulders',sans-serif", textTransform: "uppercase", letterSpacing: "-0.01em", color: "#241D14" }}>Benvenuto in <span style={{ color: "#B85C3B" }}>RSPPino</span></div>
+          <div style={{ width: 56, height: 56, margin: "0 auto 16px", background: "#1E5D39", border: "3px solid #1A140D", boxShadow: "4px 4px 0 #1A140D", borderRadius: 3, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 28, fontWeight: 900, fontFamily: "'Big Shoulders',sans-serif", color: "#F2EEE0" }}>R</div>
+          <div style={{ fontSize: 28, fontWeight: 900, fontFamily: "'Big Shoulders',sans-serif", textTransform: "uppercase", letterSpacing: "-0.01em", color: "#241D14" }}>Benvenuto in <span style={{ color: "#812C2C" }}>RSPPino</span></div>
           <div style={{ fontSize: 14, color: "#5C5545", marginTop: 8, lineHeight: 1.6 }}>Il gestionale HSE per professionisti della sicurezza sul lavoro</div>
         </div>
 
@@ -194,13 +194,13 @@ function SchermataBenvenuto({ onAccetta }) {
 
           <div style={{ padding: "8px 0" }}>
             {voci.map((item, i, arr) => (
-              <div key={i} style={{ padding: "16px 24px", borderBottom: i < arr.length - 1 ? "1px solid #1A140D40" : "none", background: item.check ? "#33513B08" : "transparent" }}>
+              <div key={i} style={{ padding: "16px 24px", borderBottom: i < arr.length - 1 ? "1px solid #1A140D40" : "none", background: item.check ? "#1E5D3908" : "transparent" }}>
                 <div style={{ display: "flex", gap: 14, cursor: "pointer" }} onClick={() => item.setCheck(!item.check)}>
                   {/* Checkbox */}
                   <div style={{
                     width: 20, height: 20, borderRadius: 5, flexShrink: 0, marginTop: 2,
-                    border: `2px solid ${item.check ? "#33513B" : "#8A8271"}`,
-                    background: item.check ? "#33513B" : "transparent",
+                    border: `2px solid ${item.check ? "#1E5D39" : "#8A8271"}`,
+                    background: item.check ? "#1E5D39" : "transparent",
                     display: "flex", alignItems: "center", justifyContent: "center",
                     transition: "all 0.15s",
                   }}>
@@ -220,7 +220,7 @@ function SchermataBenvenuto({ onAccetta }) {
                   <div style={{ marginTop: 10, marginLeft: 34 }}>
                     <button
                       onClick={e => { e.stopPropagation(); setModale(item.tipoModale); }}
-                      style={{ background: "none", border: "none", color: "#33513B", fontSize: 12, cursor: "pointer", fontFamily: "inherit", padding: 0, textDecoration: "underline" }}>
+                      style={{ background: "none", border: "none", color: "#1E5D39", fontSize: 12, cursor: "pointer", fontFamily: "inherit", padding: 0, textDecoration: "underline" }}>
                       {item.linkLabel}
                     </button>
                   </div>
@@ -239,7 +239,7 @@ function SchermataBenvenuto({ onAccetta }) {
           disabled={!tuttoAccettato}
           style={{
             width: "100%", padding: "16px",
-            background: tuttoAccettato ? "#B85C3B" : "#DCD5C4",
+            background: tuttoAccettato ? "#812C2C" : "#DCD5C4",
             border: tuttoAccettato ? "3px solid #1A140D" : "3px solid #A79D89",
             boxShadow: tuttoAccettato ? "5px 5px 0 #1A140D" : "none",
             borderRadius: 3,
@@ -354,9 +354,9 @@ function CreaAzienda({ onCreata, isFirst = false }) {
 
   const LIVELLI = ["basso", "medio", "alto"];
   const LIVELLO_CFG = {
-    basso: { color: "#33513B", bg: "#33513B15" },
+    basso: { color: "#1E5D39", bg: "#1E5D3915" },
     medio: { color: "#C4872E", bg: "#C4872E15" },
-    alto:  { color: "#B85C3B", bg: "#B85C3B15" },
+    alto:  { color: "#812C2C", bg: "#812C2C15" },
   };
 
   async function avviaAnalisi() {
@@ -406,11 +406,11 @@ function CreaAzienda({ onCreata, isFirst = false }) {
         {label} <span style={{ color: "#5C5545", fontWeight: 400 }}>{sublabel}</span>
       </div>
       <div onClick={() => document.getElementById(inputId).click()}
-        style={{ border: `2px dashed ${file ? "#33513B" : "#1A140D"}`, borderRadius: 12, padding: "20px 24px", textAlign: "center", cursor: "pointer", background: file ? "#33513B08" : "#FBF8F1", transition: "all 0.2s" }}>
+        style={{ border: `2px dashed ${file ? "#1E5D39" : "#1A140D"}`, borderRadius: 12, padding: "20px 24px", textAlign: "center", cursor: "pointer", background: file ? "#1E5D3908" : "#FBF8F1", transition: "all 0.2s" }}>
         <input id={inputId} type="file" accept=".pdf" style={{ display: "none" }} onChange={e => setFile(e.target.files[0])} />
         {file ? (
           <div>
-            <div style={{ fontSize: 13, color: "#33513B", fontWeight: 600 }}>✓ {file.name}</div>
+            <div style={{ fontSize: 13, color: "#1E5D39", fontWeight: 600 }}>✓ {file.name}</div>
             <div style={{ fontSize: 11, color: "#5C5545", marginTop: 4 }}>{(file.size / 1024 / 1024).toFixed(1)} MB</div>
           </div>
         ) : (
@@ -432,7 +432,7 @@ function CreaAzienda({ onCreata, isFirst = false }) {
       <DropZone file={visuraFile} setFile={setVisuraFile} inputId="input-visura" label="📄 Visura camerale" sublabel="(consigliata)" />
       <DropZone file={dvrFile} setFile={setDvrFile} inputId="input-dvr" label="📋 DVR aziendale" sublabel="(anche centinaia di pagine — analizzate le prime 30)" />
       {erroreAnalisi && (
-        <div style={{ padding: "12px 16px", background: "#B85C3B15", border: "1px solid #B85C3B30", borderRadius: 8, fontSize: 12, color: "#B85C3B", marginBottom: 16 }}>
+        <div style={{ padding: "12px 16px", background: "#812C2C15", border: "1px solid #812C2C30", borderRadius: 8, fontSize: 12, color: "#812C2C", marginBottom: 16 }}>
           ⚠ Errore durante l'analisi. Puoi procedere con l'inserimento manuale.
         </div>
       )}
@@ -441,7 +441,7 @@ function CreaAzienda({ onCreata, isFirst = false }) {
           Inserisci manualmente
         </button>
         <button onClick={avviaAnalisi} disabled={(!visuraFile && !dvrFile) || analizzando}
-          style={{ flex: 2, padding: "12px", background: (visuraFile || dvrFile) && !analizzando ? "#33513B" : "#1A140D", border: "none", borderRadius: 10, color: (visuraFile || dvrFile) && !analizzando ? "white" : "#8A8271", fontSize: 13, fontWeight: 800, cursor: "pointer", fontFamily: "inherit", display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
+          style={{ flex: 2, padding: "12px", background: (visuraFile || dvrFile) && !analizzando ? "#1E5D39" : "#1A140D", border: "none", borderRadius: 10, color: (visuraFile || dvrFile) && !analizzando ? "white" : "#8A8271", fontSize: 13, fontWeight: 800, cursor: "pointer", fontFamily: "inherit", display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
           {analizzando ? <><span style={{ display: "inline-block", animation: "spin 0.8s linear infinite" }}>⟳</span>Analisi in corso...</> : "⚡ Analizza con AI →"}
         </button>
       </div>
@@ -451,20 +451,20 @@ function CreaAzienda({ onCreata, isFirst = false }) {
   return (
     <div style={{ maxWidth: 640, margin: "0 auto" }}>
       {step === "revisione" && (
-        <div style={{ padding: "12px 16px", background: "#33513B10", border: "1px solid #33513B30", borderRadius: 10, marginBottom: 24, fontSize: 12, color: "#33513B" }}>
+        <div style={{ padding: "12px 16px", background: "#1E5D3910", border: "1px solid #1E5D3930", borderRadius: 10, marginBottom: 24, fontSize: 12, color: "#1E5D39" }}>
           ✓ L'AI ha estratto i dati. Verifica e correggi se necessario, poi salva.
         </div>
       )}
       {step === "manuale" && (
         <div style={{ marginBottom: 24, display: "flex", alignItems: "center", gap: 12 }}>
-          <button onClick={() => setStep("upload")} style={{ background: "none", border: "none", color: "#33513B", fontSize: 13, cursor: "pointer", fontFamily: "inherit" }}>← Torna</button>
+          <button onClick={() => setStep("upload")} style={{ background: "none", border: "none", color: "#1E5D39", fontSize: 13, cursor: "pointer", fontFamily: "inherit" }}>← Torna</button>
           <div style={{ fontSize: 16, fontWeight: 800, color: "#241D14" }}>Inserimento manuale</div>
         </div>
       )}
 
       {/* Dati aziendali */}
       <div style={{ background: "#FBF8F1", border: "1px solid #1A140D", borderRadius: 12, padding: "20px 24px", marginBottom: 16 }}>
-        <div style={{ fontSize: 12, fontWeight: 700, color: "#33513B", letterSpacing: "0.5px", marginBottom: 16 }}>DATI AZIENDALI</div>
+        <div style={{ fontSize: 12, fontWeight: 700, color: "#1E5D39", letterSpacing: "0.5px", marginBottom: 16 }}>DATI AZIENDALI</div>
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
           <div style={{ gridColumn: "1 / -1" }}>
             <label style={labelStyle}>RAGIONE SOCIALE *</label>
@@ -495,7 +495,7 @@ function CreaAzienda({ onCreata, isFirst = false }) {
 
       {/* Figure */}
       <div style={{ background: "#FBF8F1", border: "1px solid #1A140D", borderRadius: 12, padding: "20px 24px", marginBottom: 16 }}>
-        <div style={{ fontSize: 12, fontWeight: 700, color: "#B85C3B", letterSpacing: "0.5px", marginBottom: 16 }}>FIGURE DELLA SICUREZZA</div>
+        <div style={{ fontSize: 12, fontWeight: 700, color: "#812C2C", letterSpacing: "0.5px", marginBottom: 16 }}>FIGURE DELLA SICUREZZA</div>
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
           {[["datoreLavoro","DATORE DI LAVORO"],["rspp","RSPP"],["medicoCompetente","MEDICO COMPETENTE"],["rls","RLS"]].map(([key, label]) => (
             <div key={key}>
@@ -537,12 +537,12 @@ function CreaAzienda({ onCreata, isFirst = false }) {
       </div>
 
       {erroreSalva && (
-        <div style={{ marginBottom: 10, padding: "10px 14px", background: "#B85C3B12", border: "1px solid #B85C3B30", borderRadius: 9, fontSize: 12, color: "#B85C3B" }}>
+        <div style={{ marginBottom: 10, padding: "10px 14px", background: "#812C2C12", border: "1px solid #812C2C30", borderRadius: 9, fontSize: 12, color: "#812C2C" }}>
           {erroreSalva}
         </div>
       )}
       <button onClick={salvaAzienda} disabled={!form.nome.trim() || salvataggio}
-        style={{ width: "100%", padding: "14px", background: form.nome.trim() && !salvataggio ? "#33513B" : "#1A140D", border: "none", borderRadius: 12, color: form.nome.trim() && !salvataggio ? "white" : "#8A8271", fontSize: 15, fontWeight: 800, cursor: form.nome.trim() && !salvataggio ? "pointer" : "not-allowed", fontFamily: "inherit" }}>
+        style={{ width: "100%", padding: "14px", background: form.nome.trim() && !salvataggio ? "#1E5D39" : "#1A140D", border: "none", borderRadius: 12, color: form.nome.trim() && !salvataggio ? "white" : "#8A8271", fontSize: 15, fontWeight: 800, cursor: form.nome.trim() && !salvataggio ? "pointer" : "not-allowed", fontFamily: "inherit" }}>
         {salvataggio ? "Salvataggio…" : "✓ Crea profilo azienda"}
       </button>
     </div>
