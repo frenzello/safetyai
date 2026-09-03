@@ -347,10 +347,10 @@ function sanitizeRisultato(r) {
 // ─── ERROR BOUNDARY ───────────────────────────────────────────────────────────
 // Evita la "pagina bianca": qualsiasi errore di rendering viene catturato e
 // mostrato, lasciando all'utente la possibilità di ricaricare.
-class ErrorBoundaryAgile81 extends Component {
+class ErrorBoundaryRSPPino extends Component {
   constructor(props) { super(props); this.state = { error: null }; }
   static getDerivedStateFromError(error) { return { error }; }
-  componentDidCatch(error, info) { console.error("[Agile81] Crash UI:", error, info); }
+  componentDidCatch(error, info) { console.error("[RSPPino] Crash UI:", error, info); }
   render() {
     if (this.state.error) {
       return (
@@ -501,7 +501,7 @@ async function extractDocumentData(file) {
   );
 
   if (necessitaRetry) {
-    console.log(`[Agile81] Escalation Sonnet: ${file.name}`);
+    console.log(`[RSPPino] Escalation Sonnet: ${file.name}`);
     try {
       const sonnetRis = await callClaudeAPI(contentParts, "claude-sonnet-4-6", 2000);
       // Usa Sonnet se non ha errori e la confidenza media è maggiore o uguale
@@ -510,7 +510,7 @@ async function extractDocumentData(file) {
         risultati.forEach(r => { r._usatoSonnet = true; });
       }
     } catch (e) {
-      console.warn("[Agile81] Retry Sonnet fallito, uso risultati Haiku:", e.message);
+      console.warn("[RSPPino] Retry Sonnet fallito, uso risultati Haiku:", e.message);
     }
   }
 
@@ -816,7 +816,7 @@ async function esportaExcel(elaborati, decisioniConformita, azienda, fusioni) {
   const nomeAzienda = azienda?.nome || "Azienda";
 
   const titleRow = [`REGISTRO ATTESTATI SICUREZZA — ${nomeAzienda}`, ...Array(tipiOriginali.length).fill("")];
-  const infoRow  = [`Generato: ${oggi} | Agile81`, ...Array(tipiOriginali.length).fill("")];
+  const infoRow  = [`Generato: ${oggi} | RSPPino`, ...Array(tipiOriginali.length).fill("")];
   const emptyRow = Array(tipiOriginali.length + 1).fill("");
   const headerRow = ["LAVORATORE", ...tipiOriginali.map(t => t.toUpperCase())];
 
@@ -969,7 +969,7 @@ async function esportaExcel(elaborati, decisioniConformita, azienda, fusioni) {
   XLSX.utils.book_append_sheet(wb, ws2, "Dettaglio");
 
   const dataOggi = new Date().toLocaleDateString("it-IT").replace(/\//g, "-");
-  XLSX.writeFile(wb, `Agile81_Attestati_${dataOggi}.xlsx`);
+  XLSX.writeFile(wb, `RSPPino_Attestati_${dataOggi}.xlsx`);
 }
 
 // ─── HELPERS UI ───────────────────────────────────────────────────────────────
@@ -1155,10 +1155,10 @@ function SchermatScadenze({ elaborati, azienda, appaltoSelId, appaltatoreSelId, 
         <div>
           <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8 }}>
             <div style={{ width: 32, height: 32, background: "#33513B", borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16, fontWeight: 800, color: "white" }}>A</div>
-            <span style={{ fontSize: 14, fontWeight: 700, color: "#241D14" }}>Agile81</span>
+            <span style={{ fontSize: 14, fontWeight: 700, color: "#241D14" }}>RSPPino</span>
           </div>
           <div style={{ fontSize: 20, fontWeight: 800, color: "#241D14", letterSpacing: "-0.4px" }}>Situazione documentale</div>
-          <div style={{ fontSize: 12, color: "#5C5545", marginTop: 2 }}>{azienda?.nome || "Agile81"}</div>
+          <div style={{ fontSize: 12, color: "#5C5545", marginTop: 2 }}>{azienda?.nome || "RSPPino"}</div>
         </div>
         <button
           onClick={handleExport}
@@ -1615,7 +1615,7 @@ function PortaleUploadMassivoInner({ azienda }) {
       }
     } catch (err) {
       setCaricandoCartella(false);
-      if (err.name !== "AbortError") console.error("[Agile81] picker error:", err);
+      if (err.name !== "AbortError") console.error("[RSPPino] picker error:", err);
     }
   }, [handleFiles]);
 
@@ -1643,13 +1643,13 @@ function PortaleUploadMassivoInner({ azienda }) {
           const f = await new Promise((res, rej) => entry.file(res, rej));
           return isFileAccepted(f) ? { acc: [f], skip: 0 } : { acc: [], skip: 1 };
         } catch (err) {
-          console.warn("[Agile81] Voce non letta:", entry && entry.name, err);
+          console.warn("[RSPPino] Voce non letta:", entry && entry.name, err);
           return { acc: [], skip: 0 };
         }
       }));
       for (const r of risultati) { tuttiFile.push(...r.acc); skippati += r.skip; }
     } catch (err) {
-      console.warn("[Agile81] Errore lettura drop:", err);
+      console.warn("[RSPPino] Errore lettura drop:", err);
     } finally {
       setCaricandoCartella(false);
     }
@@ -1840,7 +1840,7 @@ function PortaleUploadMassivoInner({ azienda }) {
       <div style={{ marginBottom: 32 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 20 }}>
           <div style={{ width: 32, height: 32, background: "#33513B", borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16, fontWeight: 800, color: "white" }}>A</div>
-          <span style={{ fontSize: 14, fontWeight: 700, color: "#241D14" }}>Agile81</span>
+          <span style={{ fontSize: 14, fontWeight: 700, color: "#241D14" }}>RSPPino</span>
         </div>
         <div style={{ background: "#FBF8F1", border: "1px solid #1A140D", borderRadius: 12, padding: "20px 24px", marginBottom: 24 }}>
           <div style={{ fontSize: 11, color: "#33513B", fontWeight: 700, letterSpacing: "0.8px", marginBottom: 8 }}>CARICA DOCUMENTI</div>
@@ -2035,8 +2035,8 @@ function PortaleUploadMassivoInner({ azienda }) {
 // Export con error boundary: l'app non diventa mai una pagina bianca.
 export default function PortaleUploadMassivo(props) {
   return (
-    <ErrorBoundaryAgile81>
+    <ErrorBoundaryRSPPino>
       <PortaleUploadMassivoInner {...props} />
-    </ErrorBoundaryAgile81>
+    </ErrorBoundaryRSPPino>
   );
 }

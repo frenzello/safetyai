@@ -319,7 +319,7 @@ function ProfiloAzienda({ azienda }) {
 
 // ─── APP FREEMIUM (MVP) ───────────────────────────────────────────────────────
 // Nessun login, nessun database: carica PDF -> analisi AI -> Excel. E' il canale
-// di acquisizione (vedi Agile81_PIANO_90_GIORNI.md). Non tocca Supabase.
+// di acquisizione (vedi RSPPino_PIANO_90_GIORNI.md). Non tocca Supabase.
 function AppMVP() {
   const [privacyOk, setPrivacyOk] = useState(privacyAccettata());
 
@@ -337,7 +337,7 @@ function AppMVP() {
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", position: "relative", maxWidth: 1200, margin: "0 auto" }}>
           <div>
             <h1 style={{ fontFamily: "'Big Shoulders',sans-serif", fontWeight: 900, fontSize: 34, lineHeight: 0.85, letterSpacing: "-0.01em", textTransform: "uppercase", margin: 0 }}>
-              AGILE<span style={{ color: "#B85C3B", WebkitTextStroke: "1px #1A140D" }}>81</span>
+              RSPP<span style={{ color: "#B85C3B", WebkitTextStroke: "1px #1A140D" }}>ino</span>
             </h1>
             <div style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: 10, letterSpacing: "0.16em", textTransform: "uppercase", opacity: 0.8, marginTop: 6 }}>Analisi attestati · D.Lgs 81/08</div>
           </div>
@@ -429,8 +429,8 @@ function AppCompleta() {
         <div style={{ borderBottom: "1px solid #1A140D", padding: "16px 32px", display: "flex", alignItems: "center", gap: 16, background: "#FBF8F1", position: "sticky", top: 0, zIndex: 10 }}>
           <button onClick={() => setShowNuovaAzienda(false)} style={{ background: "none", border: "none", color: "#33513B", fontSize: 13, cursor: "pointer", fontFamily: "inherit" }}>← Torna</button>
           <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-            <div style={{ width: 28, height: 28, background: "#33513B", borderRadius: 7, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 14, fontWeight: 800, color: "white" }}>A</div>
-            <span style={{ fontSize: 14, fontWeight: 700, color: "#241D14" }}>Agile81</span>
+            <div style={{ width: 28, height: 28, background: "#33513B", borderRadius: 7, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 14, fontWeight: 800, color: "white" }}>R</div>
+            <span style={{ fontSize: 14, fontWeight: 700, color: "#241D14" }}>RSPPino</span>
           </div>
         </div>
         <div style={{ padding: "40px 24px" }}>
@@ -488,9 +488,9 @@ function AppCompleta() {
         {/* Logo */}
         <div style={{ padding: "16px 20px", borderBottom: "1px solid #1A140D" }}>
           <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-            <div style={{ width: 32, height: 32, background: "#33513B", borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16, fontWeight: 800, color: "white" }}>A</div>
+            <div style={{ width: 32, height: 32, background: "#33513B", borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16, fontWeight: 800, color: "white" }}>R</div>
             <div>
-              <div style={{ fontSize: 15, fontWeight: 800, color: "#241D14", letterSpacing: "-0.3px" }}>Agile81</div>
+              <div style={{ fontSize: 15, fontWeight: 800, color: "#241D14", letterSpacing: "-0.3px" }}>RSPPino</div>
               <div style={{ fontSize: 9, color: "#5C5545", letterSpacing: "1px" }}>GESTIONALE HSE</div>
             </div>
           </div>
@@ -662,6 +662,6 @@ function AppCompleta() {
 // In MVP_MODE (freemium, nessun login) monta AppMVP: nessuna chiamata a Supabase.
 // A MVP_MODE = false si torna alla versione pro multi-azienda (richiede login,
 // da rimontare dietro AuthSupabase in index.js quando si riattiva).
-export default function Agile81App() {
+export default function RSPPinoApp() {
   return MVP_MODE ? <AppMVP /> : <AppCompleta />;
 }

@@ -1,7 +1,7 @@
-# Agile81 — Lista attività
+# RSPPino — Lista attività
 
 Ultimo aggiornamento: 19 maggio 2026
-Rinominato da "SafetyAI" ad "Agile81" il 28/08/2026 — vedi la nota rebrand in `CLAUDE.md`. Alcune voci qui sotto sono superate: vedi `Agile81_PIANO_90_GIORNI.md` per lo stato verificato al 25/08/2026.
+Rinominato da "SafetyAI" ad "Agile81" il 28/08/2026, poi da "Agile81" a "RSPPino" il 02/09/2026 — vedi la nota rebrand in `CLAUDE.md`. Alcune voci qui sotto sono superate: vedi `RSPPino_PIANO_90_GIORNI.md` per lo stato verificato al 25/08/2026.
 
 ---
 
@@ -15,7 +15,7 @@ Rinominato da "SafetyAI" ad "Agile81" il 28/08/2026 — vedi la nota rebrand in 
 - [ ] Rimuovere la chiave API hardcoded da UploadMassivo.jsx e da tutti i file src
 
 ### Infrastruttura
-- [ ] Acquistare dominio agile81.it
+- [ ] Acquistare dominio rsppino.it
 - [ ] Deploy server Node.js su Railway o Render
 - [ ] Deploy frontend React su Vercel
 - [ ] Configurare variabili d'ambiente in produzione
@@ -68,13 +68,13 @@ Rinominato da "SafetyAI" ad "Agile81" il 28/08/2026 — vedi la nota rebrand in 
 
 ### Sito web
 - [ ] Aggiornare sezione prezzi con piani definitivi
-- [ ] Aggiungere email di contatto reale al posto di info@agile81.it
+- [ ] Aggiungere email di contatto reale al posto di info@rsppino.it
 - [ ] Aggiungere form "Richiedi accesso anticipato" con raccolta email
 - [ ] Pubblicare il sito online (ora è solo un file HTML locale)
 - [ ] SEO base (meta description, og tags, sitemap)
 
 ### Promozione
-- [ ] Creare profilo LinkedIn Agile81
+- [ ] Creare profilo LinkedIn RSPPino
 - [ ] Preparare post di lancio per LinkedIn
 - [ ] Contattare rete professionale HSE esistente per beta test
 - [ ] Raccogliere feedback strutturato dai 2 tester attuali

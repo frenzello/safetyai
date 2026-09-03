@@ -1,13 +1,13 @@
-# CLAUDE.md — Agile81
+# CLAUDE.md — RSPPino
 
 Gestionale HSE per RSPP esterni e CSE italiani, con analisi AI dei documenti (attestati di formazione, visure, DVR) tramite API Anthropic. Lingua del progetto: **italiano** (codice, commenti, UI, commit).
 
-> **Nota rebrand (28/08/2026):** il prodotto si chiamava "SafetyAI", rinominato in **Agile81** (nome libero sul mercato, dominio target `agile81.it` da acquistare). Cartella locale, repo GitHub (`frenzello/safetyai`) e progetti Vercel/Railway restano con il vecchio nome per ora — si rinominano quando si acquista il dominio. Non stupirti quindi di trovare "safetyai" in percorsi, URL infrastrutturali, file legali/moduli non ancora aggiornati (vedi elenco più sotto) o nella cronologia git.
+> **Nota rebrand (02/09/2026):** il prodotto si chiamava "SafetyAI", rinominato in "Agile81" il 28/08/2026 (dominio acquistato, rebrand completo, sito live), poi rinominato di nuovo in **RSPPino** il 02/09/2026 dopo aver scoperto che "Agile81" collideva con un'azienda di Padova omonima e che "agile" causava affollamento SEO pesante. "RSPPino" ha passato una verifica molto più rigorosa (aziende, software, dominio, marchio UIBM — tutti puliti) prima di essere adottato. Dominio target `rsppino.it` da acquistare (Vercel non gestisce l'acquisto di domini .it, va fatto manualmente su Aruba o altro registrar, come per agile81.it). Cartella locale, repo GitHub (`frenzello/safetyai`) e progetti Vercel/Railway restano con il vecchio nome per ora — si rinominano quando si acquista il dominio. Non stupirti quindi di trovare "safetyai" o "agile81" in percorsi, URL infrastrutturali, file legali/moduli non ancora aggiornati (vedi elenco più sotto) o nella cronologia git. Il CORS in `server.js` accetta temporaneamente sia `agile81.it` che `rsppino.it` finché il passaggio non è confermato.
 
 ## Documenti guida — leggerli prima di lavorare
 
-- `Agile81_PIANO_90_GIORNI.md` — posizionamento, priorità e criterio di successo (10 clienti paganti in 90 giorni). **L'ordine delle priorità tecniche è lì e va rispettato: niente funzionalità nuove prima della validazione.**
-- `Agile81_TODO.md` — lista attività dettagliata (attenzione: aggiornata a maggio 2026, alcune voci di sicurezza sono già risolte in `server.js`).
+- `RSPPino_PIANO_90_GIORNI.md` — posizionamento, priorità e criterio di successo (10 clienti paganti in 90 giorni). **L'ordine delle priorità tecniche è lì e va rispettato: niente funzionalità nuove prima della validazione.**
+- `RSPPino_TODO.md` — lista attività dettagliata (attenzione: aggiornata a maggio 2026, alcune voci di sicurezza sono già risolte in `server.js`).
 
 ## Architettura
 
@@ -15,8 +15,8 @@ Gestionale HSE per RSPP esterni e CSE italiani, con analisi AI dei documenti (at
 - **Back-end**: `server.js` — Express (porta 3001). Fa da proxy sicuro verso l'API Anthropic (`/api/claude`) e genera il cartiglio PSC via Python (`/api/genera-cartiglio`). Ha già: chiave in variabile d'ambiente (`ANTHROPIC_KEY`), rate limiting configurabile, CORS con whitelist, validazione modello/allegati, Sentry opzionale.
 - **AI**: Claude Haiku (con escalation a Sonnet) via API, chiamato SOLO attraverso il server, mai dal client.
 - **Storage**: nel flusso live (`AppMVP`) non c'è persistenza — analisi client-side, nessun database. `AppCompleta` (dormiente) ha una migrazione da localStorage (`src/database.js`, rimosso) a Supabase (`src/dbSupabase.js`, `src/supabaseClient.js`, `src/AuthSupabase.jsx`, schema in `supabase/schema.sql`) per un eventuale tier a pagamento futuro.
-- **Deploy**: front-end su Vercel (dominio attuale `safetyai-lluu.vercel.app`, da migrare a `agile81.it`), server su Railway (config in `railway.json`, `Dockerfile`, `nixpacks.toml`). `REACT_APP_API_URL` deve essere impostata nelle Environment Variables del progetto Vercel (tipo **Config**, non Secret — è un URL pubblico) altrimenti il front-end ricade su `localhost:3001` anche in produzione.
-- **Rebrand in corso**: testi UI, titolo pagina e documenti di progetto sono già "Agile81"; restano da aggiornare (non urgente, moduli non raggiungibili dal flusso live): `ModuloPSC.jsx`, `ModuloBadge.jsx`, `ModuloAccessi.jsx`, `ModuloNotifiche.jsx`, `RegistroScadenze.jsx`, `AuthSupabase.jsx`, `AccessGate.jsx`, `PrivacyResponsabilita.jsx`, `DPA.jsx`, `TerminiServizio.jsx`, gli script Python `genera_psc_*.py`, `supabase/schema.sql`, `legal/*.md`, `safetyai_website.html` (sito marketing, non ancora pubblicato).
+- **Deploy**: front-end su Vercel (dominio live attuale `agile81.it`, da migrare a `rsppino.it` una volta acquistato), server su Railway (config in `railway.json`, `Dockerfile`, `nixpacks.toml`). `REACT_APP_API_URL` deve essere impostata nelle Environment Variables del progetto Vercel (tipo **Config**, non Secret — è un URL pubblico) altrimenti il front-end ricade su `localhost:3001` anche in produzione.
+- **Rebrand in corso**: testi UI, titolo pagina e documenti di progetto sono già "RSPPino"; restano da aggiornare (non urgente, moduli non raggiungibili dal flusso live): `ModuloPSC.jsx`, `ModuloBadge.jsx`, `ModuloAccessi.jsx`, `ModuloNotifiche.jsx`, `RegistroScadenze.jsx`, `AuthSupabase.jsx`, `AccessGate.jsx`, `PrivacyResponsabilita.jsx`, `DPA.jsx`, `TerminiServizio.jsx`, gli script Python `genera_psc_*.py`, `supabase/schema.sql`, `legal/*.md`, `safetyai_website.html` (sito marketing, non ancora pubblicato). Loghi e banner in `brand/` sono ancora quelli di "Agile81", da rifare per RSPPino.
 
 ## Comandi
 

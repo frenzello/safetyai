@@ -42,7 +42,7 @@ export function DisclaimerExport({ onConferma, onAnnulla }) {
             {[
               {
                 icona: "🤖",
-                testo: "L'analisi prodotta dall'AI ha carattere indicativo. Agile81 non certifica la conformità normativa dei documenti.",
+                testo: "L'analisi prodotta dall'AI ha carattere indicativo. RSPPino non certifica la conformità normativa dei documenti.",
               },
               {
                 icona: "👤",
