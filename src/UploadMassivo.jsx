@@ -1155,7 +1155,7 @@ function SchermatScadenze({ elaborati, azienda, appaltoSelId, appaltatoreSelId, 
         <div>
           <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8 }}>
             <div style={{ width: 32, height: 32, background: "#1E5D39", borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center" }}>
-              <svg viewBox="0 0 140 190" width="17" height="auto"><path d="M70 8 C 90 20, 82 32, 96 38 C 112 44, 98 56, 114 64 C 130 72, 112 84, 128 94 C 140 102, 118 114, 130 124 C 138 132, 122 142, 104 144 L 100 178 L 40 178 L 36 144 C 18 142, 2 132, 10 124 C 22 114, 0 102, 12 94 C 28 84, 10 72, 26 64 C 42 56, 28 44, 44 38 C 58 32, 50 20, 70 8 Z" fill="white" /></svg>
+              <img src="/pine.png" alt="" width="17" height="auto" style={{ display: "block" }} />
             </div>
             <span style={{ fontSize: 14, fontWeight: 700, color: "#241D14" }}>rspPINO</span>
           </div>
@@ -1842,7 +1842,7 @@ function PortaleUploadMassivoInner({ azienda }) {
       <div style={{ marginBottom: 32 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 20 }}>
           <div style={{ width: 32, height: 32, background: "#1E5D39", borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center" }}>
-            <svg viewBox="0 0 140 190" width="17" height="auto"><path d="M70 8 C 90 20, 82 32, 96 38 C 112 44, 98 56, 114 64 C 130 72, 112 84, 128 94 C 140 102, 118 114, 130 124 C 138 132, 122 142, 104 144 L 100 178 L 40 178 L 36 144 C 18 142, 2 132, 10 124 C 22 114, 0 102, 12 94 C 28 84, 10 72, 26 64 C 42 56, 28 44, 44 38 C 58 32, 50 20, 70 8 Z" fill="white" /></svg>
+            <img src="/pine.png" alt="" width="17" height="auto" style={{ display: "block" }} />
           </div>
           <span style={{ fontSize: 14, fontWeight: 700, color: "#241D14" }}>rspPINO</span>
         </div>
@@ -1942,9 +1942,7 @@ function PortaleUploadMassivoInner({ azienda }) {
             {/* Banner cartella rilevata */}
             {infoCartella && (
               <div style={{ marginBottom: 12, padding: "9px 14px", background: "#E8EDE5", border: "2px solid #1E5D39", borderRadius: 2, display: "flex", alignItems: "center", gap: 10, textAlign: "left", position: "relative", overflow: "hidden" }}>
-                <svg aria-hidden="true" viewBox="0 0 140 190" style={{ position: "absolute", right: -4, bottom: -10, width: 44, height: "auto", opacity: 0.1, pointerEvents: "none" }}>
-                  <path d="M70 8 C 90 20, 82 32, 96 38 C 112 44, 98 56, 114 64 C 130 72, 112 84, 128 94 C 140 102, 118 114, 130 124 C 138 132, 122 142, 104 144 L 100 178 L 40 178 L 36 144 C 18 142, 2 132, 10 124 C 22 114, 0 102, 12 94 C 28 84, 10 72, 26 64 C 42 56, 28 44, 44 38 C 58 32, 50 20, 70 8 Z" fill="#1E5D39" />
-                </svg>
+                <img aria-hidden="true" src="/pine-forest.png" alt="" style={{ position: "absolute", right: -4, bottom: -10, width: 44, height: "auto", opacity: 0.1, pointerEvents: "none" }} />
                 <span style={{ fontSize: 16, flexShrink: 0 }}>📁</span>
                 <div style={{ flex: 1 }}>
                   <div style={{ fontSize: 12, fontWeight: 700, color: "#1E5D39" }}>{infoCartella.nome}</div>

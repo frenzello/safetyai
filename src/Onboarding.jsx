@@ -181,16 +181,16 @@ function SchermataBenvenuto({ onAccetta }) {
         {/* Logo */}
         <div style={{ textAlign: "center", marginBottom: 40 }}>
           <div style={{ width: 56, height: 56, margin: "0 auto 16px", background: "#1E5D39", border: "3px solid #1A140D", boxShadow: "4px 4px 0 #1A140D", borderRadius: 3, display: "flex", alignItems: "center", justifyContent: "center" }}>
-            <svg viewBox="0 0 140 190" width="30" height="auto"><path d="M70 8 C 90 20, 82 32, 96 38 C 112 44, 98 56, 114 64 C 130 72, 112 84, 128 94 C 140 102, 118 114, 130 124 C 138 132, 122 142, 104 144 L 100 178 L 40 178 L 36 144 C 18 142, 2 132, 10 124 C 22 114, 0 102, 12 94 C 28 84, 10 72, 26 64 C 42 56, 28 44, 44 38 C 58 32, 50 20, 70 8 Z" fill="#F2EEE0" /></svg>
+            <img src="/pine.png" alt="" width="30" height="auto" style={{ display: "block" }} />
           </div>
           <div style={{ fontSize: 28, fontWeight: 700, fontFamily: "'Zilla Slab',serif", letterSpacing: "-0.01em", color: "#241D14" }}>
             Benvenuto in{" "}
             <span style={{ position: "relative", display: "inline-block" }}>
               <span aria-hidden="true" style={{ position: "absolute", top: 2, left: 2, zIndex: 0, color: "#1A140D" }}>rsp<span style={{ textTransform: "uppercase" }}>pino</span></span>
-              <span style={{ position: "relative", zIndex: 1 }}>rsp<span style={{ color: "#812C2C", textTransform: "uppercase" }}>pino</span></span>
+              <span style={{ position: "relative", zIndex: 1 }}>rsp<span style={{ color: "#241D14", textTransform: "uppercase" }}>pino</span></span>
             </span>
           </div>
-          <div style={{ fontSize: 14, color: "#5C5545", marginTop: 8, lineHeight: 1.6 }}>Il gestionale HSE per professionisti della sicurezza sul lavoro</div>
+          <div style={{ fontSize: 14, color: "#5C5545", marginTop: 8, lineHeight: 1.6 }}>Per professionisti della sicurezza sul lavoro</div>
         </div>
 
         {/* Card consensi */}
@@ -247,11 +247,11 @@ function SchermataBenvenuto({ onAccetta }) {
           disabled={!tuttoAccettato}
           style={{
             width: "100%", padding: "16px",
-            background: tuttoAccettato ? "#812C2C" : "#DCD5C4",
+            background: tuttoAccettato ? "#C197D2" : "#DCD5C4",
             border: tuttoAccettato ? "3px solid #1A140D" : "3px solid #A79D89",
             boxShadow: tuttoAccettato ? "5px 5px 0 #1A140D" : "none",
             borderRadius: 3,
-            color: tuttoAccettato ? "#FBF3ED" : "#A79D89",
+            color: tuttoAccettato ? "#1A140D" : "#A79D89",
             fontSize: 15, fontWeight: 700, fontFamily: "'Zilla Slab',serif", textTransform: "uppercase", letterSpacing: "0.02em",
             cursor: tuttoAccettato ? "pointer" : "not-allowed",
             transition: "all 0.2s",

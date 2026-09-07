@@ -38,9 +38,7 @@ export function DisclaimerExport({ onConferma, onAnnulla }) {
 
         {/* Corpo */}
         <div style={{ padding: "20px 24px", position: "relative" }}>
-          <svg aria-hidden="true" viewBox="0 0 140 190" style={{ position: "absolute", right: -8, bottom: -16, width: 90, height: "auto", opacity: 0.08, pointerEvents: "none" }}>
-            <path d="M70 8 C 90 20, 82 32, 96 38 C 112 44, 98 56, 114 64 C 130 72, 112 84, 128 94 C 140 102, 118 114, 130 124 C 138 132, 122 142, 104 144 L 100 178 L 40 178 L 36 144 C 18 142, 2 132, 10 124 C 22 114, 0 102, 12 94 C 28 84, 10 72, 26 64 C 42 56, 28 44, 44 38 C 58 32, 50 20, 70 8 Z" fill="#1E5D39" />
-          </svg>
+          <img aria-hidden="true" src="/pine-forest.png" alt="" style={{ position: "absolute", right: -8, bottom: -16, width: 90, height: "auto", opacity: 0.08, pointerEvents: "none" }} />
           <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 20, position: "relative" }}>
             {[
               {

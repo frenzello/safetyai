@@ -330,12 +330,10 @@ function AppMVP() {
   return (
     <div style={{ fontFamily: "'Work Sans','Segoe UI',sans-serif", background: "#EFE9DD", minHeight: "100vh", color: "#241D14" }}>
       {/* Nastro di segnaletica */}
-      <div style={{ height: 10, background: "repeating-linear-gradient(45deg, #812C2C, #812C2C 10px, #1A140D 10px, #1A140D 20px)" }} />
+      <div style={{ height: 10, background: "repeating-linear-gradient(45deg, #C197D2, #C197D2 10px, #1A140D 10px, #1A140D 20px)" }} />
 
       <div style={{ position: "relative", background: "#1E5D39", color: "#F2EEE0", padding: "18px 28px", borderBottom: "4px solid #1A140D", overflow: "hidden" }}>
-        <svg aria-hidden="true" viewBox="0 0 140 190" style={{ position: "absolute", right: -10, top: -20, width: 150, height: "auto", opacity: 0.12, pointerEvents: "none" }}>
-          <path d="M70 8 C 90 20, 82 32, 96 38 C 112 44, 98 56, 114 64 C 130 72, 112 84, 128 94 C 140 102, 118 114, 130 124 C 138 132, 122 142, 104 144 L 100 178 L 40 178 L 36 144 C 18 142, 2 132, 10 124 C 22 114, 0 102, 12 94 C 28 84, 10 72, 26 64 C 42 56, 28 44, 44 38 C 58 32, 50 20, 70 8 Z" fill="#F2EEE0" />
-        </svg>
+        <img aria-hidden="true" src="/pine.png" alt="" style={{ position: "absolute", right: -10, top: -20, width: 150, height: "auto", opacity: 0.12, pointerEvents: "none" }} />
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", position: "relative", maxWidth: 1200, margin: "0 auto" }}>
           <div>
             <div style={{ fontFamily: "'Zilla Slab',serif", fontWeight: 700, fontSize: 34, lineHeight: 0.9, position: "relative", display: "inline-block" }}>
@@ -344,12 +342,12 @@ function AppMVP() {
               </span>
               <span style={{ position: "relative", zIndex: 1 }}>
                 <span style={{ color: "#F2EEE0" }}>rsp</span>
-                <span style={{ color: "#812C2C", textTransform: "uppercase" }}>pino</span>
+                <span style={{ color: "#C197D2", textTransform: "uppercase" }}>pino</span>
               </span>
             </div>
             <div style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: 10, letterSpacing: "0.16em", textTransform: "uppercase", opacity: 0.8, marginTop: 6 }}>Analisi attestati · D.Lgs 81/08</div>
           </div>
-          <div style={{ transform: "rotate(-6deg)", background: "#FBF3ED", color: "#812C2C", border: "3px solid #812C2C", borderRadius: 3, padding: "6px 13px", fontFamily: "'Zilla Slab',serif", fontWeight: 700, fontSize: 12, textTransform: "uppercase", letterSpacing: "0.04em", boxShadow: "4px 4px 0 #1A140D" }}>
+          <div style={{ transform: "rotate(-6deg)", background: "#C197D2", color: "#1A140D", border: "3px solid #1A140D", borderRadius: 3, padding: "6px 13px", fontFamily: "'Zilla Slab',serif", fontWeight: 700, fontSize: 12, textTransform: "uppercase", letterSpacing: "0.04em", boxShadow: "4px 4px 0 #1A140D" }}>
             Beta · no login
           </div>
         </div>
@@ -442,7 +440,7 @@ function AppCompleta() {
           <button onClick={() => setShowNuovaAzienda(false)} style={{ background: "none", border: "none", color: "#1E5D39", fontSize: 13, cursor: "pointer", fontFamily: "inherit" }}>← Torna</button>
           <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
             <div style={{ width: 28, height: 28, background: "#1E5D39", borderRadius: 7, display: "flex", alignItems: "center", justifyContent: "center" }}>
-              <svg viewBox="0 0 140 190" width="15" height="auto"><path d="M70 8 C 90 20, 82 32, 96 38 C 112 44, 98 56, 114 64 C 130 72, 112 84, 128 94 C 140 102, 118 114, 130 124 C 138 132, 122 142, 104 144 L 100 178 L 40 178 L 36 144 C 18 142, 2 132, 10 124 C 22 114, 0 102, 12 94 C 28 84, 10 72, 26 64 C 42 56, 28 44, 44 38 C 58 32, 50 20, 70 8 Z" fill="white" /></svg>
+              <img src="/pine.png" alt="" width="15" height="auto" style={{ display: "block" }} />
             </div>
             <span style={{ fontSize: 14, fontWeight: 700, color: "#241D14" }}>rspPINO</span>
           </div>
@@ -503,11 +501,10 @@ function AppCompleta() {
         <div style={{ padding: "16px 20px", borderBottom: "1px solid #1A140D" }}>
           <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
             <div style={{ width: 32, height: 32, background: "#1E5D39", borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center" }}>
-              <svg viewBox="0 0 140 190" width="17" height="auto"><path d="M70 8 C 90 20, 82 32, 96 38 C 112 44, 98 56, 114 64 C 130 72, 112 84, 128 94 C 140 102, 118 114, 130 124 C 138 132, 122 142, 104 144 L 100 178 L 40 178 L 36 144 C 18 142, 2 132, 10 124 C 22 114, 0 102, 12 94 C 28 84, 10 72, 26 64 C 42 56, 28 44, 44 38 C 58 32, 50 20, 70 8 Z" fill="white" /></svg>
+              <img src="/pine.png" alt="" width="17" height="auto" style={{ display: "block" }} />
             </div>
             <div>
               <div style={{ fontSize: 15, fontWeight: 800, color: "#241D14", letterSpacing: "-0.3px" }}>rspPINO</div>
-              <div style={{ fontSize: 9, color: "#5C5545", letterSpacing: "1px" }}>GESTIONALE HSE</div>
             </div>
           </div>
         </div>
